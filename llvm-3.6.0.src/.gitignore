@@ -6,6 +6,20 @@
 # as most of those are useless.
 #==============================================================================#
 
+# CMake
+*.vcproj
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.cmake
+*.sln
+*.props
+DummyConfigureOutput
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+
 #==============================================================================#
 # File extensions to be ignored anywhere in the tree.
 #==============================================================================#
