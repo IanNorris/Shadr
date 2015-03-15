@@ -81,7 +81,7 @@
 #define HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the <fenv.h> header file. */
-/* #undef HAVE_FENV_H */
+#define HAVE_FENV_H 1
 
 /* Define if libffi is available on this platform. */
 /* #undef HAVE_FFI_CALL */
@@ -102,7 +102,7 @@
 #define HAVE_LOG 1
 
 /* Define to 1 if you have the `log2' function. */
-/* #undef HAVE_LOG2 */
+#define HAVE_LOG2 1
 
 /* Define to 1 if you have the `log10' function. */
 #define HAVE_LOG10 1
@@ -111,7 +111,7 @@
 #define HAVE_EXP 1
 
 /* Define to 1 if you have the `exp2' function. */
-/* #undef HAVE_EXP2 */
+#define HAVE_EXP2 1
 
 /* Define to 1 if you have the `exp10' function. */
 /* #undef HAVE_EXP10 */
@@ -144,7 +144,7 @@
 #define HAVE_INT64_T 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-/* #undef HAVE_INTTYPES_H */
+#define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the `isatty' function. */
 /* #undef HAVE_ISATTY */
@@ -153,13 +153,13 @@
 /* #undef HAVE_ISINF_IN_CMATH */
 
 /* Set to 1 if the isinf function is found in <math.h> */
-/* #undef HAVE_ISINF_IN_MATH_H */
+#define HAVE_ISINF_IN_MATH_H 1
 
 /* Set to 1 if the isnan function is found in <cmath> */
 /* #undef HAVE_ISNAN_IN_CMATH */
 
 /* Set to 1 if the isnan function is found in <math.h> */
-/* #undef HAVE_ISNAN_IN_MATH_H */
+#define HAVE_ISNAN_IN_MATH_H 1
 
 /* Define if you have the libdl library or equivalent. */
 /* #undef HAVE_LIBDL */
@@ -242,7 +242,7 @@
 /* #undef HAVE_NDIR_H */
 
 /* Define to 1 if you have the `nearbyintf' function. */
-/* #undef HAVE_NEARBYINTF */
+#define HAVE_NEARBYINTF 1
 
 /* Define to 1 if you have the `opendir' function. */
 /* #undef HAVE_OPENDIR */
@@ -525,10 +525,10 @@
 #undef size_t
 
 /* Define to a function replacing strtoll */
-#define strtoll _strtoi64
+/* #undef strtoll */
 
 /* Define to a function implementing strtoull */
-#define strtoull _strtoui64
+/* #undef strtoull */
 
 /* Define to a function implementing stricmp */
 #define stricmp _stricmp
