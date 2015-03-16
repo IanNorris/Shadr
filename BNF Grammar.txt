@@ -14,7 +14,9 @@
 <OPERATOR_MULTIPLY> ::= '*'
 <OPERATOR_MODULO> ::= '%'
 <TOKEN_INCREMENT> ::= '++'
-<TOKEN_DECCREMENT> ::= '--'
+<TOKEN_DECREMENT> ::= '--'
+<TOKEN_EQUAL> ::= '=='
+<TOKEN_NOT_EQUAL> ::= '!='
 
 <TOKEN_IF> ::= 'if'
 <TOKEN_ELSE> ::= 'else'
