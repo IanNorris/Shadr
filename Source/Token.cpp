@@ -1,6 +1,10 @@
 #include "Tokens.h"
+#include <algorithm>
+#include <unordered_map>
 
 typedef std::function< unsigned int( const char*, unsigned int, unsigned int&, unsigned int& ) > TTokenCallback;
+
+std::unordered_map< EShaderToken, std::list< EShaderToken > > g_tIgnoreTokens;
 
 struct SBasicTokenMap
 {
@@ -94,6 +98,8 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
 {
 	{ "identifier", std::regex( "[a-zA-Z_][a-zA-Z0-9_]+" ) },
+	{ "float",		std::regex( "[\\-]?(?:(?:[0-9]+\\.[0-9]*)|(?:[0-9]*\\.[0-9]+))f?" ) }, //Allow .3f or 3.f but not .f
+	{ "int",		std::regex( "-?[0-9]+" ) },
 };
 
 
@@ -137,6 +143,26 @@ SCallbackTokenMap g_asCallbackTokens[  GetCountFromTokenRange(EShaderToken_Begin
 	},
 };
 
+bool ShouldIgnoreToken( std::vector<SPossibleToken>& rsPossibleTokens, EShaderToken eNew )
+{
+	for( SPossibleToken& rsExisting : rsPossibleTokens )
+	{
+		auto tIter = g_tIgnoreTokens.find( rsExisting.eToken );
+		if( tIter != g_tIgnoreTokens.end() )
+		{
+			auto& tList = (*tIter).second;
+			for( EShaderToken eListToken : tList )
+			{
+				if( eListToken == eNew )
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens )
 {
 	unsigned int uBasicTokenCount = GetCountFromTokenRange( EShaderToken_BeginBasic, EShaderToken_EndBasic );
@@ -149,11 +175,14 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 			{
 				SPossibleToken tToken;
 				tToken.eToken = (EShaderToken)(EShaderToken_BeginBasic - uToken);
-				tToken.uLength = g_asBasicTokens[ uToken ].uTokenLength;
-				tToken.uAfterTokenRow = uCurrentRow;
-				tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
-				tToken.pszToken = pszInputString;
-				rsPossibleTokens.push_back( tToken );
+				if( !ShouldIgnoreToken( rsPossibleTokens, tToken.eToken ) )
+				{
+					tToken.uLength = g_asBasicTokens[ uToken ].uTokenLength;
+					tToken.uAfterTokenRow = uCurrentRow;
+					tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
+					tToken.pszToken = pszInputString;
+					rsPossibleTokens.push_back( tToken );
+				}
 			}
 		}
 	}
@@ -165,10 +194,17 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 		std::cmatch matches;
 		std::regex_search( pszInputString, matches, g_asRegexTokens[ uToken ].tRegex, std::regex_constants::match_continuous );
 
-		if( matches.size() > 0 )
+		if( matches.size() > 0 && matches.position() == 0 )
 		{
 			SPossibleToken tToken;
 			tToken.eToken = (EShaderToken)(EShaderToken_BeginRegex - uToken);
+
+			//If we're about to create an identifier token yet we've already identified a keyword, bail
+			if( (tToken.eToken == EShaderToken_Identifier && !rsPossibleTokens.empty() ) || ShouldIgnoreToken( rsPossibleTokens, tToken.eToken ) )
+			{
+				continue;
+			}
+
 			tToken.uLength = matches[0].length();
 			tToken.uAfterTokenRow = uCurrentRow;
 			tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
@@ -190,13 +226,19 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 		{
 			SPossibleToken tToken;
 			tToken.eToken = (EShaderToken)(EShaderToken_BeginCallback - uToken);
-			tToken.uLength = uMatched;
-			tToken.uAfterTokenRow = uTempCurrentRow;
-			tToken.uAfterTokenColumn = uTempCurrentCol;
-			tToken.pszToken = pszInputString;
-			rsPossibleTokens.push_back( tToken );
+			
+			if( !ShouldIgnoreToken( rsPossibleTokens, tToken.eToken ) )
+			{
+				tToken.uLength = uMatched;
+				tToken.uAfterTokenRow = uTempCurrentRow;
+				tToken.uAfterTokenColumn = uTempCurrentCol;
+				tToken.pszToken = pszInputString;
+				rsPossibleTokens.push_back( tToken );
+			}
 		}
 	}
+
+	std::sort( rsPossibleTokens.begin(), rsPossibleTokens.end() );
 
 	return !rsPossibleTokens.empty();
 }
@@ -221,6 +263,41 @@ const char* GetTokenName( EShaderToken eToken )
 	return "Unknown";
 }
 
+EShaderToken GetTokenByName( const char* pszTokenName )
+{
+	unsigned int uBasicTokenCount = GetCountFromTokenRange( EShaderToken_BeginBasic, EShaderToken_EndBasic );
+
+	for( unsigned int uToken = 0; uToken < uBasicTokenCount; ++uToken )
+	{
+		if( _stricmp( g_asBasicTokens[ uToken ].pszTokenName, pszTokenName ) == 0 )
+		{
+			return (EShaderToken)(EShaderToken_BeginBasic - uToken);
+		}
+	}
+
+	unsigned int uRegexTokenCount = GetCountFromTokenRange( EShaderToken_BeginRegex, EShaderToken_EndRegex );
+
+	for( unsigned int uToken = 0; uToken < uRegexTokenCount; ++uToken )
+	{
+		if( _stricmp( g_asRegexTokens[ uToken ].pszTokenName, pszTokenName ) == 0 )
+		{
+			return (EShaderToken)(EShaderToken_BeginRegex - uToken);
+		}
+	}
+
+	unsigned int uCallbackTokenCount = GetCountFromTokenRange( EShaderToken_BeginCallback, EShaderToken_EndCallback );
+
+	for( unsigned int uToken = 0; uToken < uCallbackTokenCount; ++uToken )
+	{
+		if( _stricmp( g_asCallbackTokens[ uToken ].pszTokenName, pszTokenName ) == 0 )
+		{
+			return (EShaderToken)(EShaderToken_BeginCallback - uToken);
+		}
+	}
+
+	return EShaderToken_Invalid;
+}
+
 void InitialiseTokenTables( void )
 {
 	unsigned int uTokenCount = GetCountFromTokenRange( EShaderToken_BeginBasic, EShaderToken_EndBasic );
@@ -229,4 +306,9 @@ void InitialiseTokenTables( void )
 	{
 		g_asBasicTokens[ uToken ].uTokenLength = strlen( g_asBasicTokens[ uToken ].pszTokenString );
 	}
+
+	//List of tokens to ignore
+	//If X is already a possibility then ignore Y
+	//X												Y
+	g_tIgnoreTokens[ EShaderToken_Float ].push_back( EShaderToken_Int );
 }

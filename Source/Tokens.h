@@ -91,8 +91,10 @@ enum EShaderToken
 	EShaderToken_BeginRegex					= -2000,
 
 	EShaderToken_Identifier					= -2000,
+	EShaderToken_Float						= -2001,
+	EShaderToken_Int						= -2002,
 
-	EShaderToken_EndRegex					= -2000,
+	EShaderToken_EndRegex					= -2002,
 
 	//Special tokens
 	EShaderToken_BeginSpecial				= -3000,
@@ -123,11 +125,18 @@ struct SPossibleToken
 	unsigned int uAfterTokenColumn;
 
 	const char* pszToken;
+
+	bool operator < ( const SPossibleToken& other ) const
+	{
+		return ( other.uLength < uLength );
+	}
 };
 
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens );
 
 const char* GetTokenName( EShaderToken eToken );
+
+EShaderToken GetTokenByName( const char* pszTokenName );
 
 void InitialiseTokenTables( void );
 
