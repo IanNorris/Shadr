@@ -48,7 +48,6 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	{ "equal",					"==", 0 },				// EShaderToken_Binary_Comparison_Equal	
 	{ "not equal",				"!=", 0 },				// EShaderToken_Binary_Comparison_NotEqual
 	
-	{ "negate",					"-", 0 },				// EShaderToken_Unary_Negate			
 	{ "not",					"!", 0 },				// EShaderToken_Unary_Not				
 	{ "increment",				"++", 0 },				// EShaderToken_Unary_Increment			
 	{ "decrement",				"--", 0 },				// EShaderToken_Unary_Deccrement		
@@ -64,6 +63,7 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 
 	{ "semi-colon",				";", 0 },				// EShaderToken_SemiColon				
 	{ "colon",					":", 0 },				// EShaderToken_Colon					
+	{ "dot",					".", 0 },				// EShaderToken_Colon					
 	{ "reference",				"&", 0 },				// EShaderToken_Reference				
 	
 	{ "return",					"return", 0 },			// EShaderToken_Return					
@@ -377,6 +377,7 @@ void InitialiseTokenTables( void )
 	//Throw away a token X if we encounter Y
 	//X												Y
 	g_tIgnoreTokens[ EShaderToken_Int ].push_back( EShaderToken_Float );
+	g_tIgnoreTokens[ EShaderToken_Dot ].push_back( EShaderToken_Float );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Comment );
 }
 
