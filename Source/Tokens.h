@@ -84,8 +84,9 @@ enum EShaderToken
 	EShaderToken_BeginCallback				= -1000,
 
 	EShaderToken_Whitespace					= -1000,
+	EShaderToken_Comment					= -1001,
 
-	EShaderToken_EndCallback				= -1000,
+	EShaderToken_EndCallback				= -1001,
 
 	//Regex based tokens
 	EShaderToken_BeginRegex					= -2000,
@@ -139,5 +140,7 @@ const char* GetTokenName( EShaderToken eToken );
 EShaderToken GetTokenByName( const char* pszTokenName );
 
 void InitialiseTokenTables( void );
+
+void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens );
 
 #endif //SHADR_TOKEN_H

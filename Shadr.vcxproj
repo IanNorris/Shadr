@@ -64,7 +64,7 @@
       <AdditionalDependencies>LLVMAnalysis.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMInstCombine.lib;LLVMMC.lib;LLVMScalarOpts.lib;LLVMSupport.lib;LLVMTransformUtils.lib;LLVMMCJIT.lib;LLVMX86CodeGen.lib;LLVMX86AsmPrinter.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMRuntimeDyld.lib;LLVMAsmPrinter.lib;LLVMSelectionDAG.lib;LLVMCodeGen.lib;LLVMProfileData.lib;LLVMipa.lib;LLVMTarget.lib;LLVMX86Utils.lib;LLVMObject.lib;LLVMBitReader.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>cmd /C move $(OutDir)$(TargetName).pdb $(OutDir)$(TargetName)-%RANDOM%.pdb</Command>
+      <Command>cmd /C move $(OutDir)$(TargetName).pdb $(OutDir)$(TargetName)-%RANDOM%.pdb &amp; exit 0</Command>
     </PreBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -90,7 +90,7 @@
       <AdditionalDependencies>LLVMAnalysis.lib;LLVMCore.lib;LLVMExecutionEngine.lib;LLVMInstCombine.lib;LLVMMC.lib;LLVMScalarOpts.lib;LLVMSupport.lib;LLVMTransformUtils.lib;LLVMMCJIT.lib;LLVMX86CodeGen.lib;LLVMX86AsmPrinter.lib;LLVMX86AsmParser.lib;LLVMX86Desc.lib;LLVMX86Info.lib;LLVMX86Disassembler.lib;LLVMRuntimeDyld.lib;LLVMAsmPrinter.lib;LLVMSelectionDAG.lib;LLVMCodeGen.lib;LLVMProfileData.lib;LLVMipa.lib;LLVMTarget.lib;LLVMX86Utils.lib;LLVMObject.lib;LLVMBitReader.lib;LLVMMCParser.lib;LLVMMCDisassembler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>cmd /C move $(OutDir)$(TargetName).pdb $(OutDir)$(TargetName)-%RANDOM%.pdb</Command>
+      <Command>cmd /C move $(OutDir)$(TargetName).pdb $(OutDir)$(TargetName)-%RANDOM%.pdb &amp; exit 0</Command>
     </PreBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -98,10 +98,12 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Error.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Error.h" />
     <ClInclude Include="Source\Tokens.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

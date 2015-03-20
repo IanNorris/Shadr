@@ -1,0 +1,12 @@
+//This is a simple comment
+
+//This is a simple comment with\
+an escape before a newline.
+
+/* This is a C style comment */
+
+/* This is a C style
+* comment that spans multiple
+* lines */
+
+//

@@ -1,10 +1,11 @@
 #include "Tokens.h"
+#include "Error.h"
 #include <algorithm>
 #include <unordered_map>
 
 typedef std::function< unsigned int( const char*, unsigned int, unsigned int&, unsigned int& ) > TTokenCallback;
 
-std::unordered_map< EShaderToken, std::list< EShaderToken > > g_tIgnoreTokens;
+std::unordered_map< EShaderToken, std::vector< EShaderToken > > g_tIgnoreTokens;
 
 struct SBasicTokenMap
 {
@@ -141,27 +142,97 @@ SCallbackTokenMap g_asCallbackTokens[  GetCountFromTokenRange(EShaderToken_Begin
 			return uMatched;
 		}
 	},
-};
-
-bool ShouldIgnoreToken( std::vector<SPossibleToken>& rsPossibleTokens, EShaderToken eNew )
-{
-	for( SPossibleToken& rsExisting : rsPossibleTokens )
-	{
-		auto tIter = g_tIgnoreTokens.find( rsExisting.eToken );
-		if( tIter != g_tIgnoreTokens.end() )
+	{ "comment", []( const char* pszInputString, unsigned int uCharactersLeft, unsigned int& ruCurrentRow, unsigned int& ruCurrentCol ) -> unsigned int
 		{
-			auto& tList = (*tIter).second;
-			for( EShaderToken eListToken : tList )
+			unsigned int uStartRow = ruCurrentRow;
+			unsigned int uStartCol = ruCurrentCol;
+
+			unsigned int uMatched = 0;
+
+			if( uCharactersLeft >= 2 )
 			{
-				if( eListToken == eNew )
+				//Comments starting with '//'
+				if( *(pszInputString+0) == '/' && *(pszInputString+1) == '/' )
 				{
-					return true;
+					uMatched += 2;
+
+					pszInputString+=2;
+					uCharactersLeft-=2;
+					ruCurrentCol+=2;
+
+					while( *pszInputString && uCharactersLeft )
+					{
+						bool bIsUnixNewline = *pszInputString == '\n';
+						bool bIsWindowsNewline = (uCharactersLeft >= 2) && (*pszInputString == '\r') && (*(pszInputString+1) == '\n');
+
+						//Found the end of the comment
+						if( bIsUnixNewline || bIsWindowsNewline )
+						{
+							ruCurrentRow++;
+							ruCurrentCol = 0;	
+
+							//Comment was escaped
+							if( *(pszInputString-1) == '\\' )
+							{
+								//Just carry on
+							}
+							else
+							{
+
+								uMatched++;
+
+								return uMatched;
+							}
+
+							//Eat the newline or our row will be out
+							if( bIsWindowsNewline )
+							{
+								pszInputString++;
+							}
+						}
+
+						uMatched++;
+
+						pszInputString++;
+						uCharactersLeft--;
+					}
+				}
+				//Comments starting with '/*'
+				else if( *(pszInputString+0) == '/' && *(pszInputString+1) == '*' )
+				{
+					uMatched += 2;
+
+					pszInputString+=2;
+					uCharactersLeft--;
+					ruCurrentCol+=2;
+
+					while( *pszInputString && uCharactersLeft >= 2 )
+					{
+						if( *(pszInputString+0) == '*' && *(pszInputString+1) == '/' )
+						{
+							uMatched += 2;
+
+							pszInputString+=2;
+							uCharactersLeft--;
+							ruCurrentCol+=2;
+
+							return uMatched;
+						}
+
+						uMatched++;
+
+						pszInputString++;
+						uCharactersLeft--;
+					}
+
+					Error_Compiler( EError_Fatal, uStartRow, uStartCol, "End of file reached before comment closed." );
 				}
 			}
+
+			return uMatched;
 		}
-	}
-	return false;
-}
+	},
+};
 
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens )
 {
@@ -175,14 +246,11 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 			{
 				SPossibleToken tToken;
 				tToken.eToken = (EShaderToken)(EShaderToken_BeginBasic - uToken);
-				if( !ShouldIgnoreToken( rsPossibleTokens, tToken.eToken ) )
-				{
-					tToken.uLength = g_asBasicTokens[ uToken ].uTokenLength;
-					tToken.uAfterTokenRow = uCurrentRow;
-					tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
-					tToken.pszToken = pszInputString;
-					rsPossibleTokens.push_back( tToken );
-				}
+				tToken.uLength = g_asBasicTokens[ uToken ].uTokenLength;
+				tToken.uAfterTokenRow = uCurrentRow;
+				tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
+				tToken.pszToken = pszInputString;
+				rsPossibleTokens.push_back( tToken );
 			}
 		}
 	}
@@ -200,7 +268,7 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 			tToken.eToken = (EShaderToken)(EShaderToken_BeginRegex - uToken);
 
 			//If we're about to create an identifier token yet we've already identified a keyword, bail
-			if( (tToken.eToken == EShaderToken_Identifier && !rsPossibleTokens.empty() ) || ShouldIgnoreToken( rsPossibleTokens, tToken.eToken ) )
+			if( (tToken.eToken == EShaderToken_Identifier && !rsPossibleTokens.empty() ) )
 			{
 				continue;
 			}
@@ -226,17 +294,15 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 		{
 			SPossibleToken tToken;
 			tToken.eToken = (EShaderToken)(EShaderToken_BeginCallback - uToken);
-			
-			if( !ShouldIgnoreToken( rsPossibleTokens, tToken.eToken ) )
-			{
-				tToken.uLength = uMatched;
-				tToken.uAfterTokenRow = uTempCurrentRow;
-				tToken.uAfterTokenColumn = uTempCurrentCol;
-				tToken.pszToken = pszInputString;
-				rsPossibleTokens.push_back( tToken );
-			}
+			tToken.uLength = uMatched;
+			tToken.uAfterTokenRow = uTempCurrentRow;
+			tToken.uAfterTokenColumn = uTempCurrentCol;
+			tToken.pszToken = pszInputString;
+			rsPossibleTokens.push_back( tToken );
 		}
 	}
+
+	FilterTokens( rsPossibleTokens );
 
 	std::sort( rsPossibleTokens.begin(), rsPossibleTokens.end() );
 
@@ -308,7 +374,44 @@ void InitialiseTokenTables( void )
 	}
 
 	//List of tokens to ignore
-	//If X is already a possibility then ignore Y
+	//Throw away a token X if we encounter Y
 	//X												Y
-	g_tIgnoreTokens[ EShaderToken_Float ].push_back( EShaderToken_Int );
+	g_tIgnoreTokens[ EShaderToken_Int ].push_back( EShaderToken_Float );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Comment );
+}
+
+void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens )
+{
+	auto tIter = rsPossibleTokens.begin();
+	while( tIter != rsPossibleTokens.end() )
+	{
+		bool bErase = false;
+
+		auto tIgnoreIter = g_tIgnoreTokens.find( (*tIter).eToken );
+		if( tIgnoreIter != g_tIgnoreTokens.end() )
+		{
+			for( auto tFindIter = rsPossibleTokens.begin(); tFindIter != rsPossibleTokens.end(); ++tFindIter )
+			{
+				auto& rtIgnoreList = (*tIgnoreIter).second;
+
+				for( auto tListIter = rtIgnoreList.begin(); tListIter != rtIgnoreList.end(); ++tListIter )
+				{
+					if( (*tFindIter).eToken == (*tListIter) )
+					{
+						bErase = true;
+						break;
+					}
+				}
+			}
+		}
+
+		if( bErase )
+		{
+			tIter = rsPossibleTokens.erase( tIter );
+		}
+		else
+		{
+			++tIter;
+		}
+	}
 }
