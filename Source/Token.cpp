@@ -5,13 +5,14 @@
 
 typedef std::function< unsigned int( const char*, unsigned int, unsigned int&, unsigned int& ) > TTokenCallback;
 
-std::unordered_map< EShaderToken, std::vector< EShaderToken > > g_tIgnoreTokens;
+
 
 struct SBasicTokenMap
 {
 	const char*		pszTokenName;
 	const char*		pszTokenString;
 	unsigned int	uTokenLength;
+	
 };
 
 struct SRegexTokenMap
@@ -26,18 +27,32 @@ struct SCallbackTokenMap
 	TTokenCallback	pfnTokenCallback;
 };
 
+std::unordered_map< EShaderToken, std::vector< EShaderToken > > g_tIgnoreTokens;
+
+std::unordered_map< EShaderToken, SPrecedence > g_atTokenPrecedence[ EOperatorType_MAX ];
+
+//TODO:
+// * Ternary
+// * XOR
+// * &=
+// * |=
+// * ^=
+// * ~
+// * ~=
+// * Casts
+
 SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic, EShaderToken_EndBasic)  ] = 
 {
 	{ "comma",					",", 0 },				// EShaderToken_Comma
 	
 	{ "left shift",				"<<", 0 },				// EShaderToken_Binary_Bitwise_Shift_Left
 	{ "right shift",			">>", 0 },				// EShaderToken_Binary_Bitwise_Shift_Right
-	{ "or",						"|", 0 },				// EShaderToken_Binary_Bitwise_Or		
-	{ "and",					"&", 0 },				// EShaderToken_Binary_Bitwise_And		
+	{ "or",						"|", 0  },				// EShaderToken_Binary_Bitwise_Or		
+	{ "and",					"&", 0  },				// EShaderToken_Binary_Bitwise_And		
 	{ "lazy or",				"||", 0 },				// EShaderToken_Binary_Bitwise_Lazy_Or	
 	{ "lazy and",				"&&", 0 },				// EShaderToken_Binary_Bitwise_Lazy_And	
-	{ "plus",					"+", 0 },				// EShaderToken_Binary_Operator_Plus	
-	{ "minus",					"-", 0 },				// EShaderToken_Binary_Operator_Minus	
+	{ "plus",					"+", 0  },				// EShaderToken_Binary_Operator_Plus	
+	{ "minus",					"-", 0  },				// EShaderToken_Binary_Operator_Minus	
 	{ "divide",					"/", 0 },				// EShaderToken_Binary_Operator_Divide	
 	{ "multiply",				"*", 0 },				// EShaderToken_Binary_Operator_Multiply
 	{ "modulo",					"%", 0 },				// EShaderToken_Binary_Operator_Modulo	
@@ -99,8 +114,8 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
 {
 	{ "identifier", std::regex( "[a-zA-Z_][a-zA-Z0-9_]+" ) },
-	{ "float",		std::regex( "[\\-]?(?:(?:[0-9]+\\.[0-9]*)|(?:[0-9]*\\.[0-9]+))f?" ) }, //Allow .3f or 3.f but not .f
-	{ "int",		std::regex( "-?[0-9]+" ) },
+	{ "float",		std::regex( "[\\-]?(?:(?:[0-9]+\\.[0-9]*)|(?:[0-9]*\\.[0-9]+))(?:f|(?:e[+\\-]?[0-9]+))?" ) }, //Allow .3f or 3.f but not .f
+	{ "int",		std::regex( "-?(?:(?:0[Xx](?:[0-9a-fA-F]+))|(?:[0-9]+))" ) },
 };
 
 
@@ -379,6 +394,67 @@ void InitialiseTokenTables( void )
 	g_tIgnoreTokens[ EShaderToken_Int ].push_back( EShaderToken_Float );
 	g_tIgnoreTokens[ EShaderToken_Dot ].push_back( EShaderToken_Float );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Comment );
+
+	//Set up operator precedence
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Dot ] = SPrecedence( 2 );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Parenthesis_Open ] = SPrecedence( 2 );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Square_Open ] = SPrecedence( 2 );
+
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Increment ] = SPrecedence( 3, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Deccrement ] = SPrecedence( 3, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Binary_Operator_Plus ] = SPrecedence( 3, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Binary_Operator_Minus ] = SPrecedence( 3, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Not ] = SPrecedence( 3, EAssociativity_RightToLeft );
+	//TODO: ~
+	//TODO: Cast
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Operator_Multiply ] = SPrecedence( 5 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Operator_Divide ] = SPrecedence( 5 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Operator_Modulo ] = SPrecedence( 5 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Operator_Plus ] = SPrecedence( 6 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Operator_Minus ] = SPrecedence( 6 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Shift_Left ] = SPrecedence( 7 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Shift_Right ] = SPrecedence( 7 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Comparison_LT ] = SPrecedence( 8 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Comparison_LTE ] = SPrecedence( 8 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Comparison_GT ] = SPrecedence( 8 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Comparison_GTE ] = SPrecedence( 8 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Comparison_Equal ] = SPrecedence( 9 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Comparison_NotEqual ] = SPrecedence( 9 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_And ] = SPrecedence( 10 );
+
+	//TODO: ^
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Xor ] = SPrecedence( 11 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Or ] = SPrecedence( 12 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Lazy_And ] = SPrecedence( 13 );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Lazy_Or ] = SPrecedence( 14 );
+
+	//TODO: Ternary
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Add ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Subtract ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Multiply ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Divide ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Modulo ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Shift_Left ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Shift_Right ] = SPrecedence( 15, EAssociativity_RightToLeft );
+
+	//TODO
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_And ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Xor ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Or ] = SPrecedence( 15, EAssociativity_RightToLeft );
+
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Comma ] = SPrecedence( 17 );
 }
 
 void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens )
@@ -415,4 +491,83 @@ void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens )
 			++tIter;
 		}
 	}
+}
+
+SPrecedence GetOperatorPrecedence( EOperatorType eOperatorType, EShaderToken eToken )
+{
+	auto tIter = g_atTokenPrecedence[ eOperatorType ].find( eToken );
+	
+	if( tIter != g_atTokenPrecedence[ eOperatorType ].end() )
+	{
+		SPrecedence tReturn = (*tIter).second; 
+		tReturn.iPrecedence = INT_MAX - (1000000 * tReturn.iPrecedence);
+
+		return tReturn;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+SPrecedence GetNextOperatorPrecedence( SParseContext& rtContext )
+{
+	SParseContext tTempContext = rtContext;
+
+	if( !ConsumeToken( tTempContext ) )
+	{
+		Error_Compiler( EError_Error, tTempContext.uCurrentRow, tTempContext.uCurrentCol, "Unexpected end of expression." );
+
+		return SPrecedence();
+	}
+
+	return GetOperatorPrecedence( EOperatorType_Binary, tTempContext.sNextToken.eToken );
+}
+
+bool ConsumeToken( SParseContext& rtContext )
+{
+	rtContext.asPossibleTokens.clear();
+
+	while( rtContext.uBytesLeft && GetPossibleTokens( rtContext.pszBuffer, rtContext.uBytesLeft, rtContext.uCurrentRow, rtContext.uCurrentCol, rtContext.asPossibleTokens ) )
+	{
+		SPossibleToken& rtToken = rtContext.asPossibleTokens[0];
+
+		rtContext.pszBuffer += rtToken.uLength;
+		rtContext.uCurrentRow = rtToken.uAfterTokenRow;
+		rtContext.uCurrentCol = rtToken.uAfterTokenColumn;
+		rtContext.uBytesLeft -= rtToken.uLength;
+
+		if( rtContext.asPossibleTokens.size() > 1 )
+		{
+			std::string tTokens;
+			for( auto sToken : rtContext.asPossibleTokens )
+			{
+				tTokens += GetTokenName( sToken.eToken );
+				tTokens += " ";
+			}
+
+			Error_Compiler( EError_Warning, rtContext.uCurrentRow, rtContext.uCurrentCol, "Token ambiguity, could be: %s", tTokens.c_str() );
+		}
+		
+		if( rtToken.eToken == EShaderToken_Whitespace || rtToken.eToken == EShaderToken_Comment )
+		{
+			rtContext.asPossibleTokens.clear();
+			continue;
+		}
+		else
+		{
+			rtContext.sNextToken = rtContext.asPossibleTokens[0];
+			return true;
+		}
+	}
+
+	if( rtContext.uBytesLeft )
+	{
+		std::string tShortString( rtContext.pszBuffer, 30 );
+
+		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unable to parse at %s", tShortString.c_str() );
+	}
+
+	rtContext.sNextToken.eToken = EShaderToken_Invalid;
+	return false;
 }

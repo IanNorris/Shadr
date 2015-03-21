@@ -41,12 +41,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);llvm-3.6.0.src\include;%(AdditionalIncludeDirectories)</IncludePath>
+    <IncludePath>$(VC_IncludePath);ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);llvm-3.6.0.src\include;Source;%(AdditionalIncludeDirectories)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);llvm-3.6.0.src\Debug\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);llvm-3.6.0.src\include;%(AdditionalIncludeDirectories)</IncludePath>
+    <IncludePath>$(VC_IncludePath);ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);llvm-3.6.0.src\include;Source;%(AdditionalIncludeDirectories)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);llvm-3.6.0.src\Debug\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -98,6 +98,8 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AST\Expression.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
     <ClCompile Include="Source\Error.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -106,6 +108,9 @@
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\AST\AST.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
     <ClInclude Include="Source\Error.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />

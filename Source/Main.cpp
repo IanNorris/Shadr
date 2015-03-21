@@ -6,10 +6,97 @@
 #include "Error.h"
 #include "Utility.h"
 #include "LLVM.h"
+#include "AST/AST.h"
 
 #include "UnitTesting.h"
 
-void ParseFile( const char* pszFilename )
+CASTExpression* ParsePrimary( SParseContext& rtContext );
+
+CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
+{
+	return NULL;
+}
+
+CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftPrecedence, CASTExpression* pLeft )
+{
+	while( true )
+	{
+		int iRightPrecedence = GetOperatorPrecedence( EOperatorType_Binary, rtContext.sNextToken.eToken ).iPrecedence;
+
+		if( iRightPrecedence < iLeftPrecedence )
+		{
+			return pLeft;
+		}
+
+		EShaderToken eBinaryOperator = rtContext.sNextToken.eToken;
+		if( !ConsumeToken( rtContext ) )
+		{
+			Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unexpected end of expression." );
+		}
+
+		CASTExpression* pRight = ParsePrimary( rtContext );
+		if( !pRight )
+		{
+			Error_Compiler( EError_Debug, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression." );
+			return nullptr;
+		}
+
+		int iNextPrecedence = GetOperatorPrecedence( EOperatorType_Binary, rtContext.sNextToken.eToken ).iPrecedence;
+		if( iRightPrecedence < iNextPrecedence )
+		{
+			pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, pRight );
+			if( !pRight )
+			{
+				Error_Compiler( EError_Debug, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression." );
+				return nullptr;
+			}
+		}
+
+		pLeft = new CASTExpressionBinary( eBinaryOperator, pLeft, pRight );
+	}
+}
+
+CASTExpression* ParsePrimary( SParseContext& rtContext )
+{
+	CASTExpression* pResult = nullptr;
+
+	switch( rtContext.sNextToken.eToken )
+	{
+		case EShaderToken_Parenthesis_Open:
+			pResult = ParseParenthesisExpression( rtContext );
+			break;
+
+		case EShaderToken_Float:
+			pResult = new CASTConstantFloat( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+			break;
+
+		case EShaderToken_Int:
+			pResult = new CASTConstantInt( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+			break;
+
+		case EShaderToken_Identifier:
+			pResult = NULL; //TODO
+			break;
+	}
+
+	ConsumeToken( rtContext );
+
+	return pResult;
+}
+
+CASTExpression* ParseExpression( SParseContext& rtContext )
+{
+	CASTExpression* pLeft = ParsePrimary( rtContext );
+	if( !pLeft )
+	{
+		Error_Compiler( EError_Debug, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression." );
+		return nullptr;
+	}
+
+	return ParseBinaryExpressionRight( rtContext, 0, pLeft );
+}
+
+void ParseFile( const char* pszFilename, CModule* pModule )
 {
 	std::string tFile;
 	ReadFile( tFile, pszFilename );
@@ -19,46 +106,13 @@ void ParseFile( const char* pszFilename )
 	unsigned int uCurrentRow = 0;
 	unsigned int uCurrentCol = 0;
 
-	std::vector<SPossibleToken> asPossibleTokens;
+	SParseContext tContext( pszBuffer, pModule );
 
-	while( uBufferSize && GetPossibleTokens( pszBuffer, uBufferSize, uCurrentRow, uCurrentCol, asPossibleTokens) )
+	while( ConsumeToken( tContext ) )
 	{
-		SPossibleToken& rtToken = asPossibleTokens[0];
-
-		if( uCurrentRow != rtToken.uAfterTokenRow )
-		{
-			printf( "\n" );
-		}
-
-		pszBuffer += rtToken.uLength;
-		uCurrentRow = rtToken.uAfterTokenRow;
-		uCurrentCol = rtToken.uAfterTokenColumn;
-		uBufferSize -= rtToken.uLength;
-
-		if( rtToken.eToken != EShaderToken_Whitespace && rtToken.eToken != EShaderToken_Comment )
-		{
-			if( asPossibleTokens.size() > 1 )
-			{
-				printf( "\nToken ambiguity, matched:\n" );
-				for( auto sToken : asPossibleTokens )
-				{
-					printf( "\t%s\n", GetTokenName( sToken.eToken ) );
-				}
-			}
-
-			printf( "%s ", GetTokenName( rtToken.eToken ) );
-		}
-
-		asPossibleTokens.clear();
-	}
-
-	if( uBufferSize == 0 )
-	{
-		printf( "END\n");
-	}
-	else
-	{
-		printf( "Parse failed at %s\n", pszBuffer );
+		CASTExpression* pExpression = ParseExpression( tContext );
+		llvm::Value* pValue = pExpression->GenerateCode();
+		pValue;
 	}
 }
 
@@ -73,9 +127,8 @@ int main( int iArgCount, char** apszArguments )
 	
 	if( iArgCount > 1 )
 	{
-		ParseFile( apszArguments[1] );
+		ParseFile( apszArguments[1], &tModule );
 	}
-	
 
 	return 0;
 }

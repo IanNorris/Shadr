@@ -4,6 +4,42 @@
 #include <functional>
 #include <vector>
 #include <regex>
+#include <string>
+
+class CModule;
+
+enum EOperatorType
+{
+	EOperatorType_Unary,
+	EOperatorType_Binary,
+	EOperatorType_Ternary,
+
+	EOperatorType_MAX
+};
+
+enum EAssociativity
+{
+	EAssociativity_LeftToRight,
+	EAssociativity_RightToLeft,
+
+	EAssociativity_MAX,
+};
+
+struct SPrecedence
+{
+	SPrecedence( int iPrec, EAssociativity eAssoc = EAssociativity_LeftToRight )
+	: iPrecedence( iPrec )
+	, eAssociativity( eAssoc )
+	{}
+
+	SPrecedence()
+	: iPrecedence( -1 )
+	, eAssociativity( EAssociativity_LeftToRight )
+	{}
+
+	int iPrecedence;
+	EAssociativity eAssociativity;
+};
 
 //Positive tokens are reserved for system values such as identifiers
 enum EShaderToken
@@ -133,6 +169,28 @@ struct SPossibleToken
 	}
 };
 
+struct SParseContext
+{
+	SParseContext( const char* pszInputString, CModule* pMod )
+	: pszBuffer( pszInputString )
+	, uBytesLeft( strlen( pszInputString ) )
+	, uCurrentRow( 0 )
+	, uCurrentCol( 0 )
+	, pModule( pMod )
+	{}
+
+	const char* pszBuffer;
+	unsigned int uBytesLeft;
+	unsigned int uCurrentRow;
+	unsigned int uCurrentCol;
+
+	SPossibleToken sNextToken;
+
+	std::vector<SPossibleToken> asPossibleTokens;
+
+	CModule* pModule;
+};
+
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens );
 
 const char* GetTokenName( EShaderToken eToken );
@@ -142,5 +200,10 @@ EShaderToken GetTokenByName( const char* pszTokenName );
 void InitialiseTokenTables( void );
 
 void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens );
+
+SPrecedence GetOperatorPrecedence( EOperatorType eOperatorType, EShaderToken eToken );
+SPrecedence GetNextOperatorPrecedence( SParseContext& rtContext );
+
+bool ConsumeToken( SParseContext& rtContext );
 
 #endif //SHADR_TOKEN_H
