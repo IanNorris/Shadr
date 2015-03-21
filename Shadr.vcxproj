@@ -99,6 +99,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\AST\Expression.cpp" />
+    <ClCompile Include="Source\AST\Function.cpp" />
     <ClCompile Include="Source\AST\Numeric.cpp" />
     <ClCompile Include="Source\Error.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
@@ -110,10 +111,12 @@
   <ItemGroup>
     <ClInclude Include="Source\AST\AST.h" />
     <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
     <ClInclude Include="Source\AST\Numeric.h" />
     <ClInclude Include="Source\Error.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
     <ClInclude Include="Source\UnitTesting.h" />
     <ClInclude Include="Source\Utility.h" />
   </ItemGroup>

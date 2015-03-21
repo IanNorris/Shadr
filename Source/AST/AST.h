@@ -2,22 +2,29 @@
 #define SHADR_AST_H
 
 #include "Tokens.h"
+#include "Type.h"
 
 class CASTBase
 {
 public:
 
-	CASTBase( EShaderToken eToken ) : m_eToken( eToken ){}
+	CASTBase( const CType& rtType )
+	: m_tType( rtType )
+	{}
+
 	virtual ~CASTBase() {}
 
-	virtual llvm::Value* GenerateCode() = 0;
+	virtual llvm::Value* GenerateCode( CModule* pModule ) = 0;
+	const CType& GetType() const { return m_tType; }
+	CType& GetType() { return m_tType; }
 
 private:
 
-	EShaderToken m_eToken;
+	CType		m_tType;
 };
 
 #include "Expression.h"
 #include "Numeric.h"
+#include "Function.h"
 
 #endif //SHADR_AST_H

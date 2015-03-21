@@ -10,6 +10,8 @@
 
 #include "UnitTesting.h"
 
+#include <iostream>
+
 CASTExpression* ParsePrimary( SParseContext& rtContext );
 
 CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
@@ -96,24 +98,46 @@ CASTExpression* ParseExpression( SParseContext& rtContext )
 	return ParseBinaryExpressionRight( rtContext, 0, pLeft );
 }
 
-void ParseFile( const char* pszFilename, CModule* pModule )
+void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* pModule )
 {
-	std::string tFile;
-	ReadFile( tFile, pszFilename );
-
-	const char* pszBuffer = &tFile[0];
-	unsigned int uBufferSize = tFile.length();
+	unsigned int uBufferSize = tBuffer.length();
 	unsigned int uCurrentRow = 0;
 	unsigned int uCurrentCol = 0;
+
+	const char* pszBuffer = &tBuffer[0];
 
 	SParseContext tContext( pszBuffer, pModule );
 
 	while( ConsumeToken( tContext ) )
 	{
 		CASTExpression* pExpression = ParseExpression( tContext );
-		llvm::Value* pValue = pExpression->GenerateCode();
-		pValue;
+
+		CASTPrototype* pPrototype = new CASTPrototype( "hello", 5, CType(EScalarType_Double) );
+		CASTFunction* pFunction = new CASTFunction( pPrototype, pExpression );
+
+		llvm::Function* pLLVMFunction = (llvm::Function*)pFunction->GenerateCode( pModule );
+
+		pModule->GetExecutionEngine()->finalizeObject();
+
+
+		void* pRawFP = pModule->GetExecutionEngine()->getPointerToFunction( pLLVMFunction );
+
+		double(*pRawFPCasted)() = (double(*)())(intptr_t)pRawFP;
+
+		double fReturnVal = pRawFPCasted();
+
+		printf( "%.3f\n", fReturnVal );
 	}
+
+	pModule->GetModule()->dump();
+}
+
+void ParseFile( const char* pszFilename, CModule* pModule )
+{
+	std::string tFile;
+	ReadFile( tFile, pszFilename );
+
+	ParseBuffer( pszFilename, tFile, pModule );
 }
 
 int main( int iArgCount, char** apszArguments )
@@ -125,10 +149,18 @@ int main( int iArgCount, char** apszArguments )
 
 	RunUnitTests();
 	
-	if( iArgCount > 1 )
+	/*if( iArgCount > 1 )
 	{
 		ParseFile( apszArguments[1], &tModule );
-	}
+	}*/
+
+	/*std::string tExpression;
+	while( true )
+	{
+		std::getline (std::cin, tExpression);
+
+		ParseBuffer( "test", tExpression, &tModule );
+	}*/
 
 	return 0;
 }

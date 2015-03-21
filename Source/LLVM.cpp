@@ -10,6 +10,7 @@ void InitialiseLLVM( void )
 
 CModule::CModule( const char* pszModule )
 : m_rtContext( llvm::getGlobalContext() )
+, m_tIRBuilder( m_rtContext )
 , m_pModule( nullptr )
 , m_pExecutionEngine( nullptr )
 {

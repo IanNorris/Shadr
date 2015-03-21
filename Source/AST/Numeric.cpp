@@ -35,7 +35,7 @@ void CASTConstantInt::ParseString( const char* pszString, unsigned int uCharacte
 	m_uBits = 64;
 }
 
-llvm::Value* CASTConstantInt::GenerateCode()
+llvm::Value* CASTConstantInt::GenerateCode( CModule* pModule )
 {
 	return llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( m_uBits, m_uValue, m_bSigned ));
 }
@@ -45,7 +45,7 @@ void CASTConstantFloat::ParseString( const char* pszString, unsigned int uCharac
 	m_fValue = strtod( pszString, NULL );
 }
 
-llvm::Value* CASTConstantFloat::GenerateCode()
+llvm::Value* CASTConstantFloat::GenerateCode( CModule* pModule )
 {
 	return llvm::ConstantFP::get( llvm::getGlobalContext(), llvm::APFloat( m_fValue ) );
 }

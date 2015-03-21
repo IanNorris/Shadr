@@ -8,17 +8,18 @@ class CASTConstantInt : public CASTExpression
 public:
 
 	CASTConstantInt( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( EShaderToken_Int )
+	: CASTExpression( CType::GetNotEvaluated(), EShaderToken_Int )
 	, m_uValue( 0 )
 	, m_uBits( 0 )
 	, m_bSigned( 0 )
 	{
 		ParseString( pszString, uCharacters );
+		GetType().SetScalarType( m_bSigned ? EScalarType_Int : EScalarType_UnsignedInt);
 	}
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
-	virtual llvm::Value* GenerateCode();
+	virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 
@@ -36,15 +37,16 @@ class CASTConstantFloat : public CASTExpression
 public:
 
 	CASTConstantFloat( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( EShaderToken_Float )
+	: CASTExpression( CType::GetNotEvaluated(), EShaderToken_Float )
 	, m_fValue( 0.0 )
 	{
 		ParseString( pszString, uCharacters );
+		GetType().SetScalarType( EScalarType_Double );
 	}
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
-	virtual llvm::Value* GenerateCode();
+	virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 

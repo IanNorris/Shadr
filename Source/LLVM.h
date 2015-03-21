@@ -25,11 +25,19 @@ class CModule
 {
 public:
 
+	typedef llvm::IRBuilder<> TBuilder;
+
 	CModule( const char* pszModule );
+
+	TBuilder& GetIRBuilder() { return m_tIRBuilder; }
+	llvm::Module* GetModule() { return m_pModule; }
+	llvm::FunctionPassManager* GetFPM() { return m_pFunctionPassManager.get(); }
+	llvm::ExecutionEngine* GetExecutionEngine() { return m_pExecutionEngine; }
 
 private:
 
 	llvm::LLVMContext&								m_rtContext;
+	TBuilder										m_tIRBuilder;
 	llvm::Module*									m_pModule;
 	llvm::ExecutionEngine*							m_pExecutionEngine;
 	std::unique_ptr<llvm::FunctionPassManager>		m_pFunctionPassManager;
