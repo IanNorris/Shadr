@@ -12,11 +12,25 @@
 
 #include <iostream>
 
+CASTExpression* ParseExpression( SParseContext& rtContext );
+
 CASTExpression* ParsePrimary( SParseContext& rtContext );
 
 CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
 {
-	return NULL;
+	if( !ConsumeToken( rtContext ) )
+	{
+		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression" );
+	}
+
+	CASTExpression* pSubExpression = ParseExpression( rtContext );
+
+	if( !ConsumeToken( rtContext ) || rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Close )
+	{
+		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Mismatched (, expected )" );
+	}
+
+	return pSubExpression;
 }
 
 CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftPrecedence, CASTExpression* pLeft )
@@ -149,10 +163,10 @@ int main( int iArgCount, char** apszArguments )
 
 	RunUnitTests();
 	
-	/*if( iArgCount > 1 )
+	if( iArgCount > 1 )
 	{
 		ParseFile( apszArguments[1], &tModule );
-	}*/
+	}
 
 	/*std::string tExpression;
 	while( true )
