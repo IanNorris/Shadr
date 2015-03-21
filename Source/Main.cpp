@@ -25,7 +25,7 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
 
 	CASTExpression* pSubExpression = ParseExpression( rtContext );
 
-	if( !ConsumeToken( rtContext ) || rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Close )
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
 		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Mismatched (, expected )" );
 	}
