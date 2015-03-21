@@ -5,6 +5,7 @@
 #include "Tokens.h"
 #include "Error.h"
 #include "Utility.h"
+#include "LLVM.h"
 
 #include "UnitTesting.h"
 
@@ -64,6 +65,9 @@ void ParseFile( const char* pszFilename )
 int main( int iArgCount, char** apszArguments )
 {
 	InitialiseTokenTables();
+	InitialiseLLVM();
+	
+	CModule tModule( "Shader" );
 
 	RunUnitTests();
 	

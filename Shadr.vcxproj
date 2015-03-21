@@ -99,6 +99,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Error.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
     <ClCompile Include="Source\UnitTesting.cpp" />
@@ -106,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Error.h" />
+    <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\UnitTesting.h" />
     <ClInclude Include="Source\Utility.h" />
