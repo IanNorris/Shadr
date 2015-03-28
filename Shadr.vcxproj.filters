@@ -13,66 +13,246 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\AST">
+      <UniqueIdentifier>{7f70e819-28d1-4830-9bc0-084cf9da52b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UnitTests">
+      <UniqueIdentifier>{90342eb3-7561-4a6f-817a-e60d3ded07c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{f5057e78-e572-4276-b469-bc426331eee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AST">
+      <UniqueIdentifier>{557d6142-7439-40cf-be71-293f9c760bf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{36ad5d83-6554-4ae1-b4a7-ca5147ed82e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UnitTests">
+      <UniqueIdentifier>{36af9436-ce7b-4294-9a4f-d28f75a38012}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Token.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Error.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UnitTesting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LLVM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AST\Numeric.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
     <ClCompile Include="Source\AST\Expression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AST\Function.cpp">
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Expression.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Expression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Function.cpp" />
+    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\LLVM.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\AST\Expression.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AST\Function.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AST\Numeric.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp">
+      <Filter>Source Files\UnitTests</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utility\Utility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utility\Error.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Tokens.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UnitTesting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\LLVM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
     <ClInclude Include="Source\AST\AST.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AST\Numeric.h">
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\AST.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\AST.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\Expression.h" />
+    <ClInclude Include="Source\AST\Function.h" />
+    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Tokens.h" />
+    <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
+    <ClInclude Include="Source\AST\AST.h">
+      <Filter>Header Files\AST</Filter>
     </ClInclude>
     <ClInclude Include="Source\AST\Expression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Type.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\AST</Filter>
     </ClInclude>
     <ClInclude Include="Source\AST\Function.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AST\Numeric.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utility\Utility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utility\Error.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UnitTests\UnitTesting.h">
+      <Filter>Header Files\UnitTests</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

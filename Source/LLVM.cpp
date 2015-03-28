@@ -1,5 +1,5 @@
 #include "LLVM.h"
-#include "Error.h"
+#include "Utility/Error.h"
 
 void InitialiseLLVM( void )
 {

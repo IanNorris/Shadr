@@ -1,6 +1,6 @@
 #include "UnitTesting.h"
-#include "Error.h"
-#include "Utility.h"
+#include "Utility/Error.h"
+#include "Utility/Utility.h"
 #include "Tokens.h"
 
 #include <functional>

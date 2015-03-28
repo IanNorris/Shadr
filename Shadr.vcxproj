@@ -101,24 +101,24 @@
     <ClCompile Include="Source\AST\Expression.cpp" />
     <ClCompile Include="Source\AST\Function.cpp" />
     <ClCompile Include="Source\AST\Numeric.cpp" />
-    <ClCompile Include="Source\Error.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
-    <ClCompile Include="Source\UnitTesting.cpp" />
-    <ClCompile Include="Source\Utility.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AST\AST.h" />
     <ClInclude Include="Source\AST\Expression.h" />
     <ClInclude Include="Source\AST\Function.h" />
     <ClInclude Include="Source\AST\Numeric.h" />
-    <ClInclude Include="Source\Error.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
-    <ClInclude Include="Source\UnitTesting.h" />
-    <ClInclude Include="Source\Utility.h" />
+    <ClInclude Include="Source\UnitTests\UnitTesting.h" />
+    <ClInclude Include="Source\Utility\Error.h" />
+    <ClInclude Include="Source\Utility\Utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

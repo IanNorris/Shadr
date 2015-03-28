@@ -3,12 +3,12 @@
 
 
 #include "Tokens.h"
-#include "Error.h"
-#include "Utility.h"
+#include "Utility/Error.h"
+#include "Utility/Utility.h"
 #include "LLVM.h"
 #include "AST/AST.h"
 
-#include "UnitTesting.h"
+#include "UnitTests/UnitTesting.h"
 
 #include <iostream>
 

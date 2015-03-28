@@ -1,6 +1,6 @@
 #include "LLVM.h"
 #include "AST.h"
-#include "Error.h"
+#include "Utility/Error.h"
 
 llvm::Value* CASTExpressionBinary::GenerateCode( CModule* pModule )
 {
