@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+bool g_bErrors = false;
 std::vector<std::string> g_tFilenameStack;
 
 void PushCurrentFile( const char* pszFilename )
@@ -32,10 +33,12 @@ void Error_Compiler( EError eLevel, unsigned int uSourceRow, unsigned int uSourc
 	{
 		case EError_Fatal:
 			pszErrorType = "fatal error";
+			g_bErrors = true;
 			pFile = stderr;
 			break;
 		case EError_Error:
 			pszErrorType = "error";
+			g_bErrors = true;
 			pFile = stderr;
 			break;
 
@@ -83,10 +86,12 @@ void Error_Linker( EError eLevel, const char* pszDescription, ... )
 	{
 		case EError_Fatal:
 			pszErrorType = "fatal error";
+			g_bErrors = true;
 			pFile = stderr;
 			break;
 		case EError_Error:
 			pszErrorType = "error";
+			g_bErrors = true;
 			pFile = stderr;
 			break;
 
@@ -124,6 +129,8 @@ void Error_Linker( EError eLevel, const char* pszDescription, ... )
 
 void Error_Fatal( const char* pszDescription, ... )
 {
+	g_bErrors = true;
+
 	const char* pszFile = "Internal Error";
 	if( !g_tFilenameStack.empty() )
 	{
@@ -143,6 +150,8 @@ void Error_Fatal( const char* pszDescription, ... )
 
 void Error_Assert( const char* pszExpression, const char* pszSourceFile, int iLine, const char* pszDescription, ... )
 {
+	g_bErrors = true;
+
 	const char* pszFile = "Internal Error";
 	if( !g_tFilenameStack.empty() )
 	{
@@ -158,4 +167,9 @@ void Error_Assert( const char* pszExpression, const char* pszSourceFile, int iLi
 
 	fprintf( stderr, "\nExpression: %s\nUnable to continue from previous error.\n", pszExpression );
 	abort();
+}
+
+bool DidCompilationSucceed( void )
+{
+	return g_bErrors;
 }

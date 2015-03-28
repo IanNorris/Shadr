@@ -22,6 +22,8 @@ void Error_Fatal( const char* pszDescription, ... );
 
 void Error_Assert( const char* pszExpression, const char* pszSourceFile, int iLine, const char* pszDescription, ... );
 
+bool DidCompilationSucceed( void );
+
 #define Assert( condition, description, ... ) if( !(condition) ){ Error_Assert( #condition, __FILE__, __LINE__, description, __VA_ARGS__ ); }
 
 #endif //SHADR_ERROR_H

@@ -23,8 +23,8 @@ private:
 	CType		m_tType;
 };
 
-#include "Expression.h"
-#include "Numeric.h"
-#include "Function.h"
+#include "ASTExpression.h"
+#include "ASTNumeric.h"
+#include "ASTFunction.h"
 
 #endif //SHADR_AST_H

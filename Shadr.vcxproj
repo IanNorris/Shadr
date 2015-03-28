@@ -98,11 +98,15 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\AST\Expression.cpp" />
-    <ClCompile Include="Source\AST\Function.cpp" />
-    <ClCompile Include="Source\AST\Numeric.cpp" />
+    <ClCompile Include="Source\AST\ASTExpression.cpp" />
+    <ClCompile Include="Source\AST\ASTFunction.cpp" />
+    <ClCompile Include="Source\AST\ASTNumeric.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Parser\ParserExpression.cpp" />
+    <ClCompile Include="Source\Parser\ParserFunction.cpp" />
+    <ClCompile Include="Source\Parser\Parser.cpp" />
+    <ClCompile Include="Source\Parser\ParserProgram.cpp" />
     <ClCompile Include="Source\Token.cpp" />
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
@@ -110,10 +114,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AST\AST.h" />
-    <ClInclude Include="Source\AST\Expression.h" />
-    <ClInclude Include="Source\AST\Function.h" />
-    <ClInclude Include="Source\AST\Numeric.h" />
+    <ClInclude Include="Source\AST\ASTExpression.h" />
+    <ClInclude Include="Source\AST\ASTFunction.h" />
+    <ClInclude Include="Source\AST\ASTNumeric.h" />
     <ClInclude Include="Source\LLVM.h" />
+    <ClInclude Include="Source\Parser\ParserExpression.h" />
+    <ClInclude Include="Source\Parser\ParserFunction.h" />
+    <ClInclude Include="Source\Parser\Parser.h" />
+    <ClInclude Include="Source\Parser\ParserProgram.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
