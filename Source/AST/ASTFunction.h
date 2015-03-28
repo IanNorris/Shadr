@@ -1,12 +1,12 @@
 #if !defined( SHADR_AST_FUNCTION_H )
 #define SHADR_AST_FUNCTION_H
 
-class CASTPrototype : public CASTBase
+class CASTPrototype : public CASTDefinition
 {
 public:
 
 	CASTPrototype( const char* pszName, unsigned int uNameLength, const CType& rtReturnType )
-	: CASTBase( rtReturnType )
+	: CASTDefinition( rtReturnType )
 	, m_tName( pszName, uNameLength )
 	{}
 
@@ -17,12 +17,12 @@ private:
 	std::string m_tName;
 };
 
-class CASTFunction : public CASTBase
+class CASTFunction : public CASTDefinition
 {
 public:
 
 	CASTFunction( CASTPrototype* pPrototype, CASTExpression* pBody )
-	: CASTBase( pPrototype->GetType() )
+	: CASTDefinition( pPrototype->GetType() )
 	, m_pProrotype( pPrototype )
 	, m_pBody( pBody )
 	{}

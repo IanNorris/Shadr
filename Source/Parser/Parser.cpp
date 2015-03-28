@@ -1,8 +1,6 @@
 #include "LLVM.h"
 #include "AST/AST.h"
 #include "Parser.h"
-#include "Utility/Error.h"
-#include "Utility/Utility.h"
 
 void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* pModule )
 {

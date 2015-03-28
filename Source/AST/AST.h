@@ -23,6 +23,15 @@ private:
 	CType		m_tType;
 };
 
+class CASTDefinition : public CASTBase
+{
+public:
+
+	CASTDefinition( const CType& rtType )
+	: CASTBase( rtType )
+	{}
+};
+
 #include "ASTExpression.h"
 #include "ASTNumeric.h"
 #include "ASTFunction.h"

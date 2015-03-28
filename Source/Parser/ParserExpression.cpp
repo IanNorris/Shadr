@@ -7,14 +7,14 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
 {
 	if( !ConsumeToken( rtContext ) )
 	{
-		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression" );
+		ParserError( rtContext, "Expected expression" );
 	}
 
 	CASTExpression* pSubExpression = ParseExpression( rtContext );
 
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
-		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Mismatched (, expected )" );
+		ParserError( rtContext, "Mismatched (, expected )" );
 	}
 
 	return pSubExpression;
@@ -34,13 +34,13 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftP
 		EShaderToken eBinaryOperator = rtContext.sNextToken.eToken;
 		if( !ConsumeToken( rtContext ) )
 		{
-			Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unexpected end of expression." );
+			ParserError( rtContext, "Unexpected end of expression." );
 		}
 
 		CASTExpression* pRight = ParsePrimary( rtContext );
 		if( !pRight )
 		{
-			Error_Compiler( EError_Debug, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression." );
+			ParserError( rtContext, "Expected expression." );
 			return nullptr;
 		}
 
@@ -50,7 +50,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftP
 			pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, pRight );
 			if( !pRight )
 			{
-				Error_Compiler( EError_Debug, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression." );
+				ParserError( rtContext, "Expected expression." );
 				return nullptr;
 			}
 		}
@@ -92,7 +92,7 @@ CASTExpression* ParseExpression( SParseContext& rtContext )
 	CASTExpression* pLeft = ParsePrimary( rtContext );
 	if( !pLeft )
 	{
-		Error_Compiler( EError_Debug, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected expression." );
+		ParserError( rtContext, "Expected expression." );
 		return nullptr;
 	}
 
