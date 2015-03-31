@@ -15,6 +15,7 @@
 int main( int iArgCount, char** apszArguments )
 {
 	InitialiseTokenTables();
+	InitialiseBasicTypes();
 	InitialiseLLVM();
 	
 	CModule tModule( "Shader" );

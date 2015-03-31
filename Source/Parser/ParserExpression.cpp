@@ -1,7 +1,6 @@
 #include "LLVM.h"
 #include "AST/AST.h"
 #include "Parser.h"
-#include "Utility/Error.h"
 
 CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
 {

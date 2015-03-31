@@ -12,9 +12,17 @@ public:
 
 	virtual llvm::Value* GenerateCode( CModule* pModule );
 
+	void AddParameter( CASTVariableDefinition* pParameter )
+	{
+		m_apParameters.push_back( pParameter );
+	}
+
+	const std::vector< CASTVariableDefinition* >& GetParameters() const { return m_apParameters; }
+
 private:
 
 	std::string m_tName;
+	std::vector< CASTVariableDefinition* > m_apParameters;
 };
 
 class CASTFunction : public CASTDefinition

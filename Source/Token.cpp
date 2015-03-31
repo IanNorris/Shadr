@@ -79,7 +79,6 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	{ "semi-colon",				";", 0 },				// EShaderToken_SemiColon				
 	{ "colon",					":", 0 },				// EShaderToken_Colon					
 	{ "dot",					".", 0 },				// EShaderToken_Colon					
-	{ "reference",				"&", 0 },				// EShaderToken_Reference				
 	
 	{ "return",					"return", 0 },			// EShaderToken_Return					
 	{ "if",						"if", 0 },				// EShaderToken_If						
@@ -281,18 +280,47 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 		{
 			SPossibleToken tToken;
 			tToken.eToken = (EShaderToken)(EShaderToken_BeginRegex - uToken);
-
-			//If we're about to create an identifier token yet we've already identified a keyword, bail
-			if( (tToken.eToken == EShaderToken_Identifier && !rsPossibleTokens.empty() ) )
-			{
-				continue;
-			}
-
 			tToken.uLength = matches[0].length();
-			tToken.uAfterTokenRow = uCurrentRow;
-			tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
-			tToken.pszToken = pszInputString;
-			rsPossibleTokens.push_back( tToken );
+
+			bool bKeepToken = true;
+
+			//If we're about to create an identifier token
+			if( tToken.eToken == EShaderToken_Identifier )
+			{
+				// yet we've already identified a keyword
+				if( !rsPossibleTokens.empty() )
+				{
+					for( auto tIter = rsPossibleTokens.begin(); tIter != rsPossibleTokens.end(); ++tIter )
+					{
+						auto& rtToken = (*tIter);
+
+						//Check we've got a keyword/basic token (this test is redundant given the order, but we'll check anyway)
+						if( rtToken.eToken <= EShaderToken_BeginBasic && rtToken.eToken >= EShaderToken_EndBasic )
+						{
+							//And that keyword is shorter than the identifier
+							if( rtToken.uLength < tToken.uLength )
+							{
+								//Ditch the old token, keep the new one instead
+								rsPossibleTokens.erase( tIter );
+
+								break;
+							}
+							else
+							{
+								bKeepToken = false;
+							}
+						}
+					}
+				}
+			}
+			
+			if( bKeepToken )
+			{
+				tToken.uAfterTokenRow = uCurrentRow;
+				tToken.uAfterTokenColumn = uCurrentCol + tToken.uLength;
+				tToken.pszToken = pszInputString;
+				rsPossibleTokens.push_back( tToken );
+			}
 		}
 	}
 

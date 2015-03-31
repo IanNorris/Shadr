@@ -150,6 +150,15 @@
     <ClCompile Include="Source\Parser\ParserProgram.cpp">
       <Filter>Source Files\Parser</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Parser\ParserType.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Type.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AST\ASTBlock.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\AST\Expression.h" />
@@ -282,6 +291,9 @@
       <Filter>Header Files\Parser</Filter>
     </ClInclude>
     <ClInclude Include="Source\Parser\ParserProgram.h">
+      <Filter>Header Files\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Parser\ParserType.h">
       <Filter>Header Files\Parser</Filter>
     </ClInclude>
   </ItemGroup>

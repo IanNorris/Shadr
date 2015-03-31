@@ -13,6 +13,10 @@
 void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* pModule );
 void ParseFile( const char* pszFilename, CModule* pModule );
 
+void PushParseContext( SParseContext& rtContext );
+SParseContext PopParseContext( void );
+
+#include "ParserType.h"
 #include "ParserExpression.h"
 #include "ParserFunction.h"
 #include "ParserProgram.h"

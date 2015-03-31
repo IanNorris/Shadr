@@ -3,6 +3,7 @@
 
 #include "Tokens.h"
 #include "Type.h"
+#include "Utility/Error.h"
 
 class CASTBase
 {
@@ -30,6 +31,48 @@ public:
 	CASTDefinition( const CType& rtType )
 	: CASTBase( rtType )
 	{}
+};
+
+class CASTVariableDefinition : public CASTDefinition
+{
+public:
+
+	CASTVariableDefinition( const CType& rtType, const std::string& rtName )
+	: CASTDefinition( rtType )
+	, m_tName( rtName )
+	{}
+
+	const std::string& GetName() const { return m_tName; }
+
+	llvm::Value* GenerateCode( CModule* pModule )
+	{
+		Assert( 0, "Attempting to call GenerateCode on an unsupported AST node (CASTVariableDefinition)." );
+		return NULL;
+	}
+
+private:
+
+	std::string m_tName;
+};
+
+class CASTBlock : public CASTBase
+{
+public:
+
+	CASTBlock()
+	: CASTBase( CType::GetVoidType() )
+	{}
+
+	void Add( CASTBase* pChild )
+	{
+		m_apChildren.push_back( pChild );
+	}
+
+	llvm::Value* GenerateCode( CModule* pModule );
+
+private:
+
+	std::vector< CASTBase* > m_apChildren;
 };
 
 #include "ASTExpression.h"

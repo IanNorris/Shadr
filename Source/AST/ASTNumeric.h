@@ -8,7 +8,7 @@ class CASTConstantInt : public CASTExpression
 public:
 
 	CASTConstantInt( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetNotEvaluated(), EShaderToken_Int )
+	: CASTExpression( CType::GetConstIntType(), EShaderToken_Int )
 	, m_uValue( 0 )
 	, m_uBits( 0 )
 	, m_bSigned( 0 )
@@ -37,7 +37,7 @@ class CASTConstantFloat : public CASTExpression
 public:
 
 	CASTConstantFloat( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetNotEvaluated(), EShaderToken_Float )
+	: CASTExpression( CType::GetConstFloatType(), EShaderToken_Float )
 	, m_fValue( 0.0 )
 	{
 		ParseString( pszString, uCharacters );

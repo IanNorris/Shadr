@@ -82,5 +82,5 @@ llvm::Value* CASTExpressionBinary::GenerateCode( CModule* pModule )
 
 CType CASTExpressionBinary::EvaluateType( CASTExpression* pLeft, CASTExpression* pRight )
 {
-	return CType( EScalarType_Float );
+	return CType::GetConstFloatType();
 }

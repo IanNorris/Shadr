@@ -1,0 +1,2 @@
+const float4& MyFunction( void );
+void MyFunction( float4 myParam1, const float2& rParam2, half double1 doubleStuff );
