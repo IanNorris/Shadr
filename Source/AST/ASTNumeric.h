@@ -1,6 +1,7 @@
 #if !defined( SHADR_AST_NUMERIC_H )
 #define SHADR_AST_NUMERIC_H
 
+#include <stdint.h>
 #include "Tokens.h"
 
 class CASTConstantInt : public CASTExpression
@@ -19,7 +20,7 @@ public:
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
-	virtual llvm::Value* GenerateCode( CModule* pModule );
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 
@@ -46,7 +47,7 @@ public:
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
-	virtual llvm::Value* GenerateCode( CModule* pModule );
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 

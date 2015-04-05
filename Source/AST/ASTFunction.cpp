@@ -1,8 +1,8 @@
-#include "LLVM.h"
+#include "CompilationUnit.h"
 #include "AST.h"
 #include "Utility/Error.h"
 
-llvm::Value* CASTPrototype::GenerateCode( CModule* pModule )
+/*llvm::Value* CASTPrototype::GenerateCode( CModule* pModule )
 {
 	std::vector<llvm::Type*> tArguments;
 
@@ -38,4 +38,4 @@ llvm::Value* CASTFunction::GenerateCode( CModule* pModule )
 	pModule->GetFPM()->run( *pFunction );
 
 	return pFunction;
-}
+}*/

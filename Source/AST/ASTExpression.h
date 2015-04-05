@@ -26,7 +26,7 @@ public:
 	, m_eOperator( eToken )
 	{}
 
-	virtual llvm::Value* GenerateCode( CModule* pModule );
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 protected:
 

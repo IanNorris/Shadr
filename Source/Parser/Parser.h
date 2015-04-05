@@ -10,8 +10,8 @@
 #define ParserInfo( context, description, ... ) Error_Compiler( EError_Information, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
 #define ParserDebug( context, description, ... ) Error_Compiler( EError_Debug, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
 
-void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* pModule );
-void ParseFile( const char* pszFilename, CModule* pModule );
+void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU );
+void ParseFile( const char* pszFilename, CCompilationUnit* pCU );
 
 void PushParseContext( SParseContext& rtContext );
 SParseContext PopParseContext( void );

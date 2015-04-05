@@ -15,7 +15,7 @@ public:
 
 	virtual ~CASTBase() {}
 
-	virtual llvm::Value* GenerateCode( CModule* pModule ) = 0;
+	//virtual llvm::Value* GenerateCode( CModule* pModule ) = 0;
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }
 
@@ -44,11 +44,11 @@ public:
 
 	const std::string& GetName() const { return m_tName; }
 
-	llvm::Value* GenerateCode( CModule* pModule )
+	/*llvm::Value* GenerateCode( CModule* pModule )
 	{
 		Assert( 0, "Attempting to call GenerateCode on an unsupported AST node (CASTVariableDefinition)." );
 		return NULL;
-	}
+	}*/
 
 private:
 
@@ -68,7 +68,7 @@ public:
 		m_apChildren.push_back( pChild );
 	}
 
-	llvm::Value* GenerateCode( CModule* pModule );
+	//llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 

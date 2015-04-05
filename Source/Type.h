@@ -49,7 +49,6 @@ public:
 
 	CType( const std::string& rtTypeName, EScalarType eType, unsigned int uFlags = 0, unsigned int uVectorWidth = 0, unsigned int uVectorHeight = 0, unsigned int uArrayCount = 0, CType* pParentType = nullptr, CSemantic* pSemantic = nullptr, CRegister* pRegister = nullptr )
 	: m_tName( rtTypeName )
-	, m_pCachedType( NULL )
 	, m_pParentType( pParentType )
 	, m_pSemantic( pSemantic )
 	, m_pRegister( pRegister )
@@ -96,17 +95,7 @@ public:
 
 	void SetScalarType( EScalarType eType ) { m_eType = eType; }
 
-	static llvm::Type::TypeID GetTypeID( EScalarType eType );
-	static unsigned int GetBitWidth( EScalarType eType );
-	static bool GetTypeSigned( EScalarType eType );
-
-	llvm::Type* GetLLVMType();
-
 private:
-
-	llvm::Type* CreateLLVMType();
-	llvm::Type* GetLLVMBasicType();
-	llvm::StructType* GetLLVMStructType();
 
 	struct SChild
 	{
@@ -117,8 +106,6 @@ private:
 	std::vector< SChild > m_tChildren;
 
 	std::string		m_tName;
-
-	llvm::Type*		m_pCachedType;
 
 	CType*			m_pParentType;
 	CSemantic*		m_pSemantic;

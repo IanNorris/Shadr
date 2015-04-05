@@ -6,7 +6,7 @@
 #include <regex>
 #include <string>
 
-class CModule;
+class CCompilationUnit;
 
 enum EOperatorType
 {
@@ -170,12 +170,12 @@ struct SPossibleToken
 
 struct SParseContext
 {
-	SParseContext( const char* pszInputString, CModule* pMod )
+	SParseContext( const char* pszInputString, CCompilationUnit* pCU )
 	: pszBuffer( pszInputString )
 	, uBytesLeft( strlen( pszInputString ) )
 	, uCurrentRow( 0 )
 	, uCurrentCol( 0 )
-	, pModule( pMod )
+	, pCompilationUnit( pCU )
 	{}
 
 	const char* pszBuffer;
@@ -187,7 +187,7 @@ struct SParseContext
 
 	std::vector<SPossibleToken> asPossibleTokens;
 
-	CModule* pModule;
+	CCompilationUnit* pCompilationUnit;
 };
 
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens );

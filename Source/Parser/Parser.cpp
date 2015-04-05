@@ -1,10 +1,10 @@
-#include "LLVM.h"
+#include "CompilationUnit.h"
 #include "AST/AST.h"
 #include "Parser.h"
 
 std::vector< SParseContext > g_tParseContextStack;
 
-void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* pModule )
+void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU )
 {
 	unsigned int uBufferSize = tBuffer.length();
 	unsigned int uCurrentRow = 0;
@@ -12,15 +12,15 @@ void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* 
 
 	const char* pszBuffer = &tBuffer[0];
 
-	SParseContext tContext( pszBuffer, pModule );
+	SParseContext tContext( pszBuffer, pCU );
 
 	if( ConsumeToken( tContext ) )
 	{
 		CASTBlock* pProgram = ParseProgram( tContext );
-		pProgram->GenerateCode( pModule );
+		//pProgram->GenerateCode( pModule );
 	}
 
-	pModule->GetExecutionEngine()->finalizeObject();
+	//pModule->GetExecutionEngine()->finalizeObject();
 
 	/*while( ConsumeToken( tContext ) )
 	{
@@ -43,15 +43,15 @@ void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CModule* 
 		printf( "%.3f\n", fReturnVal );
 	}*/
 
-	pModule->GetModule()->dump();
+	//pModule->GetModule()->dump();
 }
 
-void ParseFile( const char* pszFilename, CModule* pModule )
+void ParseFile( const char* pszFilename, CCompilationUnit* pCU )
 {
 	std::string tFile;
 	ReadFile( tFile, pszFilename );
 
-	ParseBuffer( pszFilename, tFile, pModule );
+	ParseBuffer( pszFilename, tFile, pCU );
 }
 
 void PushParseContext( SParseContext& rtContext )

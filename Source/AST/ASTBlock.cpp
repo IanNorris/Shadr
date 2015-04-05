@@ -1,8 +1,8 @@
-#include "LLVM.h"
+#include "CompilationUnit.h"
 #include "AST.h"
 #include "Utility/Error.h"
 
-llvm::Value* CASTBlock::GenerateCode( CModule* pModule )
+/*llvm::Value* CASTBlock::GenerateCode( CModule* pModule )
 {
 	return NULL;
-}
+}*/

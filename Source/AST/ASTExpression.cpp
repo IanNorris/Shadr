@@ -1,8 +1,8 @@
-#include "LLVM.h"
+#include "CompilationUnit.h"
 #include "AST.h"
 #include "Utility/Error.h"
 
-llvm::Value* CASTExpressionBinary::GenerateCode( CModule* pModule )
+/*llvm::Value* CASTExpressionBinary::GenerateCode( CModule* pModule )
 {
 	CModule::TBuilder& rtBuilder = pModule->GetIRBuilder();
 
@@ -78,7 +78,7 @@ llvm::Value* CASTExpressionBinary::GenerateCode( CModule* pModule )
 	Assert( 0, "Unknown binary operator" );
 
 	return NULL;
-}
+}*/
 
 CType CASTExpressionBinary::EvaluateType( CASTExpression* pLeft, CASTExpression* pRight )
 {

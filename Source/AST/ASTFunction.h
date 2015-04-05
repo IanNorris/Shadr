@@ -10,7 +10,7 @@ public:
 	, m_tName( pszName, uNameLength )
 	{}
 
-	virtual llvm::Value* GenerateCode( CModule* pModule );
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 	void AddParameter( CASTVariableDefinition* pParameter )
 	{
@@ -35,7 +35,7 @@ public:
 	, m_pBody( pBody )
 	{}
 
-	virtual llvm::Value* GenerateCode( CModule* pModule );
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 
