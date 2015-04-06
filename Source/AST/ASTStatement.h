@@ -8,7 +8,7 @@ class CASTStatement : public CASTBase
 public:
 
 	CASTStatement()
-	: CASTBase( CType::GetVoidType() )
+	: CASTBase()
 	{}
 };
 

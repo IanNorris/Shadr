@@ -9,19 +9,13 @@ class CASTBase
 {
 public:
 
-	CASTBase( const CType& rtType )
-	: m_tType( rtType )
+	CASTBase()
 	{}
 
 	virtual ~CASTBase() {}
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule ) = 0;
-	const CType& GetType() const { return m_tType; }
-	CType& GetType() { return m_tType; }
-
-private:
-
-	CType		m_tType;
+	
 };
 
 class CASTProgram : public CASTBase
@@ -29,7 +23,7 @@ class CASTProgram : public CASTBase
 public:
 
 	CASTProgram()
-	: CASTBase( CType::GetVoidType() )
+	: CASTBase()
 	{}
 
 	void AddElement( CASTBase* pElement ) { m_apElements.push_back( pElement ); }
@@ -45,8 +39,8 @@ class CASTDefinition : public CASTBase
 {
 public:
 
-	CASTDefinition( const CType& rtType )
-	: CASTBase( rtType )
+	CASTDefinition()
+	: CASTBase()
 	{}
 };
 
@@ -55,9 +49,13 @@ class CASTVariableDefinition : public CASTDefinition
 public:
 
 	CASTVariableDefinition( const CType& rtType, const std::string& rtName )
-	: CASTDefinition( rtType )
+	: CASTDefinition()
+	, m_tType( rtType )
 	, m_tName( rtName )
 	{}
+
+	const CType& GetType() const { return m_tType; }
+	CType& GetType() { return m_tType; }
 
 	const std::string& GetName() const { return m_tName; }
 
@@ -69,6 +67,7 @@ public:
 
 private:
 
+	CType		m_tType;
 	std::string m_tName;
 };
 

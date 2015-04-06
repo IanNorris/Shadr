@@ -6,13 +6,18 @@ class CASTExpression : public CASTBase
 public:
 
 	CASTExpression( const CType& rtType, EShaderToken eToken )
-	: CASTBase( rtType )
+	: CASTBase()
+	, m_tType( rtType )
 	, m_eToken( eToken )
 	{}
 
+	const CType& GetType() const { return m_tType; }
+	CType& GetType() { return m_tType; }
+
 private:
 
-	EShaderToken m_eToken;
+	CType			m_tType;
+	EShaderToken	m_eToken;
 };
 
 class CASTExpressionBinary : public CASTExpression

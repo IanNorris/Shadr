@@ -6,7 +6,8 @@ class CASTPrototype : public CASTDefinition
 public:
 
 	CASTPrototype( const char* pszName, unsigned int uNameLength, const CType& rtReturnType )
-	: CASTDefinition( rtReturnType )
+	: CASTDefinition()
+	, m_tReturnType( rtReturnType )
 	, m_tName( pszName, uNameLength )
 	{}
 
@@ -21,6 +22,7 @@ public:
 
 private:
 
+	CType		m_tReturnType;
 	std::string m_tName;
 	std::vector< CASTVariableDefinition* > m_apParameters;
 };
@@ -30,8 +32,8 @@ class CASTFunction : public CASTDefinition
 public:
 
 	CASTFunction( CASTPrototype* pPrototype, CASTBlockStatement* pBody )
-	: CASTDefinition( pPrototype->GetType() )
-	, m_pProrotype( pPrototype )
+	: CASTDefinition()
+	, m_pPrototype( pPrototype )
 	, m_pBody( pBody )
 	{}
 
@@ -39,7 +41,7 @@ public:
 
 private:
 
-	CASTPrototype* m_pProrotype;
+	CASTPrototype* m_pPrototype;
 	CASTBlockStatement* m_pBody;
 };
 
