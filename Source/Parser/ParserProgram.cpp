@@ -53,10 +53,13 @@ CASTProgram* ParseProgram( SParseContext& rtContext )
 			else if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
 			{
 				pProgram->AddElement( pPrototype );
+
+				if( !ConsumeToken( rtContext ) )
+				{
+					ParserError( rtContext, "Unexpected end of file" );
+				}
 			}
 		}
-
-		ConsumeToken( rtContext );
 	}
 	while( rtContext.sNextToken.eToken != EShaderToken_Invalid );
 

@@ -47,46 +47,49 @@ CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, con
 {
 	CASTPrototype* pPrototype = new CASTPrototype( rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType );
 
-	bool bContinue;
-	do
-	{
-		bContinue = false;
-
-		CASTVariableDefinition* pParameter = ParseFunctionParameter( rtContext );
-		if( pParameter )
-		{
-			pPrototype->AddParameter( pParameter );
-		}
-		else
-		{
-			//ParseFunctionParameter will return NULL if it encounters the void type,
-			//but we need to validate that we didn't get any more parameters before it.
-			//If there was any kind of parsing error it would have already reported that
-			//to the user.
-
-			if( !pPrototype->GetParameters().empty() )
-			{
-				ParserError( rtContext, "Malformed parameter list for function %s", rtFunctionName.c_str() );
-			}
-
-			break;
-		}
-
-		if( rtContext.sNextToken.eToken == EShaderToken_Comma )
-		{
-			if( !ConsumeToken( rtContext ) )
-			{
-				ParserError( rtContext, "Expected end of file" );
-			}
-
-			bContinue = true;
-		}
-	}
-	while( bContinue );
-	
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
-		ParserError( rtContext, "Expected end of function prototype" );
+		bool bContinue;
+		do
+		{
+			bContinue = false;
+
+			CASTVariableDefinition* pParameter = ParseFunctionParameter( rtContext );
+			if( pParameter )
+			{
+				pPrototype->AddParameter( pParameter );
+			}
+			else
+			{
+				//ParseFunctionParameter will return NULL if it encounters the void type,
+				//but we need to validate that we didn't get any more parameters before it.
+				//If there was any kind of parsing error it would have already reported that
+				//to the user.
+
+				if( !pPrototype->GetParameters().empty() )
+				{
+					ParserError( rtContext, "Malformed parameter list for function %s", rtFunctionName.c_str() );
+				}
+
+				break;
+			}
+
+			if( rtContext.sNextToken.eToken == EShaderToken_Comma )
+			{
+				if( !ConsumeToken( rtContext ) )
+				{
+					ParserError( rtContext, "Expected end of file" );
+				}
+
+				bContinue = true;
+			}
+		}
+		while( bContinue );
+
+		if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
+		{
+			ParserError( rtContext, "Expected end of function prototype" );
+		}
 	}
 
 	if( !ConsumeToken( rtContext ) )
@@ -99,6 +102,12 @@ CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, con
 
 CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype )
 {
+	if( rtContext.sNextToken.eToken != EShaderToken_Brace_Open )
+	{
+		ParserError( rtContext, "Expected opening brace ({)");
+	}
+	ConsumeToken( rtContext );
+
 	CASTBlockStatement* pBlock = ParseBlockStatement( rtContext );
 
 	if( pBlock )

@@ -3,5 +3,6 @@
 
 CASTStatement* ParseStatement( SParseContext& rtContext );
 CASTBlockStatement* ParseBlockStatement( SParseContext& rtContext );
+CASTIfStatement* ParseIfStatement( SParseContext& rtContext );
 
 #endif //SHADR_PARSER_STATEMENT_H
