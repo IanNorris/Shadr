@@ -18,6 +18,7 @@ SParseContext PopParseContext( void );
 
 #include "ParserType.h"
 #include "ParserExpression.h"
+#include "ParserStatement.h"
 #include "ParserFunction.h"
 #include "ParserProgram.h"
 

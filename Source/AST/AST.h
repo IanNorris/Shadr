@@ -24,6 +24,23 @@ private:
 	CType		m_tType;
 };
 
+class CASTProgram : public CASTBase
+{
+public:
+
+	CASTProgram()
+	: CASTBase( CType::GetVoidType() )
+	{}
+
+	void AddElement( CASTBase* pElement ) { m_apElements.push_back( pElement ); }
+
+private:
+
+	std::vector< CASTBase* > m_apElements;
+};
+
+
+
 class CASTDefinition : public CASTBase
 {
 public:
@@ -55,27 +72,8 @@ private:
 	std::string m_tName;
 };
 
-class CASTBlock : public CASTBase
-{
-public:
-
-	CASTBlock()
-	: CASTBase( CType::GetVoidType() )
-	{}
-
-	void Add( CASTBase* pChild )
-	{
-		m_apChildren.push_back( pChild );
-	}
-
-	//llvm::Value* GenerateCode( CModule* pModule );
-
-private:
-
-	std::vector< CASTBase* > m_apChildren;
-};
-
 #include "ASTExpression.h"
+#include "ASTStatement.h"
 #include "ASTNumeric.h"
 #include "ASTFunction.h"
 

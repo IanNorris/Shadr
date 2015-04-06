@@ -39,6 +39,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
@@ -61,17 +66,6 @@
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\AST\Function.cpp" />
-    <ClCompile Include="Source\AST\Numeric.cpp" />
-    <ClCompile Include="Source\LLVM.cpp" />
-    <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\Token.cpp" />
-    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
-    <ClCompile Include="Source\Utility\Error.cpp" />
-    <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\AST\Expression.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\AST\Function.cpp" />
     <ClCompile Include="Source\AST\Numeric.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
@@ -154,17 +148,22 @@
     <ClCompile Include="Source\AST\ASTBlock.cpp">
       <Filter>Source Files\AST</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CompilationUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AST\ASTStatement.cpp">
+      <Filter>Source Files\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Parser\ParserStatement.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
     <ClInclude Include="Source\Utility\Error.h" />
     <ClInclude Include="Source\Utility\Utility.h" />
-    <ClInclude Include="Source\AST\Expression.h" />
-    <ClInclude Include="Source\AST\Function.h" />
-    <ClInclude Include="Source\AST\Numeric.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
@@ -286,6 +285,15 @@
       <Filter>Header Files\Parser</Filter>
     </ClInclude>
     <ClInclude Include="Source\Parser\ParserType.h">
+      <Filter>Header Files\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CompilationUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AST\ASTStatement.h">
+      <Filter>Header Files\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Parser\ParserStatement.h">
       <Filter>Header Files\Parser</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,7 +16,7 @@ void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilat
 
 	if( ConsumeToken( tContext ) )
 	{
-		CASTBlock* pProgram = ParseProgram( tContext );
+		CASTProgram* pProgram = ParseProgram( tContext );
 		//pProgram->GenerateCode( pModule );
 	}
 
@@ -48,10 +48,14 @@ void ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilat
 
 void ParseFile( const char* pszFilename, CCompilationUnit* pCU )
 {
+	PushCurrentFile( pszFilename );
+
 	std::string tFile;
 	ReadFile( tFile, pszFilename );
 
 	ParseBuffer( pszFilename, tFile, pCU );
+
+	PopCurrentFile();
 }
 
 void PushParseContext( SParseContext& rtContext )

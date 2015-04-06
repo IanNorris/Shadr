@@ -29,7 +29,7 @@ class CASTFunction : public CASTDefinition
 {
 public:
 
-	CASTFunction( CASTPrototype* pPrototype, CASTExpression* pBody )
+	CASTFunction( CASTPrototype* pPrototype, CASTBlockStatement* pBody )
 	: CASTDefinition( pPrototype->GetType() )
 	, m_pProrotype( pPrototype )
 	, m_pBody( pBody )
@@ -40,7 +40,7 @@ public:
 private:
 
 	CASTPrototype* m_pProrotype;
-	CASTExpression* m_pBody;
+	CASTBlockStatement* m_pBody;
 };
 
 #endif //SHADR_AST_FUNCTION_H

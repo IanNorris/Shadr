@@ -97,8 +97,14 @@ CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, con
 	return pPrototype;
 }
 
-
 CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype )
 {
+	CASTBlockStatement* pBlock = ParseBlockStatement( rtContext );
+
+	if( pBlock )
+	{
+		return new CASTFunction( pPrototype, pBlock );
+	}
+	
 	return NULL;
 }

@@ -2,9 +2,9 @@
 #include "AST/AST.h"
 #include "Parser.h"
 
-CASTBlock* ParseProgram( SParseContext& rtContext )
+CASTProgram* ParseProgram( SParseContext& rtContext )
 {
-	CASTBlock* pProgram = new CASTBlock();
+	CASTProgram* pProgram = new CASTProgram();
 
 	do 
 	{
@@ -43,7 +43,7 @@ CASTBlock* ParseProgram( SParseContext& rtContext )
 
 				if( pFunction )
 				{
-					pProgram->Add( pFunction );
+					pProgram->AddElement( pFunction );
 				}
 				else
 				{
@@ -52,7 +52,7 @@ CASTBlock* ParseProgram( SParseContext& rtContext )
 			}
 			else if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
 			{
-				pProgram->Add( pPrototype );
+				pProgram->AddElement( pPrototype );
 			}
 		}
 
