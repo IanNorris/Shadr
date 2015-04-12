@@ -426,6 +426,8 @@ void InitialiseTokenTables( void )
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Float );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Int );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Comment );
+	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_And ].push_back( EShaderToken_Binary_Bitwise_Lazy_And );
+	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_Or ].push_back( EShaderToken_Binary_Bitwise_Lazy_Or );
 
 	//Set up operator precedence
 
