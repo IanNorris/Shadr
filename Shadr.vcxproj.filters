@@ -296,5 +296,8 @@
     <ClInclude Include="Source\Parser\ParserStatement.h">
       <Filter>Header Files\Parser</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -43,9 +43,9 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 	return new CASTVariableDefinition( *pType, tName );
 }
 
-CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, const std::string& rtFunctionName )
+CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, const std::string& rtFunctionName, CScope* pParentScope )
 {
-	CASTPrototype* pPrototype = new CASTPrototype( rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType );
+	CASTPrototype* pPrototype = new CASTPrototype( rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType, pParentScope );
 
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
@@ -58,6 +58,8 @@ CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, con
 			if( pParameter )
 			{
 				pPrototype->AddParameter( pParameter );
+
+				pPrototype->GetScope().AddVariable( rtContext, pParameter->GetName(), pParameter->GetVariable() );
 			}
 			else
 			{
@@ -100,7 +102,7 @@ CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, con
 	return pPrototype;
 }
 
-CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype )
+CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype, CScope* pGlobalScope )
 {
 	if( rtContext.sNextToken.eToken != EShaderToken_Brace_Open )
 	{
@@ -108,7 +110,7 @@ CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype
 	}
 	ConsumeToken( rtContext );
 
-	CASTBlockStatement* pBlock = ParseBlockStatement( rtContext );
+	CASTBlockStatement* pBlock = ParseBlockStatement( rtContext, pGlobalScope );
 
 	if( pBlock )
 	{

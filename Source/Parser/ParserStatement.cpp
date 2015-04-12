@@ -2,7 +2,7 @@
 #include "AST/AST.h"
 #include "Parser.h"
 
-CASTStatement* ParseStatement( SParseContext& rtContext )
+CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 {
 	SParseContext tContextCopy = rtContext;
 
@@ -11,13 +11,13 @@ CASTStatement* ParseStatement( SParseContext& rtContext )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseBlockStatement( rtContext );
+		return ParseBlockStatement( rtContext, pParentScope );
 	}
 	else if( rtContext.sNextToken.eToken == EShaderToken_Return )
 	{
 		ConsumeToken( rtContext );
 
-		CASTExpression* pExpression = ParseExpression( rtContext );
+		CASTExpression* pExpression = ParseExpression( rtContext, pParentScope );
 
 
 		if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
@@ -42,19 +42,19 @@ CASTStatement* ParseStatement( SParseContext& rtContext )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseIfStatement( rtContext );
+		return ParseIfStatement( rtContext, pParentScope );
 	}
 
 	return NULL;
 }
 
-CASTBlockStatement* ParseBlockStatement( SParseContext& rtContext )
+CASTBlockStatement* ParseBlockStatement( SParseContext& rtContext, CScope* pParentScope )
 {
-	CASTBlockStatement* pBlock = new CASTBlockStatement();
+	CASTBlockStatement* pBlock = new CASTBlockStatement( pParentScope );
 
 	while( rtContext.sNextToken.eToken != EShaderToken_Brace_Close )
 	{
-		CASTStatement* pStatement = ParseStatement( rtContext );
+		CASTStatement* pStatement = ParseStatement( rtContext, &pBlock->GetScope() );
 
 		if( pStatement )
 		{
@@ -66,7 +66,7 @@ CASTBlockStatement* ParseBlockStatement( SParseContext& rtContext )
 	return pBlock;
 }
 
-CASTIfStatement* ParseIfStatement( SParseContext& rtContext )
+CASTIfStatement* ParseIfStatement( SParseContext& rtContext, CScope* pParentScope )
 {
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Open )
 		{
@@ -74,7 +74,7 @@ CASTIfStatement* ParseIfStatement( SParseContext& rtContext )
 		}
 		ConsumeToken( rtContext );
 
-		CASTExpression* pCondition = ParseExpression( rtContext );
+		CASTExpression* pCondition = ParseExpression( rtContext, pParentScope );
 		if( !pCondition )
 		{
 			return NULL;
@@ -86,7 +86,7 @@ CASTIfStatement* ParseIfStatement( SParseContext& rtContext )
 		}
 		ConsumeToken( rtContext );
 
-		CASTStatement* pStatement = ParseStatement( rtContext );
+		CASTStatement* pStatement = ParseStatement( rtContext, pParentScope );
 
 		if( !pStatement )
 		{
@@ -99,7 +99,7 @@ CASTIfStatement* ParseIfStatement( SParseContext& rtContext )
 		{
 			ConsumeToken( rtContext );
 
-			pElseStatement = ParseStatement( rtContext );
+			pElseStatement = ParseStatement( rtContext, pParentScope );
 		}
 
 		return new CASTIfStatement( pCondition, pStatement, pElseStatement );

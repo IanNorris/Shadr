@@ -3,7 +3,24 @@
 
 #include "Tokens.h"
 #include "Type.h"
+#include "Scope.h"
 #include "Utility/Error.h"
+
+class CASTScope
+{
+public:
+
+	CASTScope( CScope* pScope )
+	: m_tScope( pScope )
+	{}
+
+	CScope& GetScope() { return m_tScope; }
+	const CScope& GetScope() const { return m_tScope; }
+
+private:
+	
+	CScope							m_tScope;
+};
 
 class CASTBase
 {
@@ -18,12 +35,13 @@ public:
 	
 };
 
-class CASTProgram : public CASTBase
+class CASTProgram : public CASTBase, public CASTScope
 {
 public:
 
 	CASTProgram()
 	: CASTBase()
+	, CASTScope( NULL )
 	{}
 
 	void AddElement( CASTBase* pElement ) { m_apElements.push_back( pElement ); }
@@ -52,12 +70,16 @@ public:
 	: CASTDefinition()
 	, m_tType( rtType )
 	, m_tName( rtName )
-	{}
+	{
+		m_tVariable.pType = &m_tType;
+	}
 
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }
 
 	const std::string& GetName() const { return m_tName; }
+
+	SVariable* GetVariable() { return &m_tVariable; }
 
 	/*llvm::Value* GenerateCode( CModule* pModule )
 	{
@@ -69,6 +91,8 @@ private:
 
 	CType		m_tType;
 	std::string m_tName;
+
+	SVariable	m_tVariable;
 };
 
 #include "ASTExpression.h"

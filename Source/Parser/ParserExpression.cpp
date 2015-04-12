@@ -2,14 +2,14 @@
 #include "AST/AST.h"
 #include "Parser.h"
 
-CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
+CASTExpression* ParseParenthesisExpression( SParseContext& rtContext, CScope* pParentScope )
 {
 	if( !ConsumeToken( rtContext ) )
 	{
 		ParserError( rtContext, "Expected expression" );
 	}
 
-	CASTExpression* pSubExpression = ParseExpression( rtContext );
+	CASTExpression* pSubExpression = ParseExpression( rtContext, pParentScope );
 
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
@@ -19,7 +19,7 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext )
 	return pSubExpression;
 }
 
-CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftPrecedence, CASTExpression* pLeft )
+CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftPrecedence, CASTExpression* pLeft, CScope* pParentScope )
 {
 	while( true )
 	{
@@ -36,7 +36,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftP
 			ParserError( rtContext, "Unexpected end of expression." );
 		}
 
-		CASTExpression* pRight = ParsePrimary( rtContext );
+		CASTExpression* pRight = ParsePrimary( rtContext, pParentScope );
 		if( !pRight )
 		{
 			ParserError( rtContext, "Expected expression." );
@@ -46,7 +46,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftP
 		int iNextPrecedence = GetOperatorPrecedence( EOperatorType_Binary, rtContext.sNextToken.eToken ).iPrecedence;
 		if( iRightPrecedence < iNextPrecedence )
 		{
-			pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, pRight );
+			pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, pRight, pParentScope );
 			if( !pRight )
 			{
 				ParserError( rtContext, "Expected expression." );
@@ -58,14 +58,14 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftP
 	}
 }
 
-CASTExpression* ParsePrimary( SParseContext& rtContext )
+CASTExpression* ParsePrimary( SParseContext& rtContext, CScope* pParentScope )
 {
 	CASTExpression* pResult = nullptr;
 
 	switch( rtContext.sNextToken.eToken )
 	{
 		case EShaderToken_Parenthesis_Open:
-			pResult = ParseParenthesisExpression( rtContext );
+			pResult = ParseParenthesisExpression( rtContext, pParentScope );
 			break;
 
 		case EShaderToken_Float:
@@ -86,14 +86,14 @@ CASTExpression* ParsePrimary( SParseContext& rtContext )
 	return pResult;
 }
 
-CASTExpression* ParseExpression( SParseContext& rtContext )
+CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope )
 {
-	CASTExpression* pLeft = ParsePrimary( rtContext );
+	CASTExpression* pLeft = ParsePrimary( rtContext, pParentScope );
 	if( !pLeft )
 	{
 		ParserError( rtContext, "Expected expression." );
 		return nullptr;
 	}
 
-	return ParseBinaryExpressionRight( rtContext, 0, pLeft );
+	return ParseBinaryExpressionRight( rtContext, 0, pLeft, pParentScope );
 }

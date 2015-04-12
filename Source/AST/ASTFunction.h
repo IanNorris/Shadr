@@ -1,12 +1,13 @@
 #if !defined( SHADR_AST_FUNCTION_H )
 #define SHADR_AST_FUNCTION_H
 
-class CASTPrototype : public CASTDefinition
+class CASTPrototype : public CASTDefinition, public CASTScope
 {
 public:
 
-	CASTPrototype( const char* pszName, unsigned int uNameLength, const CType& rtReturnType )
+	CASTPrototype( const char* pszName, unsigned int uNameLength, const CType& rtReturnType, CScope* pParentScope )
 	: CASTDefinition()
+	, CASTScope( pParentScope )
 	, m_tReturnType( rtReturnType )
 	, m_tName( pszName, uNameLength )
 	{}

@@ -44,19 +44,20 @@ private:
 	CASTStatement* m_pElseStatement;
 };
 
-class CASTBlockStatement : public CASTStatement
+class CASTBlockStatement : public CASTStatement, public CASTScope
 {
 public:
 
-	CASTBlockStatement()
+	CASTBlockStatement( CScope* pParentScope )
 	: CASTStatement()
+	, CASTScope( pParentScope )
 	{}
 
 	void AddStatement( CASTStatement* pStatement ) { m_apStatements.push_back( pStatement ); }
 
 private:
 
-	std::vector< CASTStatement* > m_apStatements;
+	std::vector< CASTStatement* >	m_apStatements;
 };
 
 #endif //SHADR_AST_STATEMENT_H

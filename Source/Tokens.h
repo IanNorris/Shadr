@@ -2,9 +2,12 @@
 #define SHADR_TOKEN_H
 
 #include <functional>
+#include <unordered_map>
 #include <vector>
 #include <regex>
 #include <string>
+
+#include "Utility/Error.h"
 
 class CCompilationUnit;
 

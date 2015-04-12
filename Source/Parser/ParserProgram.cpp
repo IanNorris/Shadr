@@ -34,12 +34,12 @@ CASTProgram* ParseProgram( SParseContext& rtContext )
 				ParserError( rtContext, "Unexpected end of file" );
 			}
 
-			CASTPrototype* pPrototype = ParsePrototype( rtContext, pReturnType, tTargetName );
+			CASTPrototype* pPrototype = ParsePrototype( rtContext, pReturnType, tTargetName, &pProgram->GetScope() );
 
 			//We have a function body
 			if( rtContext.sNextToken.eToken == EShaderToken_Brace_Open )
 			{
-				CASTFunction* pFunction = ParseFunction( rtContext, pPrototype );
+				CASTFunction* pFunction = ParseFunction( rtContext, pPrototype, &pPrototype->GetScope() );
 
 				if( pFunction )
 				{
