@@ -21,8 +21,15 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext, CScope* pP
 
 CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftPrecedence, CASTExpression* pLeft, CScope* pParentScope )
 {
+	bool bRejectComma = rtContext.IsFlagSet( EParseFlag_RejectComma );
+
 	while( true )
 	{
+		if( rtContext.sNextToken.eToken == EShaderToken_Comma && bRejectComma )
+		{
+			return pLeft;
+		}
+
 		int iRightPrecedence = GetOperatorPrecedence( EOperatorType_Binary, rtContext.sNextToken.eToken ).iPrecedence;
 
 		if( iRightPrecedence < iLeftPrecedence )
@@ -84,9 +91,16 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, CScope* pParentScope )
 
 				if( !pVariable )
 				{
+					CType* pFindType = GetType( tIdentifierName );
+					if( pFindType )
+					{
+						return nullptr;
+					}
+
 					ParserError( rtContext, "Undeclared identifier '%s'.", tIdentifierName.c_str() );
 					SVariable* pDummy = SVariable::CreateDummyVariable();
-					pParentScope->AddVariable( rtContext, tIdentifierName, pDummy );
+					pDummy->tName = tIdentifierName;
+					pParentScope->AddVariable( rtContext, pDummy );
 					pResult = new CASTVariableReference( pDummy );
 				}
 				else
@@ -108,7 +122,6 @@ CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope 
 	CASTExpression* pLeft = ParsePrimary( rtContext, pParentScope );
 	if( !pLeft )
 	{
-		ParserError( rtContext, "Expected expression." );
 		return nullptr;
 	}
 

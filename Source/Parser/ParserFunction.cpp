@@ -59,7 +59,7 @@ CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, con
 			{
 				pPrototype->AddParameter( pParameter );
 
-				pPrototype->GetScope().AddVariable( rtContext, pParameter->GetName(), pParameter->GetVariable() );
+				pPrototype->GetScope().AddVariable( rtContext, &pParameter->GetVariables()[0] );
 			}
 			else
 			{

@@ -51,50 +51,6 @@ private:
 	std::vector< CASTBase* > m_apElements;
 };
 
-
-
-class CASTDefinition : public CASTBase
-{
-public:
-
-	CASTDefinition()
-	: CASTBase()
-	{}
-};
-
-class CASTVariableDefinition : public CASTDefinition
-{
-public:
-
-	CASTVariableDefinition( const CType& rtType, const std::string& rtName )
-	: CASTDefinition()
-	, m_tType( rtType )
-	, m_tName( rtName )
-	{
-		m_tVariable.pType = &m_tType;
-	}
-
-	const CType& GetType() const { return m_tType; }
-	CType& GetType() { return m_tType; }
-
-	const std::string& GetName() const { return m_tName; }
-
-	SVariable* GetVariable() { return &m_tVariable; }
-
-	/*llvm::Value* GenerateCode( CModule* pModule )
-	{
-		Assert( 0, "Attempting to call GenerateCode on an unsupported AST node (CASTVariableDefinition)." );
-		return NULL;
-	}*/
-
-private:
-
-	CType		m_tType;
-	std::string m_tName;
-
-	SVariable	m_tVariable;
-};
-
 #include "ASTExpression.h"
 #include "ASTStatement.h"
 #include "ASTNumeric.h"

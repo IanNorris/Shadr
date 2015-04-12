@@ -5,6 +5,13 @@
 #include <algorithm>
 #include <unordered_map>
 
+std::unordered_map< std::string, CType* > g_tTypeDatabase;
+
+void AddTypeDefinition( CType* pType )
+{
+	g_tTypeDatabase[ pType->GetTypeName() ] = pType;
+}
+
 void InitialiseBasicTypes( void )
 {
 	AddTypeDefinition( new CType( "void",  EScalarType_Void ) );
@@ -32,4 +39,15 @@ void InitialiseBasicTypes( void )
 	AddTypeDefinition( new CType( "bool2", EScalarType_Bool, 0, 2 ) );
 	AddTypeDefinition( new CType( "bool3", EScalarType_Bool, 0, 3 ) );
 	AddTypeDefinition( new CType( "bool4", EScalarType_Bool, 0, 4 ) );
+}
+
+CType* GetType( const std::string& rtName )
+{
+	auto tIter = g_tTypeDatabase.find( rtName );
+	if( tIter != g_tTypeDatabase.end() )
+	{
+		return tIter->second;
+	}
+
+	return NULL;
 }

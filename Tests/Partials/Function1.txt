@@ -1,5 +1,9 @@
 float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIsTrue )
 {
+	int3 myVar2;
+	int myVar3, myVar4;
+	int myVar6 = 2, myVar7 = iCount + 2;
+	
 	fIn1 = 3;
 	
 	fStuff = fIn1 + fIn1 + (fStuff = fVal3 * 3);
@@ -18,6 +22,7 @@ float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIs
 
 float4 PSMain()
 {
+	float fIn1 = 4;
 	if( fIn1 / 2 /* hello */ ) //test
 	{
 		return 2;

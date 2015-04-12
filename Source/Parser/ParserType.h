@@ -3,7 +3,6 @@
 
 #include "Type.h"
 
-void AddTypeDefinition( CType* pType );
 CType* ParseTypeDefinition( SParseContext& rtContext );
 
 CType* ParseType( SParseContext& rtContext );

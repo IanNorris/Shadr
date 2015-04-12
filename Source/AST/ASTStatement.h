@@ -74,4 +74,39 @@ private:
 	std::vector< CASTStatement* >	m_apStatements;
 };
 
+class CASTVariableDefinition : public CASTStatement
+{
+public:
+
+	CASTVariableDefinition( const CType& rtType, const std::string& rtName )
+	: CASTStatement()
+	, m_tType( rtType )
+	{
+		SVariable tVariable;
+		tVariable.tName = rtName;
+		tVariable.pType = &m_tType;
+
+		m_tVariables.push_back( tVariable );
+	}
+
+	const CType& GetType() const { return m_tType; }
+	CType& GetType() { return m_tType; }
+
+	std::vector<SVariable>& GetVariables() { return m_tVariables; }
+	std::vector<CASTStatement*>& GetAssignments() { return m_tAssignments; }
+
+	/*llvm::Value* GenerateCode( CModule* pModule )
+	{
+		Assert( 0, "Attempting to call GenerateCode on an unsupported AST node (CASTVariableDefinition)." );
+		return NULL;
+	}*/
+
+private:
+
+	CType		m_tType;
+
+	std::vector<SVariable>	m_tVariables;
+	std::vector<CASTStatement*> m_tAssignments;
+};
+
 #endif //SHADR_AST_STATEMENT_H

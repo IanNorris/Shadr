@@ -4,12 +4,7 @@
 
 #include <unordered_map>
 
-std::unordered_map< std::string, CType* > g_tTypeDatabase;
 
-void AddTypeDefinition( CType* pType )
-{
-	g_tTypeDatabase[ pType->GetTypeName() ] = pType;
-}
 
 CType* ParseTypeDefinition( SParseContext& rtContext )
 {
@@ -33,6 +28,8 @@ CType* ParseType( SParseContext& rtContext )
 	bool bFinishEatingModifiers = false;
 	do
 	{
+		bool bAteSomething = true;
+
 		switch( rtContext.sNextToken.eToken )
 		{
 			case EShaderToken_Const:
@@ -56,21 +53,26 @@ CType* ParseType( SParseContext& rtContext )
 				break;
 
 			default:
+				bAteSomething = false;
 				bFinishEatingModifiers = true;
 		}
+
+		if( bAteSomething )
+		{
+			if( !ConsumeToken( rtContext ) )
+			{
+				return nullptr;
+			}
+		}
 	}
-	while( !bFinishEatingModifiers && ConsumeToken(rtContext ) );
+	while( !bFinishEatingModifiers );
 
 	if( rtContext.sNextToken.eToken == EShaderToken_Identifier )
 	{
 		tTypeName = std::string( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
 
-		auto tIter = g_tTypeDatabase.find( tTypeName );
-		if( tIter != g_tTypeDatabase.end() )
-		{
-			pParent = tIter->second;
-		}
-		else
+		pParent = GetType( tTypeName );
+		if( !pParent )
 		{
 			ParserError( rtContext, "Type %s is not defined", tTypeName.c_str() );
 			return NULL;

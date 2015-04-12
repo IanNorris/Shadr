@@ -119,4 +119,7 @@ private:
 	unsigned int	m_uArrayCount;
 };
 
+void AddTypeDefinition( CType* pType );
+CType* GetType( const std::string& rtName );
+
 #endif //SHADR_TYPE_H

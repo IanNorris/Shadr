@@ -1,12 +1,12 @@
 #if !defined( SHADR_AST_FUNCTION_H )
 #define SHADR_AST_FUNCTION_H
 
-class CASTPrototype : public CASTDefinition, public CASTScope
+class CASTPrototype : public CASTBase, public CASTScope
 {
 public:
 
 	CASTPrototype( const char* pszName, unsigned int uNameLength, const CType& rtReturnType, CScope* pParentScope )
-	: CASTDefinition()
+	: CASTBase()
 	, CASTScope( pParentScope )
 	, m_tReturnType( rtReturnType )
 	, m_tName( pszName, uNameLength )
@@ -28,12 +28,12 @@ private:
 	std::vector< CASTVariableDefinition* > m_apParameters;
 };
 
-class CASTFunction : public CASTDefinition
+class CASTFunction : public CASTBase
 {
 public:
 
 	CASTFunction( CASTPrototype* pPrototype, CASTBlockStatement* pBody )
-	: CASTDefinition()
+	: CASTBase()
 	, m_pPrototype( pPrototype )
 	, m_pBody( pBody )
 	{}

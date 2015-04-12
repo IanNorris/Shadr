@@ -24,6 +24,8 @@ struct SVariable
 		return pVariable;
 	}
 
+	std::string tName;
+
 	CType* pType;
 	unsigned int uFlags;
 };
@@ -53,18 +55,18 @@ public:
 		return nullptr;
 	}
 
-	void AddVariable( SParseContext& rtContext, const std::string& rtName, SVariable* pVariable )
+	void AddVariable( SParseContext& rtContext, SVariable* pVariable )
 	{
-		auto tIter = m_pVariables.find( rtName );
+		auto tIter = m_pVariables.find( pVariable->tName );
 		if( tIter != m_pVariables.end() )
 		{
 			if( (*tIter).second->pType->GetScalarType() != EScalarType_Dummy )
 			{
-				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Identifier %s is already defined in this scope.", rtName.c_str() );
+				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Identifier %s is already defined in this scope.", pVariable->tName.c_str() );
 			}
 		}
 
-		m_pVariables[ rtName ] = pVariable;
+		m_pVariables[ pVariable->tName ] = pVariable;
 	}
 
 private:

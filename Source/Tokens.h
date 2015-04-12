@@ -171,6 +171,11 @@ struct SPossibleToken
 	}
 };
 
+enum EParseFlag
+{
+	EParseFlag_RejectComma		= 1 << 0,
+};
+
 struct SParseContext
 {
 	SParseContext( const char* pszInputString, CCompilationUnit* pCU )
@@ -178,6 +183,7 @@ struct SParseContext
 	, uBytesLeft( strlen( pszInputString ) )
 	, uCurrentRow( 0 )
 	, uCurrentCol( 0 )
+	, uFlags( 0 )
 	, pCompilationUnit( pCU )
 	{}
 
@@ -185,6 +191,11 @@ struct SParseContext
 	unsigned int uBytesLeft;
 	unsigned int uCurrentRow;
 	unsigned int uCurrentCol;
+	unsigned int uFlags;
+
+	void SetFlag( EParseFlag eFlag ) { uFlags |= eFlag; }
+	void UnsetFlag( EParseFlag eFlag ) { uFlags &= ~eFlag; }
+	bool IsFlagSet( EParseFlag eFlag ) { return (uFlags & eFlag) != 0; }
 
 	SPossibleToken sNextToken;
 
