@@ -542,20 +542,6 @@ SPrecedence GetOperatorPrecedence( EOperatorType eOperatorType, EShaderToken eTo
 	}
 }
 
-SPrecedence GetNextOperatorPrecedence( SParseContext& rtContext )
-{
-	SParseContext tTempContext = rtContext;
-
-	if( !ConsumeToken( tTempContext ) )
-	{
-		Error_Compiler( EError_Error, tTempContext.uCurrentRow, tTempContext.uCurrentCol, "Unexpected end of expression." );
-
-		return SPrecedence();
-	}
-
-	return GetOperatorPrecedence( EOperatorType_Binary, tTempContext.sNextToken.eToken );
-}
-
 bool ConsumeToken( SParseContext& rtContext )
 {
 	rtContext.asPossibleTokens.clear();

@@ -201,7 +201,6 @@ void InitialiseTokenTables( void );
 void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens );
 
 SPrecedence GetOperatorPrecedence( EOperatorType eOperatorType, EShaderToken eToken );
-SPrecedence GetNextOperatorPrecedence( SParseContext& rtContext );
 
 bool ConsumeToken( SParseContext& rtContext );
 
