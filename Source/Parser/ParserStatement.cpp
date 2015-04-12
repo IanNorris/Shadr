@@ -45,6 +45,22 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 		return ParseIfStatement( rtContext, pParentScope );
 	}
 
+
+	CASTExpression* pExpression = ParseExpression( rtContext, pParentScope );
+	if( pExpression )
+	{
+		if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
+		{
+			ConsumeToken( rtContext );
+		}
+		else
+		{
+			ParserError( rtContext, "Expected semi-colon (;)");
+		}
+
+		return new CASTExpressionStatement( pExpression );
+	}
+
 	return NULL;
 }
 

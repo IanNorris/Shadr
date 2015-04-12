@@ -26,6 +26,20 @@ private:
 	CASTExpression* m_pExpression;
 };
 
+class CASTExpressionStatement : public CASTStatement
+{
+public:
+
+	CASTExpressionStatement( CASTExpression* pExpression )
+	: CASTStatement()
+	, m_pExpression( pExpression )
+	{}
+
+private:
+
+	CASTExpression* m_pExpression;
+};
+
 class CASTIfStatement : public CASTStatement
 {
 public:
