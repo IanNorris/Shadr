@@ -77,8 +77,23 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, CScope* pParentScope )
 			break;
 
 		case EShaderToken_Identifier:
-			pResult = NULL; //TODO
-			break;
+			{
+				std::string tIdentifierName( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+		
+				SVariable* pVariable = pParentScope->FindVariable( tIdentifierName );
+
+				if( !pVariable )
+				{
+					ParserError( rtContext, "Variable '%s' undeclared.", tIdentifierName.c_str() );
+					pResult = nullptr;
+				}
+				else
+				{
+					pResult = new CASTVariableReference( pVariable );
+				}
+
+				break;
+			}
 	}
 
 	ConsumeToken( rtContext );

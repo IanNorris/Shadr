@@ -54,4 +54,21 @@ private:
 	double m_fValue;
 };
 
+class CASTVariableReference : public CASTExpression
+{
+public:
+
+	CASTVariableReference( SVariable* pVariable )
+	: CASTExpression( *pVariable->pType, EShaderToken_Identifier )
+	, m_pVariable( pVariable )
+	{
+	}
+
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
+
+private:
+
+	SVariable* m_pVariable;
+};
+
 #endif //SHADR_AST_NUMERIC_H
