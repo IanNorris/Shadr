@@ -5,6 +5,8 @@ void InitialiseBasicTypes( void );
 
 enum EScalarType
 {
+	EScalarType_Dummy,
+
 	EScalarType_Void,
 
 	EScalarType_Bool,

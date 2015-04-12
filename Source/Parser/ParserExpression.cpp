@@ -84,8 +84,10 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, CScope* pParentScope )
 
 				if( !pVariable )
 				{
-					ParserError( rtContext, "Variable '%s' undeclared.", tIdentifierName.c_str() );
-					pResult = nullptr;
+					ParserError( rtContext, "Undeclared identifier '%s'.", tIdentifierName.c_str() );
+					SVariable* pDummy = SVariable::CreateDummyVariable();
+					pParentScope->AddVariable( rtContext, tIdentifierName, pDummy );
+					pResult = new CASTVariableReference( pDummy );
 				}
 				else
 				{

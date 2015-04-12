@@ -16,6 +16,14 @@ struct SVariable
 	, uFlags( 0 )
 	{}
 
+	static SVariable* CreateDummyVariable()
+	{
+		SVariable* pVariable = new SVariable();
+		pVariable->pType = new CType( "dummy", EScalarType_Dummy );
+
+		return pVariable;
+	}
+
 	CType* pType;
 	unsigned int uFlags;
 };
@@ -47,9 +55,13 @@ public:
 
 	void AddVariable( SParseContext& rtContext, const std::string& rtName, SVariable* pVariable )
 	{
-		if( m_pVariables.find( rtName ) != m_pVariables.end() )
+		auto tIter = m_pVariables.find( rtName );
+		if( tIter != m_pVariables.end() )
 		{
-			Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Variable %s is already defined in this scope.", rtName.c_str() );
+			if( (*tIter).second->pType->GetScalarType() != EScalarType_Dummy )
+			{
+				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Identifier %s is already defined in this scope.", rtName.c_str() );
+			}
 		}
 
 		m_pVariables[ rtName ] = pVariable;

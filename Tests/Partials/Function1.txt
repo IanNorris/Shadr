@@ -18,7 +18,7 @@ float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIs
 
 float4 PSMain()
 {
-	if( 11 / 2 /* hello */ ) //test
+	if( fIn1 / 2 /* hello */ ) //test
 	{
 		return 2;
 	}
