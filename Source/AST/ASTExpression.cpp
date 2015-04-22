@@ -80,6 +80,11 @@
 	return NULL;
 }*/
 
+CType CASTExpressionUnary::EvaluateType( CASTExpression* pExpression )
+{
+	return CType::GetConstFloatType();
+}
+
 CType CASTExpressionBinary::EvaluateType( CASTExpression* pLeft, CASTExpression* pRight )
 {
 	return CType::GetConstFloatType();

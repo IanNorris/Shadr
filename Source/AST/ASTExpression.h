@@ -20,6 +20,30 @@ private:
 	EShaderToken	m_eToken;
 };
 
+class CASTExpressionUnary : public CASTExpression
+{
+public:
+
+	CASTExpressionUnary( EShaderToken eToken, bool bPre, CASTExpression* pExpression )
+	: CASTExpression( EvaluateType( pExpression ), eToken )
+	, m_pExpression( pExpression )
+	, m_eOperator( eToken )
+	, m_bPre( bPre )
+	{}
+
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
+
+protected:
+
+	CType EvaluateType( CASTExpression* pExpression );
+
+private:
+
+	CASTExpression* m_pExpression;
+	EShaderToken	m_eOperator;
+	bool			m_bPre;
+};
+
 class CASTExpressionBinary : public CASTExpression
 {
 public:
