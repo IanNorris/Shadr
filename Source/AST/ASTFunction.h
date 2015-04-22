@@ -46,4 +46,28 @@ private:
 	CASTBlockStatement* m_pBody;
 };
 
+class CASTExpressionFunctionCall : public CASTExpression
+{
+public:
+	CASTExpressionFunctionCall( const std::string& rtName )
+	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
+	, m_tName( rtName )
+	{}
+
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
+
+
+	void AddParameter( CASTExpression* pParameter )
+	{
+		m_apParameters.push_back( pParameter );
+	}
+
+	const std::vector< CASTExpression* >& GetParameters() const { return m_apParameters; }
+
+private:
+
+	std::string m_tName;
+	std::vector< CASTExpression* > m_apParameters;
+};
+
 #endif //SHADR_AST_FUNCTION_H

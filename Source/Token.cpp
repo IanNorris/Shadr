@@ -112,9 +112,10 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
 {
-	{ "identifier", std::regex( "[a-zA-Z_][a-zA-Z0-9_]+" ) },
 	{ "float",		std::regex( "[\\-]?(?:(?:[0-9]+\\.[0-9]*)|(?:[0-9]*\\.[0-9]+))(?:f|(?:e[+\\-]?[0-9]+))?" ) }, //Allow .3f or 3.f but not .f
 	{ "int",		std::regex( "-?(?:(?:0[Xx](?:[0-9a-fA-F]+))|(?:[0-9]+))" ) },
+	{ "boolean",	std::regex( "(?:true|TRUE|false|FALSE)" ) },
+	{ "identifier", std::regex( "[a-zA-Z_][a-zA-Z0-9_]*" ) },
 };
 
 
@@ -295,7 +296,8 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 						auto& rtToken = (*tIter);
 
 						//Check we've got a keyword/basic token (this test is redundant given the order, but we'll check anyway)
-						if( rtToken.eToken <= EShaderToken_BeginBasic && rtToken.eToken >= EShaderToken_EndBasic )
+						if(		(rtToken.eToken <= EShaderToken_BeginBasic && rtToken.eToken >= EShaderToken_EndBasic)
+							||	rtToken.eToken == EShaderToken_Boolean )
 						{
 							//And that keyword is shorter than the identifier
 							if( rtToken.uLength < tToken.uLength )

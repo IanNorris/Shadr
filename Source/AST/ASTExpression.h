@@ -44,4 +44,36 @@ private:
 	EShaderToken	m_eOperator;
 };
 
+class CASTExpressionSwizzleMask : public CASTExpression
+{
+public:
+
+	CASTExpressionSwizzleMask( const std::string& rtSwizzle )
+	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
+	, m_tSwizzle( rtSwizzle )
+	{}
+
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
+
+private:
+
+	std::string m_tSwizzle;
+};
+
+class CASTExpressionMemberAccess : public CASTExpression
+{
+public:
+
+	CASTExpressionMemberAccess( const std::string& rtIdentifier )
+	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
+	, m_tIdentifier( rtIdentifier )
+	{}
+
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
+
+private:
+
+	std::string m_tIdentifier;
+};
+
 #endif //SHADR_AST_EXPRESSION_H

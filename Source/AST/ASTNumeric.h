@@ -54,6 +54,37 @@ private:
 	double m_fValue;
 };
 
+class CASTConstantBool : public CASTExpression
+{
+public:
+
+	CASTConstantBool( const char* pszString, unsigned int uCharacters )
+	: CASTExpression( CType::GetConstFloatType(), EShaderToken_Float )
+	, m_bValue( false )
+	{
+		if( strncmp( pszString, "true", uCharacters) == 0 || strncmp( pszString, "TRUE", uCharacters) == 0 )
+		{
+			m_bValue = true;
+		}
+		else if( strncmp( pszString, "false", uCharacters) == 0 || strncmp( pszString, "FALSE", uCharacters) == 0 )
+		{
+			m_bValue = false;
+		}
+		else
+		{
+			Assert( 0, "Invalid boolean value" );
+		}
+	}
+
+	void ParseString( const char* pszString, unsigned int uCharacters );
+
+	//virtual llvm::Value* GenerateCode( CModule* pModule );
+
+private:
+
+	bool m_bValue;
+};
+
 class CASTVariableReference : public CASTExpression
 {
 public:

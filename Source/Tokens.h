@@ -129,11 +129,12 @@ enum EShaderToken
 	//Regex based tokens
 	EShaderToken_BeginRegex					= -2000,
 
-	EShaderToken_Identifier					= -2000,
-	EShaderToken_Float						= -2001,
-	EShaderToken_Int						= -2002,
+	EShaderToken_Float						= -2000,
+	EShaderToken_Int						= -2001,
+	EShaderToken_Boolean					= -2002,
+	EShaderToken_Identifier					= -2003,
 
-	EShaderToken_EndRegex					= -2002,
+	EShaderToken_EndRegex					= -2003,
 
 	//Special tokens
 	EShaderToken_BeginSpecial				= -3000,

@@ -22,6 +22,10 @@ float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIs
 
 float4 PSMain()
 {
+	int i = 3;
+	float4 f4Val = MakeFloat4( 2.0, 1.0f, -3.0f, 1 );
+
+	float4 f4Result = MyFunction( f4Val.xyz, i, f4Val, f4Val.x, true );
 	float fIn1 = 4;
 	if( fIn1 / 2 /* hello */ ) //test
 	{
