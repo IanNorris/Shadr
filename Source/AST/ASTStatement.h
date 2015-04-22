@@ -145,17 +145,17 @@ public:
 	: CASTStatement()
 	, m_tType( rtType )
 	{
-		SVariable tVariable;
-		tVariable.tName = rtName;
-		tVariable.pType = &m_tType;
+		SVariable* pVariable = new SVariable();
+		pVariable->tName = rtName;
+		pVariable->pType = &m_tType;
 
-		m_tVariables.push_back( tVariable );
+		m_tVariables.push_back( pVariable );
 	}
 
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }
 
-	std::vector<SVariable>& GetVariables() { return m_tVariables; }
+	std::vector<SVariable*>& GetVariables() { return m_tVariables; }
 	std::vector<CASTStatement*>& GetAssignments() { return m_tAssignments; }
 
 	/*llvm::Value* GenerateCode( CModule* pModule )
@@ -168,7 +168,7 @@ private:
 
 	CType		m_tType;
 
-	std::vector<SVariable>	m_tVariables;
+	std::vector<SVariable*>	m_tVariables;
 	std::vector<CASTStatement*> m_tAssignments;
 };
 

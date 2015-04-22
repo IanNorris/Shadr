@@ -33,18 +33,18 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 
 			if( pVariableDef )
 			{
-				SVariable tVar;
-				tVar.tName = tName;
-				tVar.pType = pType;
+				SVariable* pVar = new SVariable();
+				pVar->tName = tName;
+				pVar->pType = pType;
 
-				pVariableDef->GetVariables().push_back( tVar );
+				pVariableDef->GetVariables().push_back( pVar );
 			}
 			else
 			{
 				pVariableDef = new CASTVariableDefinition( *pType, tName );
 			}
 
-			pParentScope->AddVariable( rtContext, &pVariableDef->GetVariables().back() );
+			pParentScope->AddVariable( rtContext, pVariableDef->GetVariables().back() );
 
 			ConsumeToken( rtContext );
 		}
