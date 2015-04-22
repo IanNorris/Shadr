@@ -136,6 +136,12 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 
 		return ParseWhileStatement( rtContext, pParentScope );
 	}
+	else if( rtContext.sNextToken.eToken == EShaderToken_Do )
+	{
+		ConsumeToken( rtContext );
+
+		return ParseDoWhileStatement( rtContext, pParentScope );
+	}
 
 	rtContext = tContextCopy;
 
@@ -226,7 +232,7 @@ CASTWhileStatement* ParseWhileStatement( SParseContext& rtContext, CScope* pPare
 {
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Open )
 	{
-		ParserError( rtContext, "Expected open parenthesis (");
+		ParserError( rtContext, "Expected open parenthesis");
 	}
 	ConsumeToken( rtContext );
 
@@ -238,7 +244,7 @@ CASTWhileStatement* ParseWhileStatement( SParseContext& rtContext, CScope* pPare
 
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
-		ParserError( rtContext, "Expected open parenthesis (");
+		ParserError( rtContext, "Expected closing parenthesis");
 	}
 	ConsumeToken( rtContext );
 
@@ -250,4 +256,46 @@ CASTWhileStatement* ParseWhileStatement( SParseContext& rtContext, CScope* pPare
 	}
 
 	return new CASTWhileStatement( pCondition, pStatement );
+}
+
+CASTDoWhileStatement* ParseDoWhileStatement( SParseContext& rtContext, CScope* pParentScope )
+{
+	CASTStatement* pStatement = ParseStatement( rtContext, pParentScope );
+
+	if( !pStatement )
+	{
+		return NULL;
+	}
+
+	if( rtContext.sNextToken.eToken != EShaderToken_While )
+	{
+		ParserError( rtContext, "Expected 'while'");
+	}
+	ConsumeToken( rtContext );
+
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Open )
+	{
+		ParserError( rtContext, "Expected open parenthesis");
+	}
+	ConsumeToken( rtContext );
+
+	CASTExpression* pCondition = ParseExpression( rtContext, pParentScope );
+	if( !pCondition )
+	{
+		return NULL;
+	}
+
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
+	{
+		ParserError( rtContext, "Expected closing parenthesis");
+	}
+	ConsumeToken( rtContext );
+
+	if( rtContext.sNextToken.eToken != EShaderToken_SemiColon )
+	{
+		ParserError( rtContext, "Expected semi-colon (;)");
+	}
+	ConsumeToken( rtContext );
+
+	return new CASTDoWhileStatement( pCondition, pStatement );
 }
