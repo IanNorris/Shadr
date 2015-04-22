@@ -430,6 +430,19 @@ void InitialiseTokenTables( void )
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Comment );
 	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_And ].push_back( EShaderToken_Binary_Bitwise_Lazy_And );
 	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_Or ].push_back( EShaderToken_Binary_Bitwise_Lazy_Or );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Multiply ].push_back( EShaderToken_Assign_Multiply );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Assign_Divide );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Minus ].push_back( EShaderToken_Assign_Subtract );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Assign_Add );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Modulo ].push_back( EShaderToken_Assign_Modulo );
+	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_Shift_Left ].push_back( EShaderToken_Assign_Shift_Left );
+	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_Shift_Right ].push_back( EShaderToken_Assign_Shift_Right );
+	g_tIgnoreTokens[ EShaderToken_Binary_Comparison_LT ].push_back( EShaderToken_Binary_Comparison_LTE );
+	g_tIgnoreTokens[ EShaderToken_Binary_Comparison_LT ].push_back( EShaderToken_Assign_Shift_Left );
+	g_tIgnoreTokens[ EShaderToken_Binary_Comparison_GT ].push_back( EShaderToken_Binary_Comparison_GTE );
+	g_tIgnoreTokens[ EShaderToken_Binary_Comparison_GT ].push_back( EShaderToken_Assign_Shift_Right );
+	g_tIgnoreTokens[ EShaderToken_Assign ].push_back( EShaderToken_Binary_Comparison_Equal );
+	g_tIgnoreTokens[ EShaderToken_Unary_Not ].push_back( EShaderToken_Binary_Comparison_NotEqual );
 
 	//Set up operator precedence
 

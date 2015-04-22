@@ -58,6 +58,22 @@ private:
 	CASTStatement* m_pElseStatement;
 };
 
+class CASTWhileStatement : public CASTStatement
+{
+public:
+
+	CASTWhileStatement( CASTExpression* pCondition, CASTStatement* pStatement )
+	: CASTStatement()
+	, m_pCondition( pCondition )
+	, m_pStatement( pStatement )
+	{}
+
+private:
+
+	CASTExpression* m_pCondition;
+	CASTStatement* m_pStatement;
+};
+
 class CASTBlockStatement : public CASTStatement, public CASTScope
 {
 public:

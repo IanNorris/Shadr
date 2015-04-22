@@ -130,6 +130,12 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 
 		return ParseIfStatement( rtContext, pParentScope );
 	}
+	else if( rtContext.sNextToken.eToken == EShaderToken_While )
+	{
+		ConsumeToken( rtContext );
+
+		return ParseWhileStatement( rtContext, pParentScope );
+	}
 
 	rtContext = tContextCopy;
 
@@ -214,4 +220,34 @@ CASTIfStatement* ParseIfStatement( SParseContext& rtContext, CScope* pParentScop
 	}
 
 	return new CASTIfStatement( pCondition, pStatement, pElseStatement );
+}
+
+CASTWhileStatement* ParseWhileStatement( SParseContext& rtContext, CScope* pParentScope )
+{
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Open )
+	{
+		ParserError( rtContext, "Expected open parenthesis (");
+	}
+	ConsumeToken( rtContext );
+
+	CASTExpression* pCondition = ParseExpression( rtContext, pParentScope );
+	if( !pCondition )
+	{
+		return NULL;
+	}
+
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
+	{
+		ParserError( rtContext, "Expected open parenthesis (");
+	}
+	ConsumeToken( rtContext );
+
+	CASTStatement* pStatement = ParseStatement( rtContext, pParentScope );
+
+	if( !pStatement )
+	{
+		return NULL;
+	}
+
+	return new CASTWhileStatement( pCondition, pStatement );
 }

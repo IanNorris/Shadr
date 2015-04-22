@@ -1,3 +1,18 @@
+float TestWhile()
+{
+	int i = 100;
+	int j = 1;
+	float fVal = 1;
+	while( i <= 100 )
+	{
+		i = i - 1;
+		fVal *= 2;
+		j <<= 1;
+	}
+	
+	return fVal;
+}
+
 float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIsTrue )
 {
 	int3 myVar2;
