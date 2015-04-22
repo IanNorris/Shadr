@@ -443,6 +443,8 @@ void InitialiseTokenTables( void )
 	g_tIgnoreTokens[ EShaderToken_Binary_Comparison_GT ].push_back( EShaderToken_Assign_Shift_Right );
 	g_tIgnoreTokens[ EShaderToken_Assign ].push_back( EShaderToken_Binary_Comparison_Equal );
 	g_tIgnoreTokens[ EShaderToken_Unary_Not ].push_back( EShaderToken_Binary_Comparison_NotEqual );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Unary_Increment );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Minus ].push_back( EShaderToken_Unary_Deccrement );
 
 	//Set up operator precedence
 
