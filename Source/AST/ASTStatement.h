@@ -12,6 +12,15 @@ public:
 	{}
 };
 
+class CASTNopStatement : public CASTStatement
+{
+public:
+
+	CASTNopStatement()
+	: CASTStatement()
+	{}
+};
+
 class CASTReturnStatement : public CASTStatement
 {
 public:
@@ -88,6 +97,28 @@ private:
 
 	CASTExpression* m_pCondition;
 	CASTStatement* m_pStatement;
+};
+
+class CASTForStatement : public CASTStatement
+{
+public:
+
+	CASTForStatement( CASTStatement* pInitialStatement, CASTExpression* pCondition, CASTExpression* pIterationExpression, CASTStatement* pBodyStatement, CScope* pForScope )
+	: CASTStatement()
+	, m_pScope( pForScope )
+	, m_pInitialStatement( pInitialStatement )
+	, m_pCondition( pCondition )
+	, m_pIterationExpression( pIterationExpression )
+	, m_pBody( pBodyStatement )
+	{}
+
+private:
+
+	CScope* m_pScope;
+	CASTStatement* m_pInitialStatement;
+	CASTExpression* m_pCondition;
+	CASTExpression* m_pIterationExpression;
+	CASTStatement* m_pBody;
 };
 
 class CASTBlockStatement : public CASTStatement, public CASTScope

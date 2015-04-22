@@ -142,6 +142,18 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 
 		return ParseDoWhileStatement( rtContext, pParentScope );
 	}
+	else if( rtContext.sNextToken.eToken == EShaderToken_For )
+	{
+		ConsumeToken( rtContext );
+
+		return ParseForStatement( rtContext, pParentScope );
+	}
+	else if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
+	{
+		ConsumeToken( rtContext );
+
+		return new CASTNopStatement();
+	}
 
 	rtContext = tContextCopy;
 
@@ -298,4 +310,55 @@ CASTDoWhileStatement* ParseDoWhileStatement( SParseContext& rtContext, CScope* p
 	ConsumeToken( rtContext );
 
 	return new CASTDoWhileStatement( pCondition, pStatement );
+}
+
+CASTForStatement* ParseForStatement( SParseContext& rtContext, CScope* pParentScope )
+{
+	CScope* pForScope = new CScope( pParentScope );
+
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Open )
+	{
+		ParserError( rtContext, "Expected open parenthesis");
+	}
+	ConsumeToken( rtContext );
+
+	CASTStatement* pInitialStatement = ParseStatement( rtContext, pForScope );
+	if( !pInitialStatement )
+	{
+		ParserError( rtContext, "Expected statement");
+		return NULL;
+	}
+
+	CASTExpression* pCondition = ParseExpression( rtContext, pForScope );
+	if( !pCondition )
+	{
+		return NULL;
+	}
+
+	if( rtContext.sNextToken.eToken != EShaderToken_SemiColon )
+	{
+		ParserError( rtContext, "Expected semi-colon (;)");
+	}
+	ConsumeToken( rtContext );
+
+	CASTExpression* pIteration = ParseExpression( rtContext, pForScope );
+	if( !pIteration )
+	{
+		return NULL;
+	}
+
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
+	{
+		ParserError( rtContext, "Expected closing parenthesis");
+	}
+	ConsumeToken( rtContext );
+
+	CASTStatement* pStatement = ParseStatement( rtContext, pForScope );
+
+	if( !pStatement )
+	{
+		return NULL;
+	}
+
+	return new CASTForStatement( pInitialStatement, pCondition, pIteration, pStatement, pForScope );
 }
