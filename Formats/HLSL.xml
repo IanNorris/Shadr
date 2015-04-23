@@ -1,0 +1,20 @@
+<ShaderSyntax IndentType="Tabs" NewlineType="Windows" Buckets="Header;Prototypes;Globals;Functions">
+	<Block>
+		<Newline/>
+		<Print Literal="{"/>
+		<Newline/>
+		<AddIndent/>
+		<Iterate Target="Statements">
+			<PrintChild/>
+			<SemiColon/>
+			<InsertOriginalNewlines Min="1"/>
+		</Iterate>
+		<RemoveIndent/>
+		<Print Literal="}"/>
+	</Block>
+	
+	<ConstantFloat>
+		<Print Value="m_fValue"/>
+		<Print Literal="f"/>
+	</ConstantFloat>
+</ShaderSyntax>

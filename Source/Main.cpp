@@ -7,6 +7,7 @@
 #include "CompilationUnit.h"
 #include "AST/AST.h"
 #include "Parser/Parser.h"
+#include "Format/Format.h"
 
 #include "UnitTests/UnitTesting.h"
 
@@ -16,6 +17,7 @@ int main( int iArgCount, char** apszArguments )
 {
 	InitialiseTokenTables();
 	InitialiseBasicTypes();
+	InitialiseFormats();
 
 	RunUnitTests();
 	

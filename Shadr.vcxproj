@@ -41,12 +41,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);Source;%(AdditionalIncludeDirectories)</IncludePath>
+    <IncludePath>$(VC_IncludePath);ThirdParty\TinyXML;ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);Source;%(AdditionalIncludeDirectories)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);Source;%(AdditionalIncludeDirectories)</IncludePath>
+    <IncludePath>$(VC_IncludePath);ThirdParty\TinyXML;ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);Source;%(AdditionalIncludeDirectories)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -104,6 +104,7 @@
     <ClCompile Include="Source\AST\ASTNumeric.cpp" />
     <ClCompile Include="Source\AST\ASTStatement.cpp" />
     <ClCompile Include="Source\CompilationUnit.cpp" />
+    <ClCompile Include="Source\Format\Format.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Parser\ParserExpression.cpp" />
     <ClCompile Include="Source\Parser\ParserFunction.cpp" />
@@ -128,6 +129,9 @@
     <ClInclude Include="Source\AST\ASTNumeric.h" />
     <ClInclude Include="Source\AST\ASTStatement.h" />
     <ClInclude Include="Source\CompilationUnit.h" />
+    <ClInclude Include="Source\Format\ASTFormatters_Statement.h" />
+    <ClInclude Include="Source\Format\Format.h" />
+    <ClInclude Include="Source\Format\FormatterCommands.h" />
     <ClInclude Include="Source\Parser\ParserExpression.h" />
     <ClInclude Include="Source\Parser\ParserFunction.h" />
     <ClInclude Include="Source\Parser\Parser.h" />

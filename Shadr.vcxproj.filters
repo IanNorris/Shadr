@@ -43,6 +43,12 @@
     <Filter Include="Source Files\TinyXML">
       <UniqueIdentifier>{b9e49ad4-fca9-47aa-897a-5b1eefc99bda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Format">
+      <UniqueIdentifier>{dbb9a55f-8329-43e7-8b2e-b5d88b5776c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Format">
+      <UniqueIdentifier>{57826318-2c73-47b4-8e0d-1a4aecad81da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -55,14 +61,11 @@
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\AST\Function.cpp" />
-    <ClCompile Include="Source\AST\Numeric.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
@@ -169,6 +172,9 @@
     <ClCompile Include="ThirdParty\TinyXML\tinyxmlparser.cpp">
       <Filter>Source Files\TinyXML</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Format\Format.cpp">
+      <Filter>Source Files\Format</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Tokens.h" />
@@ -181,15 +187,11 @@
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
     <ClInclude Include="Source\Utility\Error.h" />
     <ClInclude Include="Source\Utility\Utility.h" />
-    <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
     <ClInclude Include="Source\Utility\Error.h" />
     <ClInclude Include="Source\Utility\Utility.h" />
-    <ClInclude Include="Source\AST\Expression.h" />
-    <ClInclude Include="Source\AST\Function.h" />
-    <ClInclude Include="Source\AST\Numeric.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
@@ -312,6 +314,15 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\TinyXML\tinyxml.h">
       <Filter>Header Files\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\Format.h">
+      <Filter>Header Files\Format</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\ASTFormatters_Statement.h">
+      <Filter>Header Files\Format</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Format\FormatterCommands.h">
+      <Filter>Header Files\Format</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
