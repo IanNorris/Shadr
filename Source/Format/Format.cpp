@@ -156,13 +156,41 @@ void InitialiseFormats()
 				if( pFormat )
 				{
 					g_apFormats[ tNameWithoutExt ] = pFormat;
-
-					CFormatterContext tContext;
-					pFormat->GetASTType( "Block" )->Action( &tContext, NULL );
 				}
 			}
 		}
 
 		closedir( pDir );
+	}
+}
+
+void ExecuteFormatter( CFormatterContext* pContext, CASTBase* pASTNode )
+{
+	Assert( pASTNode, "AST node is null" );
+
+	const char* pszName = pASTNode->GetElementName();
+
+	CASTFormatter* pFormatter = pContext->pFormatter->GetASTType( pszName );
+	if( pFormatter )
+	{
+		pFormatter->Action( pContext, pASTNode );
+	}
+	else
+	{
+		fprintf( stderr, "Unable to find formatter for type %s.\n", pszName );
+	}
+}
+
+CFormatter* GetFormatter( const std::string& rtFormatName )
+{
+	auto tIter = g_apFormats.find( rtFormatName );
+	if( tIter != g_apFormats.end() )
+	{
+		return (*tIter).second;
+	}
+	else
+	{
+		Assert( 0, "No formatter found for format %s.", rtFormatName.c_str() );
+		return nullptr;
 	}
 }

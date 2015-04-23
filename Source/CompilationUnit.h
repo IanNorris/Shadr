@@ -9,6 +9,4 @@ public:
 
 };
 
-void InitialiseLLVM( void );
-
 #endif //SHADR_MODULE_H

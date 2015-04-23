@@ -31,6 +31,8 @@ public:
 	, m_bPre( bPre )
 	{}
 
+	const char* GetElementName() { return "UnaryOp"; }
+
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 protected:
@@ -55,6 +57,8 @@ public:
 	, m_eOperator( eToken )
 	{}
 
+	const char* GetElementName() { return "BinaryOp"; }
+
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 protected:
@@ -77,6 +81,8 @@ public:
 	, m_tSwizzle( rtSwizzle )
 	{}
 
+	const char* GetElementName() { return "Swizzle"; }
+
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
@@ -92,6 +98,8 @@ public:
 	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
 	, m_tIdentifier( rtIdentifier )
 	{}
+
+	const char* GetElementName() { return "MemberAccess"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 

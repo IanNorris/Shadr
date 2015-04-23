@@ -45,8 +45,8 @@ class CFormatterContext
 {
 public:
 
-	CFormatterContext()
-	: pFormatter( nullptr )
+	CFormatterContext( CFormatter* _pFormatter )
+	: pFormatter( _pFormatter )
 	, uCurrentIndent( 0 )
 	{}
 
@@ -91,6 +91,9 @@ class TiXmlElement;
 class CASTFormatterCommand : public CFormatterStore
 {
 public:
+
+	virtual const char* GetName() const = 0;
+
 	virtual void Initialise( TiXmlElement* pElement ) = 0;
 
 	virtual void Action( CFormatterContext* pContext, CASTBase* pASTNode ) = 0;
@@ -131,9 +134,16 @@ public:
 	CASTFormatter* GetASTType( const std::string& rtName )
 	{
 		auto tIter = m_tASTTypes.find( rtName );
-		Assert( tIter != m_tASTTypes.end(), "No formatter specified for AST type %s", rtName.c_str() );
 
-		return (*tIter).second;
+		if( tIter != m_tASTTypes.end() )
+		{
+			return (*tIter).second;
+		}
+		else
+		{
+			Error_Linker( EError_Error, "No formatter specified for AST type %s", rtName.c_str() );
+			return nullptr;
+		}		
 	}
 
 	const std::string& GetIndent()
@@ -150,6 +160,8 @@ private:
 
 void ProcessNode( CFormatterStore* pStore, TiXmlElement* pElement );
 CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement );
+void ExecuteFormatter( CFormatterContext* pContext, CASTBase* pASTNode );
+CFormatter* GetFormatter( const std::string& rtFormatName );
 
 void InitialiseFormats();
 

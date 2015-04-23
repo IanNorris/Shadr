@@ -16,6 +16,8 @@ class CASTNopStatement : public CASTStatement
 {
 public:
 
+	const char* GetElementName() { return "Nop"; }
+
 	CASTNopStatement()
 	: CASTStatement()
 	{}
@@ -30,6 +32,8 @@ public:
 	, m_pExpression( pExpression )
 	{}
 
+	const char* GetElementName() { return "Return"; }
+
 private:
 
 	CASTExpression* m_pExpression;
@@ -43,6 +47,8 @@ public:
 	: CASTStatement()
 	, m_pExpression( pExpression )
 	{}
+
+	const char* GetElementName() { return "ExpressionStatement"; }
 
 private:
 
@@ -59,6 +65,8 @@ public:
 	, m_pStatement( pStatement )
 	, m_pElseStatement( pElseStatement )
 	{}
+
+	const char* GetElementName() { return "If"; }
 
 private:
 
@@ -77,6 +85,8 @@ public:
 	, m_pStatement( pStatement )
 	{}
 
+	const char* GetElementName() { return "While"; }
+
 private:
 
 	CASTExpression* m_pCondition;
@@ -92,6 +102,8 @@ public:
 	, m_pCondition( pCondition )
 	, m_pStatement( pStatement )
 	{}
+
+	const char* GetElementName() { return "DoWhile"; }
 
 private:
 
@@ -112,6 +124,8 @@ public:
 	, m_pBody( pBodyStatement )
 	{}
 
+	const char* GetElementName() { return "For"; }
+
 private:
 
 	CScope* m_pScope;
@@ -129,6 +143,8 @@ public:
 	: CASTStatement()
 	, CASTScope( pParentScope )
 	{}
+
+	const char* GetElementName() { return "Block"; }
 
 	void AddStatement( CASTStatement* pStatement ) { m_apStatements.push_back( pStatement ); }
 
@@ -151,6 +167,8 @@ public:
 
 		m_tVariables.push_back( pVariable );
 	}
+
+	const char* GetElementName() { return "VariableDef"; }
 
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }

@@ -25,7 +25,22 @@ int main( int iArgCount, char** apszArguments )
 	{
 		CCompilationUnit tCU( apszArguments[1] );
 
-		ParseFile( apszArguments[1], &tCU );
+		CASTProgram* pProgram = ParseFile( apszArguments[1], &tCU );
+
+		const char* pszFormatter = "HLSL";
+		CFormatter* pFormatter = GetFormatter( "HLSL" );
+		if( pFormatter )
+		{
+			CASTFormatter* pProgramFormatter = pFormatter->GetASTType( "Program" );
+			if( pProgramFormatter )
+			{
+				CFormatterContext tContext( pFormatter );
+
+				pProgramFormatter->Action( &tContext, pProgram );
+
+				printf( "%s\n", tContext.tCurrentElement.c_str() );
+			}
+		}
 
 		return DidCompilationSucceed() ? 0 : 1;
 	}

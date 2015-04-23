@@ -12,6 +12,8 @@ public:
 	, m_tName( pszName, uNameLength )
 	{}
 
+	const char* GetElementName() { return "Prototype"; }
+
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 	void AddParameter( CASTVariableDefinition* pParameter )
@@ -38,6 +40,8 @@ public:
 	, m_pBody( pBody )
 	{}
 
+	const char* GetElementName() { return "Function"; }
+
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
@@ -53,6 +57,8 @@ public:
 	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
 	, m_tName( rtName )
 	{}
+
+	const char* GetElementName() { return "FunctionCall"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
