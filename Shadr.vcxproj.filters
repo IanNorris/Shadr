@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Parser">
       <UniqueIdentifier>{0e4fa4ed-24af-4a77-876d-d1748f03b897}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\TinyXML">
+      <UniqueIdentifier>{3782630f-867d-48d1-abdb-0079de976dcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TinyXML">
+      <UniqueIdentifier>{b9e49ad4-fca9-47aa-897a-5b1eefc99bda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
@@ -44,6 +50,11 @@
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Token.cpp" />
+    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
+    <ClCompile Include="Source\Utility\Error.cpp" />
+    <ClCompile Include="Source\Utility\Utility.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
@@ -66,17 +77,6 @@
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\AST\Function.cpp" />
-    <ClCompile Include="Source\AST\Numeric.cpp" />
-    <ClCompile Include="Source\LLVM.cpp" />
-    <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\Token.cpp" />
-    <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
-    <ClCompile Include="Source\Utility\Error.cpp" />
-    <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\AST\Expression.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\AST\Function.cpp" />
     <ClCompile Include="Source\AST\Numeric.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
@@ -157,6 +157,18 @@
     <ClCompile Include="Source\Parser\ParserStatement.cpp">
       <Filter>Source Files\Parser</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\TinyXML\tinystr.cpp">
+      <Filter>Source Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\TinyXML\tinyxml.cpp">
+      <Filter>Source Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\TinyXML\tinyxmlerror.cpp">
+      <Filter>Source Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\TinyXML\tinyxmlparser.cpp">
+      <Filter>Source Files\TinyXML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Tokens.h" />
@@ -164,15 +176,11 @@
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
     <ClInclude Include="Source\Utility\Error.h" />
     <ClInclude Include="Source\Utility\Utility.h" />
-    <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
     <ClInclude Include="Source\Utility\Error.h" />
     <ClInclude Include="Source\Utility\Utility.h" />
-    <ClInclude Include="Source\AST\Expression.h" />
-    <ClInclude Include="Source\AST\Function.h" />
-    <ClInclude Include="Source\AST\Numeric.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
@@ -298,6 +306,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scope.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\TinyXML\tinystr.h">
+      <Filter>Header Files\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\TinyXML\tinyxml.h">
+      <Filter>Header Files\TinyXML</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
