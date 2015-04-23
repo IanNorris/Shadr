@@ -108,6 +108,10 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	{ "close brace",			"}", 0 },				// EShaderToken_Brace_Close	
 	{ "open square bracket",	"[", 0 },				// EShaderToken_Square_Open	
 	{ "close square bracket",	"]", 0 },				// EShaderToken_Square_Close	
+
+	//Special tokens to resolve disambiguity
+	{ "+++",					"+++", 0 },				//EShaderToken_Special_TriplePlus
+	{ "---",					"---", 0 },				//EShaderToken_Special_TripleMinus
 };
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
@@ -444,16 +448,24 @@ void InitialiseTokenTables( void )
 	g_tIgnoreTokens[ EShaderToken_Assign ].push_back( EShaderToken_Binary_Comparison_Equal );
 	g_tIgnoreTokens[ EShaderToken_Unary_Not ].push_back( EShaderToken_Binary_Comparison_NotEqual );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Unary_Increment );
-	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Minus ].push_back( EShaderToken_Unary_Deccrement );
+	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Minus ].push_back( EShaderToken_Unary_Decrement );
+
+	//Special replacements
+	// i +++ j => (i++) + j
+
+	g_tIgnoreTokens[ EShaderToken_Special_TriplePlus ].push_back( EShaderToken_Unary_Increment );
+	g_tIgnoreTokens[ EShaderToken_Special_TripleMinus ].push_back( EShaderToken_Unary_Decrement );
 
 	//Set up operator precedence
 
+	g_atTokenPrecedence[ EOperatorType_None ][ EShaderToken_Identifier ] = SPrecedence( 0 );
+	g_atTokenPrecedence[ EOperatorType_None ][ EShaderToken_Parenthesis_Open ] = SPrecedence( 2 );
+
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Dot ] = SPrecedence( 2 );
-	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Parenthesis_Open ] = SPrecedence( 2 );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Square_Open ] = SPrecedence( 2 );
 
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Increment ] = SPrecedence( 3, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Deccrement ] = SPrecedence( 3, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Decrement ] = SPrecedence( 3, EAssociativity_RightToLeft );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Binary_Operator_Plus ] = SPrecedence( 3, EAssociativity_RightToLeft );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Binary_Operator_Minus ] = SPrecedence( 3, EAssociativity_RightToLeft );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Not ] = SPrecedence( 3, EAssociativity_RightToLeft );
@@ -544,21 +556,29 @@ void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens )
 	}
 }
 
-SPrecedence GetOperatorPrecedence( EOperatorType eOperatorType, EShaderToken eToken )
+SPrecedence GetOperatorPrecedence( EOperatorType& reOperatorType, EShaderToken eToken, bool bForceUnary )
 {
-	auto tIter = g_atTokenPrecedence[ eOperatorType ].find( eToken );
-	
-	if( tIter != g_atTokenPrecedence[ eOperatorType ].end() )
+	for( unsigned int uType = 0; uType < EOperatorType_MAX; uType++ )
 	{
-		SPrecedence tReturn = (*tIter).second; 
-		tReturn.iPrecedence = INT_MAX - (1000000 * tReturn.iPrecedence);
+		if( bForceUnary && uType != EOperatorType_Unary )
+		{
+			continue;
+		}
 
-		return tReturn;
+		auto tIter = g_atTokenPrecedence[ uType ].find( eToken );
+	
+		if( tIter != g_atTokenPrecedence[ uType ].end() )
+		{
+			reOperatorType = (EOperatorType)uType;
+
+			SPrecedence tReturn = (*tIter).second; 
+			tReturn.iPrecedence = INT_MAX - (1000000 * tReturn.iPrecedence);
+
+			return tReturn;
+		}
 	}
-	else
-	{
-		return -1;
-	}
+
+	return -1;
 }
 
 bool ConsumeToken( SParseContext& rtContext )

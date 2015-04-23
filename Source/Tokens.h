@@ -13,9 +13,13 @@ class CCompilationUnit;
 
 enum EOperatorType
 {
-	EOperatorType_Unary,
-	EOperatorType_Binary,
+	EOperatorType_None,
+
+	//Order is inverted so +/- only show up as binary unless explicitly asked for as unary.
+
 	EOperatorType_Ternary,
+	EOperatorType_Binary,
+	EOperatorType_Unary,
 
 	EOperatorType_MAX
 };
@@ -72,7 +76,7 @@ enum EShaderToken
 
 	EShaderToken_Unary_Not					= -19,
 	EShaderToken_Unary_Increment			= -20,
-	EShaderToken_Unary_Deccrement			= -21,
+	EShaderToken_Unary_Decrement			= -21,
 
 	EShaderToken_Assign						= -22,
 	EShaderToken_Assign_Add					= -23,
@@ -116,7 +120,10 @@ enum EShaderToken
 	EShaderToken_Square_Open				= -55,
 	EShaderToken_Square_Close				= -56,
 
-	EShaderToken_EndBasic					= -56,
+	EShaderToken_Special_TriplePlus			= -57,
+	EShaderToken_Special_TripleMinus		= -58,
+
+	EShaderToken_EndBasic					= -58,
 
 	//Callback based tokens
 	EShaderToken_BeginCallback				= -1000,
@@ -215,7 +222,7 @@ void InitialiseTokenTables( void );
 
 void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens );
 
-SPrecedence GetOperatorPrecedence( EOperatorType eOperatorType, EShaderToken eToken );
+SPrecedence GetOperatorPrecedence( EOperatorType& reOperatorType, EShaderToken eToken, bool bForceUnary );
 
 bool ConsumeToken( SParseContext& rtContext );
 

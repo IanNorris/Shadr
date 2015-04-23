@@ -42,122 +42,159 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftP
 			return pLeft;
 		}
 
-		int iRightPrecedence = GetOperatorPrecedence( EOperatorType_Binary, rtContext.sNextToken.eToken ).iPrecedence;
+		EOperatorType eType;
+		int iRightPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, false ).iPrecedence;
 
 		if( iRightPrecedence < iLeftPrecedence )
 		{
 			return pLeft;
 		}
 
-		EShaderToken eBinaryOperator = rtContext.sNextToken.eToken;
+		EShaderToken eOperator = rtContext.sNextToken.eToken;
 		if( !ConsumeToken( rtContext ) )
 		{
 			ParserError( rtContext, "Unexpected end of expression." );
 		}
 
-		CASTExpression* pRight = ParsePrimary( rtContext, eBinaryOperator, pParentScope );
-		if( !pRight )
-		{
-			ParserError( rtContext, "Expected expression." );
-			return nullptr;
-		}
+		CASTExpression* pRight = nullptr;
 
-		int iNextPrecedence = GetOperatorPrecedence( EOperatorType_Binary, rtContext.sNextToken.eToken ).iPrecedence;
-		if( iRightPrecedence < iNextPrecedence )
+		if( eType == EOperatorType_Unary )
 		{
-			pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, pRight, pParentScope );
+			pLeft = new CASTExpressionUnary( eOperator, false, pLeft );
+		}
+		else
+		{
+			pRight = ParsePrimary( rtContext, eOperator, pParentScope );
 			if( !pRight )
 			{
-				ParserError( rtContext, "Expected expression." );
-				return nullptr;
-			}
-		}
+			
 
-		pLeft = new CASTExpressionBinary( eBinaryOperator, pLeft, pRight );
+				if( !pRight )
+				{
+					ParserError( rtContext, "Expected expression." );
+					return nullptr;
+				}
+			}
+
+			int iNextPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, false ).iPrecedence;
+			if( iRightPrecedence < iNextPrecedence )
+			{
+				pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, pRight, pParentScope );
+				if( !pRight )
+				{
+					ParserError( rtContext, "Expected expression." );
+					return nullptr;
+				}
+			}
+
+			pLeft = new CASTExpressionBinary( eOperator, pLeft, pRight );
+		}
 	}
 }
 
-CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eBinaryToken, CScope* pParentScope )
+CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CScope* pParentScope )
 {
 	CASTExpression* pResult = nullptr;
 
 	bool bConsumedToken = false;
 
-	switch( rtContext.sNextToken.eToken )
+	EOperatorType eType;
+	int iPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, true ).iPrecedence;
+
+	if( eType == EOperatorType_Unary )
 	{
-		case EShaderToken_Parenthesis_Open:
-			pResult = ParseParenthesisExpression( rtContext, pParentScope );
-			break;
+		EShaderToken eUnaryToken = rtContext.sNextToken.eToken;
 
-		case EShaderToken_Float:
-			pResult = new CASTConstantFloat( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
-			break;
+		ConsumeToken( rtContext );
 
-		case EShaderToken_Int:
-			pResult = new CASTConstantInt( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
-			break;
+		CASTExpression* pChild = ParsePrimary( rtContext, EShaderToken_Invalid, pParentScope );
 
-		case EShaderToken_Boolean:
-			pResult = new CASTConstantBool( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
-			break;
+		if( pChild == nullptr )
+		{
+			ParserError( rtContext, "Expected expression." );
+			return nullptr;
+		}
 
-		case EShaderToken_Identifier:
-			{
-				std::string tIdentifierName( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+		pResult = new CASTExpressionUnary( eUnaryToken, true, pChild );
+	}
+	else
+	{
+		switch( rtContext.sNextToken.eToken )
+		{
+			case EShaderToken_Parenthesis_Open:
+				pResult = ParseParenthesisExpression( rtContext, pParentScope );
+				break;
 
-				ConsumeToken( rtContext );
-				bConsumedToken = true;
+			case EShaderToken_Float:
+				pResult = new CASTConstantFloat( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+				break;
 
-				//If the parent operator is the dot operator, we're looking for a swizzle or member identifier name
-				if( eBinaryToken == EShaderToken_Dot )
+			case EShaderToken_Int:
+				pResult = new CASTConstantInt( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+				break;
+
+			case EShaderToken_Boolean:
+				pResult = new CASTConstantBool( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+				break;
+
+			case EShaderToken_Identifier:
 				{
-					if( IsSwizzle( tIdentifierName ) )
-					{
-						pResult = new CASTExpressionSwizzleMask( tIdentifierName );
-					}
-					else
-					{
-						pResult = new CASTExpressionMemberAccess( tIdentifierName );
-					}
-				}
-				else
-				{
-					if( rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Open )
-					{
-						pResult = ParseFunctionCall( rtContext, tIdentifierName, pParentScope );
-					}
-					else
-					{	
-						SVariable* pVariable = pParentScope->FindVariable( tIdentifierName );
+					std::string tIdentifierName( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
 
-						if( !pVariable )
+					ConsumeToken( rtContext );
+					bConsumedToken = true;
+
+					//If the parent operator is the dot operator, we're looking for a swizzle or member identifier name
+					if( eToken == EShaderToken_Dot )
+					{
+						if( IsSwizzle( tIdentifierName ) )
 						{
-							CType* pFindType = GetType( tIdentifierName );
-							if( pFindType )
-							{
-								return nullptr;
-							}
-
-							ParserError( rtContext, "Undeclared identifier '%s'.", tIdentifierName.c_str() );
-							SVariable* pDummy = SVariable::CreateDummyVariable();
-							pDummy->tName = tIdentifierName;
-							pParentScope->AddVariable( rtContext, pDummy );
-							pResult = new CASTVariableReference( pDummy );
+							pResult = new CASTExpressionSwizzleMask( tIdentifierName );
 						}
 						else
 						{
-							pResult = new CASTVariableReference( pVariable );
+							pResult = new CASTExpressionMemberAccess( tIdentifierName );
 						}
 					}
+					else
+					{
+						if( rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Open )
+						{
+							pResult = ParseFunctionCall( rtContext, tIdentifierName, pParentScope );
+						}
+						else
+						{	
+							SVariable* pVariable = pParentScope->FindVariable( tIdentifierName );
+
+							if( !pVariable )
+							{
+								CType* pFindType = GetType( tIdentifierName );
+								if( pFindType )
+								{
+									return nullptr;
+								}
+
+								ParserError( rtContext, "Undeclared identifier '%s'.", tIdentifierName.c_str() );
+								SVariable* pDummy = SVariable::CreateDummyVariable();
+								pDummy->tName = tIdentifierName;
+								pParentScope->AddVariable( rtContext, pDummy );
+								pResult = new CASTVariableReference( pDummy );
+							}
+							else
+							{
+								pResult = new CASTVariableReference( pVariable );
+							}
+						}
+					}
+
+					break;
 				}
+		}
 
-				break;
-			}
-	}
-
-	if( !bConsumedToken )
-	{
-		ConsumeToken( rtContext );
+		if( !bConsumedToken )
+		{
+			ConsumeToken( rtContext );
+		}
 	}
 
 	return pResult;
