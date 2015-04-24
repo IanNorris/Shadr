@@ -215,6 +215,7 @@ struct SParseContext
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens );
 
 const char* GetTokenName( EShaderToken eToken );
+const char* GetTokenString( EShaderToken eToken );
 
 EShaderToken GetTokenByName( const char* pszTokenName );
 

@@ -31,7 +31,7 @@ public:
 	, m_bPre( bPre )
 	{}
 
-	const char* GetElementName() { return "UnaryOp"; }
+	const char* GetElementName() const { return "UnaryOp"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
@@ -57,7 +57,7 @@ public:
 	, m_eOperator( eToken )
 	{}
 
-	const char* GetElementName() { return "BinaryOp"; }
+	const char* GetElementName() const { return "BinaryOp"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
@@ -81,7 +81,7 @@ public:
 	, m_tSwizzle( rtSwizzle )
 	{}
 
-	const char* GetElementName() { return "Swizzle"; }
+	const char* GetElementName() const { return "Swizzle"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
@@ -99,7 +99,7 @@ public:
 	, m_tIdentifier( rtIdentifier )
 	{}
 
-	const char* GetElementName() { return "MemberAccess"; }
+	const char* GetElementName() const { return "MemberAccess"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 

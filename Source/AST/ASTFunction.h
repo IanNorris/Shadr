@@ -10,11 +10,13 @@ public:
 	, CASTScope( pParentScope )
 	, m_tReturnType( rtReturnType )
 	, m_tName( pszName, uNameLength )
-	{}
+	{
+		AddReflection( "ReturnType", EASTReflectionType_Type, &m_tReturnType );
+		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
+		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
+	}
 
-	const char* GetElementName() { return "Prototype"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
+	const char* GetElementName() const { return "Prototype"; }
 
 	void AddParameter( CASTVariableDefinition* pParameter )
 	{
@@ -38,11 +40,12 @@ public:
 	: CASTBase()
 	, m_pPrototype( pPrototype )
 	, m_pBody( pBody )
-	{}
+	{
+		AddReflection( "Prototype", EASTReflectionType_ASTNode, m_pPrototype );
+		AddReflection( "Body", EASTReflectionType_ASTNode, m_pBody );
+	}
 
-	const char* GetElementName() { return "Function"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
+	const char* GetElementName() const { return "Function"; }
 
 private:
 
@@ -56,12 +59,12 @@ public:
 	CASTExpressionFunctionCall( const std::string& rtName )
 	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
 	, m_tName( rtName )
-	{}
+	{
+		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
+		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
+	}
 
-	const char* GetElementName() { return "FunctionCall"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
-
+	const char* GetElementName() const { return "FunctionCall"; }
 
 	void AddParameter( CASTExpression* pParameter )
 	{

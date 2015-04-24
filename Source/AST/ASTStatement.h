@@ -16,7 +16,7 @@ class CASTNopStatement : public CASTStatement
 {
 public:
 
-	const char* GetElementName() { return "Nop"; }
+	const char* GetElementName() const { return "Nop"; }
 
 	CASTNopStatement()
 	: CASTStatement()
@@ -32,7 +32,7 @@ public:
 	, m_pExpression( pExpression )
 	{}
 
-	const char* GetElementName() { return "Return"; }
+	const char* GetElementName() const { return "Return"; }
 
 private:
 
@@ -48,7 +48,7 @@ public:
 	, m_pExpression( pExpression )
 	{}
 
-	const char* GetElementName() { return "ExpressionStatement"; }
+	const char* GetElementName() const { return "ExpressionStatement"; }
 
 private:
 
@@ -66,7 +66,7 @@ public:
 	, m_pElseStatement( pElseStatement )
 	{}
 
-	const char* GetElementName() { return "If"; }
+	const char* GetElementName() const { return "If"; }
 
 private:
 
@@ -85,7 +85,7 @@ public:
 	, m_pStatement( pStatement )
 	{}
 
-	const char* GetElementName() { return "While"; }
+	const char* GetElementName() const { return "While"; }
 
 private:
 
@@ -103,7 +103,7 @@ public:
 	, m_pStatement( pStatement )
 	{}
 
-	const char* GetElementName() { return "DoWhile"; }
+	const char* GetElementName() const { return "DoWhile"; }
 
 private:
 
@@ -124,7 +124,7 @@ public:
 	, m_pBody( pBodyStatement )
 	{}
 
-	const char* GetElementName() { return "For"; }
+	const char* GetElementName() const { return "For"; }
 
 private:
 
@@ -142,9 +142,11 @@ public:
 	CASTBlockStatement( CScope* pParentScope )
 	: CASTStatement()
 	, CASTScope( pParentScope )
-	{}
+	{
+		AddReflection( "Statements", EASTReflectionType_ASTNodeArray, &m_apStatements );
+	}
 
-	const char* GetElementName() { return "Block"; }
+	const char* GetElementName() const { return "Block"; }
 
 	void AddStatement( CASTStatement* pStatement ) { m_apStatements.push_back( pStatement ); }
 
@@ -166,9 +168,11 @@ public:
 		pVariable->pType = &m_tType;
 
 		m_tVariables.push_back( pVariable );
+
+		AddReflection( "Type", EASTReflectionType_Type, &m_tType );
 	}
 
-	const char* GetElementName() { return "VariableDef"; }
+	const char* GetElementName() const { return "VariableDef"; }
 
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }

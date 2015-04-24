@@ -18,7 +18,7 @@ public:
 		GetType().SetScalarType( m_bSigned ? EScalarType_Int : EScalarType_UnsignedInt);
 	}
 
-	const char* GetElementName() { return "ConstInt"; }
+	const char* GetElementName() const { return "ConstInt"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
@@ -47,7 +47,7 @@ public:
 		GetType().SetScalarType( EScalarType_Double );
 	}
 
-	const char* GetElementName() { return "ConstFloat"; }
+	const char* GetElementName() const { return "ConstFloat"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
@@ -80,7 +80,7 @@ public:
 		}
 	}
 
-	const char* GetElementName() { return "ConstBool"; }
+	const char* GetElementName() const { return "ConstBool"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
@@ -101,7 +101,7 @@ public:
 	{
 	}
 
-	const char* GetElementName() { return "VariableRef"; }
+	const char* GetElementName() const { return "VariableRef"; }
 
 	//virtual llvm::Value* GenerateCode( CModule* pModule );
 

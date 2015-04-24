@@ -324,5 +324,8 @@
     <ClInclude Include="Source\Format\FormatterCommands.h">
       <Filter>Header Files\Format</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Reflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -138,6 +138,7 @@
     <ClInclude Include="Source\Parser\ParserProgram.h" />
     <ClInclude Include="Source\Parser\ParserStatement.h" />
     <ClInclude Include="Source\Parser\ParserType.h" />
+    <ClInclude Include="Source\Reflection.h" />
     <ClInclude Include="Source\Scope.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />

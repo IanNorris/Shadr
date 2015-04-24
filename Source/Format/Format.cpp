@@ -28,9 +28,9 @@ void ProcessNode( CFormatterStore* pStore, TiXmlElement* pElement )
 	}
 }
 
-CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement )
+CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement, const char* pszName )
 {
-	CASTFormatter* pFormatter = new CASTFormatter();
+	CASTFormatter* pFormatter = new CASTFormatter( pszName );
 
 	ProcessNode( pFormatter, pElement );
 
@@ -114,7 +114,7 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 	{
 		
 
-		pFormat->AddASTType( pASTFormatter->Value(), ProcessASTFormatter( pASTFormatter ) );
+		pFormat->AddASTType( pASTFormatter->Value(), ProcessASTFormatter( pASTFormatter, pASTFormatter->Value() ) );
 
 		pASTFormatter = pASTFormatter->NextSiblingElement();
 	}
@@ -164,13 +164,13 @@ void InitialiseFormats()
 	}
 }
 
-void ExecuteFormatter( CFormatterContext* pContext, CASTBase* pASTNode )
+void ExecuteFormatter( CFormatterContext* pContext, const CReflectionObject* pASTNode, const char* pszOverrideFormatter )
 {
 	Assert( pASTNode, "AST node is null" );
 
 	const char* pszName = pASTNode->GetElementName();
 
-	CASTFormatter* pFormatter = pContext->pFormatter->GetASTType( pszName );
+	CASTFormatter* pFormatter = pszOverrideFormatter ? pContext->pFormatter->GetASTType( pszOverrideFormatter ) : pContext->pFormatter->GetASTType( pszName );
 	if( pFormatter )
 	{
 		pFormatter->Action( pContext, pASTNode );
@@ -193,4 +193,199 @@ CFormatter* GetFormatter( const std::string& rtFormatName )
 		Assert( 0, "No formatter found for format %s.", rtFormatName.c_str() );
 		return nullptr;
 	}
+}
+
+const CASTReflectionType* ReflectedValueToReflectionType( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot )
+{
+	std::string::size_type uFirstDot = rtReflectionPath.find_first_of( '.' );
+	std::string tToFirstObject = rtReflectionPath.substr( 0, uFirstDot );
+	std::string tRestOfPath = uFirstDot != std::string::npos ? rtReflectionPath.substr( uFirstDot + 1 ) : std::string();
+
+	const CASTReflectionType* pReflectionType = pReflectionType = pReflectionObject->GetReflectionType( tToFirstObject );
+
+	if( !pReflectionType )
+	{
+		Error_Linker( EError_Error, "Unable to find value %s within object %s.\n", tToFirstObject.c_str(), pReflectionObject->GetElementName() );
+
+		return nullptr;
+	}
+
+	switch( pReflectionType->GetType() )
+	{
+		case EASTReflectionType_Type:
+		case EASTReflectionType_ASTNode:
+			if( tRestOfPath.empty() )
+			{
+				return pReflectionType;
+			}
+			else
+			{
+				return ReflectedValueToReflectionType( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>(), false );
+			}
+
+		case EASTReflectionType_Variable:
+		case EASTReflectionType_TypeChild:
+		case EASTReflectionType_TypeScalar:
+		case EASTReflectionType_TypeSemantic:
+		case EASTReflectionType_TypeRegister:		
+
+		default:
+			return pReflectionType;
+	}
+}
+
+const CReflectionObject* ReflectedValueToReflectionObject( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot )
+{
+	std::string::size_type uFirstDot = rtReflectionPath.find_first_of( '.' );
+	std::string tToFirstObject = rtReflectionPath.substr( 0, uFirstDot );
+	std::string tRestOfPath = uFirstDot != std::string::npos ? rtReflectionPath.substr( uFirstDot + 1 ) : std::string();
+
+	const CASTReflectionType* pReflectionType = nullptr;
+
+	CReflectionObject* pTestNode = nullptr;
+	std::string tTestString;
+	if( bRoot && pContext->atNodeVariables.GetValue( tToFirstObject, pTestNode ) )
+	{
+		if( tRestOfPath.empty() )
+		{
+			return pTestNode;
+		}
+		else
+		{
+			return ReflectedValueToReflectionObject( tRestOfPath, pContext, pTestNode, false );
+		}
+	}
+	else
+	{
+		pReflectionType = pReflectionObject->GetReflectionType( tToFirstObject );
+	}
+
+	if( !pReflectionType )
+	{
+		Error_Linker( EError_Error, "Unable to find value %s within object %s.\n", tToFirstObject.c_str(), pReflectionObject->GetElementName() );
+
+		return nullptr;
+	}
+
+	switch( pReflectionType->GetType() )
+	{
+		case EASTReflectionType_Type:
+		case EASTReflectionType_ASTNode:
+			if( tRestOfPath.empty() )
+			{
+				return pReflectionType->GetData<CReflectionObject>();
+			}
+			else
+			{
+				return ReflectedValueToReflectionObject( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>(), false );
+			}
+
+		case EASTReflectionType_Variable:
+		case EASTReflectionType_TypeChild:
+		case EASTReflectionType_TypeScalar:
+		case EASTReflectionType_TypeSemantic:
+		case EASTReflectionType_TypeRegister:		
+
+		default:
+			Assert( 0, "Type is invalid, expected reflection object." );
+			return nullptr;
+	}
+}
+
+std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot )
+{
+	std::string::size_type uFirstDot = rtReflectionPath.find_first_of( '.' );
+	std::string tToFirstObject = rtReflectionPath.substr( 0, uFirstDot );
+	std::string tRestOfPath = uFirstDot != std::string::npos ? rtReflectionPath.substr( uFirstDot + 1 ) : std::string();
+
+	const CASTReflectionType* pReflectionType = nullptr;
+
+	CReflectionObject* pTestNode = nullptr;
+	std::string tTestString;
+	if( bRoot && pContext->atNodeVariables.GetValue( tToFirstObject, pTestNode ) )
+	{
+		return ReflectedValueToString( tRestOfPath, pContext, pTestNode, false );
+	}
+	else if( bRoot && pContext->atStringVariables.GetValue( tToFirstObject, tTestString ) )
+	{
+		return tTestString;
+	}
+	else
+	{
+		pReflectionType = pReflectionObject->GetReflectionType( tToFirstObject );
+	}
+
+	if( !pReflectionType )
+	{
+		Error_Linker( EError_Error, "Unable to find value %s within object %s.\n", tToFirstObject.c_str(), pReflectionObject->GetElementName() );
+
+		return "";
+	}
+
+	switch( pReflectionType->GetType() )
+	{
+		case EASTReflectionType_Token:
+			return GetTokenString( *pReflectionType->GetData<EShaderToken>() );
+
+		case EASTReflectionType_Type:
+		case EASTReflectionType_ASTNode:
+			Assert( !tRestOfPath.empty(), "Cannot print a node object" );
+			return ReflectedValueToString( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>(), false );
+
+		case EASTReflectionType_Variable:
+		case EASTReflectionType_TypeChild:
+		case EASTReflectionType_TypeScalar:
+		case EASTReflectionType_TypeSemantic:
+		case EASTReflectionType_TypeRegister:
+		
+		
+		case EASTReflectionType_CString:
+			return std::string( pReflectionType->GetData<const char>() );
+
+		case EASTReflectionType_SString:
+			return *(pReflectionType->GetData<std::string>());
+
+		case EASTReflectionType_ASTNodeArray:
+			Assert( 0, "Arrays cannot be printed, you should iterate" );
+			return "";
+
+		case EASTReflectionType_UInt:
+		case EASTReflectionType_Int:
+		case EASTReflectionType_Bool:
+
+		
+
+		default:
+			Assert( 0, "Unknown type." );
+			return "";
+	}
+}
+
+bool ReflectedCondition( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot )
+{
+	return false;
+}
+
+std::string CASTFormatterCommand::GetReflectedStringFromKey( const std::string& rtKey, CFormatterContext* pContext, const CReflectionObject* pASTNode ) const
+{
+	std::string tTarget;
+	if( !GetValue( rtKey, tTarget ) )
+	{
+		Error_Linker( EError_Error, "Failed to get attribute %s for formatter %s while formatting AST node %s.\n", rtKey.c_str(), GetName(), pASTNode->GetElementName() );
+		return "";
+	}
+
+	return ReflectedValueToString( tTarget, pContext, pASTNode );
+}
+
+const CReflectionObject* CASTFormatterCommand::GetReflectedObjectFromKey( const std::string& rtKey, CFormatterContext* pContext, const CReflectionObject* pASTNode ) const
+{
+	std::string tTarget;
+	if( !GetValue( rtKey, tTarget ) )
+	{
+		Error_Linker( EError_Error, "Failed to get attribute %s for formatter %s while formatting AST node %s.\n", rtKey.c_str(), GetName(), pASTNode->GetElementName() );
+		return nullptr;
+	}
+
+	return ReflectedValueToReflectionObject( tTarget, pContext, pASTNode );
 }

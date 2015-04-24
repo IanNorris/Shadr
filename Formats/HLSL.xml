@@ -1,16 +1,32 @@
 <ShaderSyntax IndentType="Tabs" NewlineType="Windows" Buckets="Header;Prototypes;Globals;Functions">
 	<Program>
-		<Iterate Target="Elements">
-			<PrintChild/>
+		<Iterate Target="Elements" Variable="Element">
+			<PrintChild Target="Element"/>
 		</Iterate>
 	</Program>
+	
+	<Function>
+		<PrintChild Use="TypeGenerator" Target="Prototype.ReturnType"/>
+		<Print Literal=" "/>
+		<Print Value="Prototype.Name"/>
+		<Print Literal="("/>
+		<Iterate Target="Prototype.Parameters" Variable="Parameter">
+			<PrintChild Target="Parameter"/>
+			<Print Literal=", "/>
+		</Iterate>
+		<Print Literal=")"/>
+		<PrintChild Target="Body"/>
+		<Newline/>
+		<Newline/>
+	</Function>
+	
 	<Block>
 		<Newline/>
 		<Print Literal="{"/>
 		<Newline/>
 		<AddIndent/>
-		<Iterate Target="Statements">
-			<PrintChild/>
+		<Iterate Target="Statements" Variable="Statement">
+			<PrintChild Target="Statement"/>
 			<SemiColon/>
 			<InsertOriginalNewlines Min="1"/>
 		</Iterate>
@@ -22,4 +38,14 @@
 		<Print Value="m_fValue"/>
 		<Print Literal="f"/>
 	</ConstFloat>
+	
+	<!-- Custom types -->
+	
+	<TypeGenerator>
+		<Print Value="Name"/>
+	</TypeGenerator>
+	
+	<FloatType>
+		
+	</FloatType>
 </ShaderSyntax>

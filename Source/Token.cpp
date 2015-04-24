@@ -378,6 +378,16 @@ const char* GetTokenName( EShaderToken eToken )
 	return "Unknown";
 }
 
+const char* GetTokenString( EShaderToken eToken )
+{
+	if( eToken <= EShaderToken_BeginBasic && eToken >= EShaderToken_EndBasic )
+	{
+		return g_asBasicTokens[ GetIndexFromRange( eToken, EShaderToken_BeginBasic ) ].pszTokenString;
+	}
+
+	return "???";
+}
+
 EShaderToken GetTokenByName( const char* pszTokenName )
 {
 	unsigned int uBasicTokenCount = GetCountFromTokenRange( EShaderToken_BeginBasic, EShaderToken_EndBasic );

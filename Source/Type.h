@@ -1,6 +1,8 @@
 #if !defined( SHADR_TYPE_H )
 #define SHADR_TYPE_H
 
+#include "Reflection.h"
+
 void InitialiseBasicTypes( void );
 
 enum EScalarType
@@ -45,7 +47,7 @@ class CRegister
 
 };
 
-class CType
+class CType : public CReflectionObject
 {
 public:
 
@@ -59,7 +61,13 @@ public:
 	, m_uVectorWidth( uVectorWidth )
 	, m_uVectorHeight( uVectorHeight )
 	, m_uArrayCount( uArrayCount )
-	{}
+	{
+		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
+
+		AddCondition( "IsConst", [&](){ return (m_uFlags & ETypeFlag_Const) != 0; } );
+	}
+
+	const char* GetElementName() const { return "Type"; }
 
 	EScalarType GetScalarType( ) { return m_eType; }
 

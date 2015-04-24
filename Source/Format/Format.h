@@ -4,6 +4,7 @@
 typedef std::unordered_map< std::string, std::string > TDictionary;
 
 class CFormatter;
+class CReflectionObject;
 
 class CFormatterBucket
 {
@@ -41,6 +42,58 @@ private:
 	std::string m_tBody;
 };
 
+template< class T >
+class CValueStack
+{
+public:
+
+	void CreateValue( const std::string& rtVariable )
+	{
+		atTempVariableStack[ rtVariable ].push_back( T() );
+	}
+
+	void DestroyValue( const std::string& rtVariable )
+	{
+		atTempVariableStack[ rtVariable ].pop_back();
+	}
+
+	bool GetValue( const std::string& rtVariable, T& rtValueOut )
+	{
+		auto tIter = atTempVariableStack.find( rtVariable );
+
+		if( tIter == atTempVariableStack.end() )
+		{
+			return false;
+		}
+		else
+		{
+			rtValueOut = (*tIter).second.back();
+			return true;
+		}
+	}
+
+	void SetValue( const std::string& rtVariable, T& rtValue )
+	{
+		auto tIter = atTempVariableStack.find( rtVariable );
+
+		if( tIter == atTempVariableStack.end() )
+		{
+			Error_Linker( EError_Error, "Variable %s has not been created.\n", rtVariable.c_str() );
+			return;
+		}
+		else
+		{
+			(*tIter).second.back() = rtValue;
+		}
+	}
+
+private:
+
+	std::unordered_map< std::string, std::vector< const T > > atTempVariableStack; 
+};
+
+class CASTBase;
+
 class CFormatterContext
 {
 public:
@@ -49,6 +102,9 @@ public:
 	: pFormatter( _pFormatter )
 	, uCurrentIndent( 0 )
 	{}
+
+	CValueStack<std::string> atStringVariables;
+	CValueStack<CReflectionObject*> atNodeVariables;
 
 	std::string tCurrentElement;
 
@@ -66,12 +122,12 @@ public:
 		m_tValues[ tKey ] = tValue;
 	}
 
-	bool GetValue( const std::string& tKey, std::string& rtValueOut )
+	bool GetValue( const std::string& tKey, std::string& rtValueOut ) const
 	{
 		auto tIter = m_tValues.find( tKey );
 		if( tIter != m_tValues.end() )
 		{
-			rtValueOut = m_tValues[ tKey ];
+			rtValueOut = (*tIter).second;
 			return true;
 		}
 
@@ -96,19 +152,26 @@ public:
 
 	virtual void Initialise( TiXmlElement* pElement ) = 0;
 
-	virtual void Action( CFormatterContext* pContext, CASTBase* pASTNode ) = 0;
+	virtual void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode ) = 0;
+
+	std::string GetReflectedStringFromKey( const std::string& rtKey, CFormatterContext* pContext, const CReflectionObject* pASTNode ) const;
+	const CReflectionObject* GetReflectedObjectFromKey( const std::string& rtKey, CFormatterContext* pContext, const CReflectionObject* pASTNode ) const;
 };
 
 class CASTFormatter : public CFormatterStore
 {
 public:
 
+	CASTFormatter( const char* pszName )
+	: m_tName( pszName )
+	{}
+
 	void AddCommand( CASTFormatterCommand* pCommand )
 	{
 		m_apCommands.push_back( pCommand );
 	}
 
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
 		for( auto pCommand : m_apCommands )
 		{
@@ -117,6 +180,8 @@ public:
 	}
 
 private:
+
+	std::string m_tName;
 
 	std::vector< CASTFormatterCommand* > m_apCommands;
 };
@@ -158,10 +223,16 @@ private:
 	std::string m_tIndent;
 };
 
+class CASTReflectionType;
+
 void ProcessNode( CFormatterStore* pStore, TiXmlElement* pElement );
-CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement );
-void ExecuteFormatter( CFormatterContext* pContext, CASTBase* pASTNode );
+CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement, const char* pszName );
+void ExecuteFormatter( CFormatterContext* pContext, const CReflectionObject* pASTNode, const char* pszOverrideFormatter );
 CFormatter* GetFormatter( const std::string& rtFormatName );
+const CASTReflectionType* ReflectedValueToReflectionType( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
+const CReflectionObject* ReflectedValueToReflectionObject( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
+std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
+bool ReflectedCondition( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 
 void InitialiseFormats();
 

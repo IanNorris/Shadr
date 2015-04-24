@@ -21,7 +21,7 @@ public:
 	
 	}
 
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
 		pContext->tCurrentElement.push_back( '\n' );
 
@@ -43,7 +43,7 @@ public:
 	
 	}
 
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
 		std::string tTemp;
 
@@ -54,8 +54,7 @@ public:
 		
 		if( GetValue( "Value", tTemp ) )
 		{
-			Assert( 0, "Not implemented" );
-			pContext->tCurrentElement += tTemp;
+			pContext->tCurrentElement += ReflectedValueToString(tTemp, pContext, pASTNode );
 		}
 
 		for( unsigned int uIndent = 0; uIndent < pContext->uCurrentIndent; uIndent++ )
@@ -76,7 +75,7 @@ public:
 	
 	}
 
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
 		pContext->uCurrentIndent++;
 	}
@@ -93,7 +92,7 @@ public:
 	
 	}
 
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
 		pContext->uCurrentIndent--;
 	}
@@ -112,15 +111,123 @@ public:
 
 	void Initialise( TiXmlElement* pElement )
 	{
-		m_pFormatter = ProcessASTFormatter( pElement );
+		m_pFormatter = ProcessASTFormatter( pElement, "Iterate" );
 	}
 
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
 		std::string tTarget;
 		GET( "Target", tTarget );
 
-		auto pList = pASTNode->GetReflectedData<std::vector< CASTBase* >>( tTarget );
+		std::string tVariableName;
+		GET( "Variable", tVariableName );
+
+		const CASTReflectionType* pRefType = ReflectedValueToReflectionType( tTarget, pContext, pASTNode );
+
+		auto pList = pRefType->GetData<std::vector< CReflectionObject* >>();
+
+		pContext->atNodeVariables.CreateValue( tVariableName );
+
+		for( auto pItem : (*pList) )
+		{
+			pContext->atNodeVariables.SetValue( tVariableName, pItem );
+
+			m_pFormatter->Action( pContext, pItem );
+		}
+
+		pContext->atNodeVariables.DestroyValue( tVariableName );
+	}
+
+private:
+
+	CASTFormatter* m_pFormatter;
+
+	std::vector< CASTFormatterCommand* > m_apCommands;
+};
+
+class CASTFormatterCommandPrintChild : public CASTFormatterCommand
+{
+public:
+
+	virtual const char* GetName() const { return "PrintChild"; }
+
+	void Initialise( TiXmlElement* pElement )
+	{
+	}
+
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
+	{
+		const char* pszUseOverride = nullptr;
+		std::string tUseOverride;
+		if( GetValue( "Use", tUseOverride ) )
+		{
+			pszUseOverride = tUseOverride.c_str();
+		}
+		
+
+		const CReflectionObject* pObject = GetReflectedObjectFromKey( "Target", pContext, pASTNode );
+		Assert( pObject, "Unable to find object for Target" );
+
+		ExecuteFormatter( pContext, pObject, pszUseOverride );
+	}
+};
+
+class CASTFormatterCommandSemiColon : public CASTFormatterCommand
+{
+public:
+
+	virtual const char* GetName() const { return "SemiColon"; }
+
+	void Initialise( TiXmlElement* pElement )
+	{
+	}
+
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
+	{
+		pContext->tCurrentElement += ";";
+	}
+};
+
+class CASTFormatterCommandInsertOriginalNewlines : public CASTFormatterCommand
+{
+public:
+
+	virtual const char* GetName() const { return "InsertOriginalNewlines"; }
+
+	void Initialise( TiXmlElement* pElement )
+	{
+	}
+
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
+	{
+		pContext->tCurrentElement += "\n";
+	}
+};
+
+class CASTFormatterCommandCondition : public CASTFormatterCommand
+{
+public:
+
+	virtual const char* GetName() const { return "Condition"; }
+
+	CASTFormatterCommandCondition()
+	: CASTFormatterCommand()
+	, m_pFormatter( nullptr )
+	{}
+
+	void Initialise( TiXmlElement* pElement )
+	{
+		m_pFormatter = ProcessASTFormatter( pElement, "Iterate" );
+	}
+
+	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
+	{
+		std::string tTarget;
+		GET( "Value", tTarget );
+
+		std::string tFunctionToCall = ReflectedValueToString( tTarget, pContext, pASTNode );
+
+		auto pList = pASTNode->GetReflectedData<std::vector< CReflectionObject* >>( tTarget );
 
 		for( auto pItem : (*pList) )
 		{
@@ -133,54 +240,6 @@ private:
 	CASTFormatter* m_pFormatter;
 
 	std::vector< CASTFormatterCommand* > m_apCommands;
-};
-
-class CASTFormatterCommandPrintChild : public CASTFormatterCommand, public CASTFormatter
-{
-public:
-
-	virtual const char* GetName() const { return "PrintChild"; }
-
-	void Initialise( TiXmlElement* pElement )
-	{
-	}
-
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
-	{
-		ExecuteFormatter( pContext, pASTNode );
-	}
-};
-
-class CASTFormatterCommandSemiColon : public CASTFormatterCommand, public CASTFormatter
-{
-public:
-
-	virtual const char* GetName() const { return "SemiColon"; }
-
-	void Initialise( TiXmlElement* pElement )
-	{
-	}
-
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
-	{
-		pContext->tCurrentElement += ";";
-	}
-};
-
-class CASTFormatterCommandInsertOriginalNewlines : public CASTFormatterCommand, public CASTFormatter
-{
-public:
-
-	virtual const char* GetName() const { return "InsertOriginalNewlines"; }
-
-	void Initialise( TiXmlElement* pElement )
-	{
-	}
-
-	void Action( CFormatterContext* pContext, CASTBase* pASTNode )
-	{
-		pContext->tCurrentElement += "\n";
-	}
 };
 
 #endif //SHADR_FORMATTER_COMMANDS_H
