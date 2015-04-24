@@ -26,11 +26,7 @@ public:
 		DEBUG_STOP
 
 		pContext->tCurrentElement += pContext->pFormatter->GetNewline();
-
-		for( unsigned int uIndent = 0; uIndent < pContext->uCurrentIndent; uIndent++ )
-		{
-			pContext->tCurrentElement += pContext->pFormatter->GetIndent();
-		}
+		pContext->uNeededIndent = pContext->uCurrentIndent;
 	}
 };
 
@@ -51,14 +47,19 @@ public:
 
 		std::string tTemp;
 
+		pContext->PrepareNewline();
+
 		if( GetValue( "Literal", tTemp ) )
 		{
 			pContext->tCurrentElement += tTemp;
 		}
-		
-		if( GetValue( "Value", tTemp ) )
+		else if( GetValue( "Value", tTemp ) )
 		{
 			pContext->tCurrentElement += ReflectedValueToString(tTemp, pContext, pASTNode );
+		}
+		else
+		{
+			Error_Linker( EError_Error, "Neither Literal or Value specified for Print command.\n" );
 		}
 	}
 };
@@ -79,6 +80,8 @@ public:
 		DEBUG_STOP
 
 		pContext->uCurrentIndent++;
+		pContext->uNeededIndent++;
+
 	}
 };
 
@@ -98,6 +101,11 @@ public:
 		DEBUG_STOP
 
 		pContext->uCurrentIndent--;
+
+		if( pContext->uNeededIndent )
+		{
+			pContext->uNeededIndent--;
+		}
 	}
 };
 
@@ -223,7 +231,10 @@ public:
 	{
 		DEBUG_STOP
 
-		pContext->tCurrentElement += "\n";
+		pContext->PrepareNewline();
+
+		pContext->tCurrentElement += pContext->pFormatter->GetNewline();
+		pContext->uNeededIndent = pContext->uCurrentIndent;
 	}
 };
 

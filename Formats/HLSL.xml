@@ -1,4 +1,4 @@
-<ShaderSyntax IndentType="Spaces" SpacesPerIndent="4" NewlineType="Windows" Buckets="Header;Prototypes;Globals;Functions">
+<ShaderSyntax IndentType="Tabs" SpacesPerIndent="4" NewlineType="Windows" Buckets="Header;Prototypes;Globals;Functions">
 	<Program>
 		<Iterate Target="Elements" Variable="$Element">
 			<PrintChild Target="$Element"/>

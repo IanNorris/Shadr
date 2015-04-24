@@ -110,8 +110,10 @@ public:
 	CFormatterContext( CFormatter* _pFormatter )
 	: pFormatter( _pFormatter )
 	, uCurrentIndent( 0 )
-	, bNeedsIndent( true )
+	, uNeededIndent( 0 )
 	{}
+
+	void PrepareNewline();
 
 	CValueStack<std::string> atStringVariables;
 	CValueStack<CReflectionObject*> atNodeVariables;
@@ -122,7 +124,7 @@ public:
 	unsigned int uCurrentIndent;
 	CFormatterBucket tBuckets;
 
-	bool bNeedsIndent;
+	unsigned int uNeededIndent;
 };
 
 class CFormatterStore

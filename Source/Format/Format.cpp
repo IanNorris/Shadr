@@ -468,3 +468,12 @@ const CReflectionObject* CASTFormatterCommand::GetReflectedObjectFromKey( const 
 
 	return ReflectedValueToReflectionObject( tTarget, pContext, pASTNode );
 }
+
+void CFormatterContext::PrepareNewline()
+{
+	for( unsigned int uIndent = 0; uIndent < uNeededIndent; uIndent++ )
+	{
+		tCurrentElement += pFormatter->GetIndent();
+	}
+	uNeededIndent = 0;
+}
