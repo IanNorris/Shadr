@@ -42,10 +42,9 @@
 	<!-- Custom types -->
 	
 	<TypeGenerator>
+		<Condition IfTrue="IsConst">
+			<Print Literal="const "/>
+		</Condition>
 		<Print Value="Name"/>
 	</TypeGenerator>
-	
-	<FloatType>
-		
-	</FloatType>
 </ShaderSyntax>

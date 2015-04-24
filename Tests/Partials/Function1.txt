@@ -1,4 +1,4 @@
-float TestWhile()
+const float TestWhile()
 {
 	int i,j,l;
 	l = +j ---i - i--;

@@ -141,8 +141,6 @@ public:
 private:
 
 	CASTFormatter* m_pFormatter;
-
-	std::vector< CASTFormatterCommand* > m_apCommands;
 };
 
 class CASTFormatterCommandPrintChild : public CASTFormatterCommand
@@ -222,24 +220,27 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
-		std::string tTarget;
-		GET( "Value", tTarget );
+		bool bExpect = true;
 
-		std::string tFunctionToCall = ReflectedValueToString( tTarget, pContext, pASTNode );
-
-		auto pList = pASTNode->GetReflectedData<std::vector< CReflectionObject* >>( tTarget );
-
-		for( auto pItem : (*pList) )
+		std::string tConditionalPath;
+		if( GetValue( "IfTrue", tConditionalPath ) )
 		{
-			m_pFormatter->Action( pContext, pItem );
-		}	
+			
+		}
+		else if( GetValue( "IfFalse", tConditionalPath ) )
+		{
+			bExpect = false;
+		}
+
+		if( IsReflectedConditionTrue( tConditionalPath, pContext, pASTNode ) == bExpect )
+		{
+			m_pFormatter->Action( pContext, pASTNode );
+		}
 	}
 
 private:
 
 	CASTFormatter* m_pFormatter;
-
-	std::vector< CASTFormatterCommand* > m_apCommands;
 };
 
 #endif //SHADR_FORMATTER_COMMANDS_H

@@ -73,6 +73,10 @@ CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement, const char* pszName 
 		{
 			pCommand = new CASTFormatterCommandInsertOriginalNewlines();
 		}
+		else if( _stricmp( pszCommandName, "Condition" ) == 0 )
+		{
+			pCommand = new CASTFormatterCommandCondition();
+		}
 		else 
 		{
 			Assert( 0, "Unrecognised command type %s", pszCommandName );
@@ -193,6 +197,50 @@ CFormatter* GetFormatter( const std::string& rtFormatName )
 		Assert( 0, "No formatter found for format %s.", rtFormatName.c_str() );
 		return nullptr;
 	}
+}
+
+bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject )
+{
+	std::string::size_type uFirstDot = rtReflectionPath.find_first_of( '.' );
+	std::string tToFirstObject = rtReflectionPath.substr( 0, uFirstDot );
+	std::string tRestOfPath = uFirstDot != std::string::npos ? rtReflectionPath.substr( uFirstDot + 1 ) : std::string();
+
+	if( tRestOfPath.empty() )
+	{
+		return pReflectionObject->GetConditionOutcome( tToFirstObject );
+	}
+	else
+	{
+		const CASTReflectionType* pReflectionType = pReflectionType = pReflectionObject->GetReflectionType( tToFirstObject );
+
+		if( !pReflectionType )
+		{
+			Error_Linker( EError_Error, "Unable to find value %s within object %s.\n", tToFirstObject.c_str(), pReflectionObject->GetElementName() );
+
+			return nullptr;
+		}
+
+		switch( pReflectionType->GetType() )
+		{
+			case EASTReflectionType_Type:
+			case EASTReflectionType_ASTNode:
+				return IsReflectedConditionTrue( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>() );
+
+			case EASTReflectionType_Variable:
+			case EASTReflectionType_TypeChild:
+			case EASTReflectionType_TypeScalar:
+			case EASTReflectionType_TypeSemantic:
+			case EASTReflectionType_TypeRegister:		
+
+			default:
+				Error_Linker( EError_Error, "Type does not support introspection.\n" );
+				return nullptr;
+		}
+	}
+
+	
+
+	
 }
 
 const CASTReflectionType* ReflectedValueToReflectionType( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot )
