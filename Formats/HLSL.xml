@@ -9,12 +9,29 @@
 		<PrintChild Use="TypeGenerator" Target="Prototype.ReturnType"/>
 		<Print Literal=" "/>
 		<Print Value="Prototype.Name"/>
-		<Print Literal="("/>
-		<Iterate Target="Prototype.Parameters" Variable="Parameter">
-			<PrintChild Target="Parameter"/>
-			<Print Literal=", "/>
-		</Iterate>
-		<Print Literal=")"/>
+		
+		<Condition IfTrue="Prototype.HasParameters">
+			<Print Literal="("/>
+			<Iterate Target="Prototype.Parameters" Variable="Parameter">
+				<Condition IfTrue="IfFirst(Parameter)">
+					<Print Literal=" "/>
+				</Condition>
+				
+				<PrintChild Target="Parameter"/>
+				
+				<Condition IfTrue="IsLast(Parameter)">
+					<Print Literal=" "/>
+				</Condition>
+				<Condition IfFalse="IsLast(Parameter)">
+					<Print Literal=", "/>
+				</Condition>
+			</Iterate>
+			<Print Literal=")"/>
+		</Condition>
+		<Condition IfFalse="Prototype.HasParameters">
+			<Print Literal="( void )"/>
+		</Condition>
+		
 		<PrintChild Target="Body"/>
 		<Newline/>
 		<Newline/>
@@ -38,6 +55,23 @@
 		<Print Value="m_fValue"/>
 		<Print Literal="f"/>
 	</ConstFloat>
+	
+	<VariableDef>
+		<PrintChild Use="TypeGenerator" Target="Type"/>
+		<Print Literal=" "/>
+		<Iterate Target="Variables" Variable="Variable">
+			<Condition IfTrue="Variable.HasAssignment">
+				<PrintChild Target="Variable.Assignment"/>
+			</Condition>
+			<Condition IfFalse="Variable.HasAssignment">
+				<Print Value="Variable.Name"/>
+			</Condition>
+			<Condition IfFalse="IsLast(Variable)">
+				<Print Literal=", "/>
+			</Condition>
+		</Iterate>
+		
+	</VariableDef>
 	
 	<!-- Custom types -->
 	

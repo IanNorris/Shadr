@@ -199,11 +199,17 @@ CFormatter* GetFormatter( const std::string& rtFormatName )
 	}
 }
 
-bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject )
+bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot )
 {
 	std::string::size_type uFirstDot = rtReflectionPath.find_first_of( '.' );
 	std::string tToFirstObject = rtReflectionPath.substr( 0, uFirstDot );
 	std::string tRestOfPath = uFirstDot != std::string::npos ? rtReflectionPath.substr( uFirstDot + 1 ) : std::string();
+
+	std::string tTestString;
+	if( bRoot && pContext->atStringVariables.GetValue( tToFirstObject, tTestString ) )
+	{
+		return tTestString.compare( "true" ) == 0;
+	}
 
 	if( tRestOfPath.empty() )
 	{
@@ -224,7 +230,7 @@ bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterCo
 		{
 			case EASTReflectionType_Type:
 			case EASTReflectionType_ASTNode:
-				return IsReflectedConditionTrue( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>() );
+				return IsReflectedConditionTrue( tRestOfPath, pContext, *pReflectionType->GetData<CReflectionObject*>(), false );
 
 			case EASTReflectionType_Variable:
 			case EASTReflectionType_TypeChild:
@@ -268,7 +274,7 @@ const CASTReflectionType* ReflectedValueToReflectionType( const std::string& rtR
 			}
 			else
 			{
-				return ReflectedValueToReflectionType( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>(), false );
+				return ReflectedValueToReflectionType( tRestOfPath, pContext, *pReflectionType->GetData<CReflectionObject*>(), false );
 			}
 
 		case EASTReflectionType_Variable:
@@ -319,16 +325,17 @@ const CReflectionObject* ReflectedValueToReflectionObject( const std::string& rt
 	{
 		case EASTReflectionType_Type:
 		case EASTReflectionType_ASTNode:
+		case EASTReflectionType_Variable:
 			if( tRestOfPath.empty() )
 			{
-				return pReflectionType->GetData<CReflectionObject>();
+				return *pReflectionType->GetData<CReflectionObject*>();
 			}
 			else
 			{
-				return ReflectedValueToReflectionObject( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>(), false );
+				return ReflectedValueToReflectionObject( tRestOfPath, pContext, *pReflectionType->GetData<CReflectionObject*>(), false );
 			}
 
-		case EASTReflectionType_Variable:
+		
 		case EASTReflectionType_TypeChild:
 		case EASTReflectionType_TypeScalar:
 		case EASTReflectionType_TypeSemantic:
@@ -377,10 +384,10 @@ std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormat
 
 		case EASTReflectionType_Type:
 		case EASTReflectionType_ASTNode:
-			Assert( !tRestOfPath.empty(), "Cannot print a node object" );
-			return ReflectedValueToString( tRestOfPath, pContext, pReflectionType->GetData<CReflectionObject>(), false );
-
 		case EASTReflectionType_Variable:
+			Assert( !tRestOfPath.empty(), "Cannot print a node object" );
+			return ReflectedValueToString( tRestOfPath, pContext, *pReflectionType->GetData<CReflectionObject*>(), false );
+
 		case EASTReflectionType_TypeChild:
 		case EASTReflectionType_TypeScalar:
 		case EASTReflectionType_TypeSemantic:

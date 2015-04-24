@@ -9,11 +9,14 @@ public:
 	: CASTBase()
 	, CASTScope( pParentScope )
 	, m_tReturnType( rtReturnType )
+	, m_pReturnType( &m_tReturnType )
 	, m_tName( pszName, uNameLength )
 	{
-		AddReflection( "ReturnType", EASTReflectionType_Type, &m_tReturnType );
+		AddReflection( "ReturnType", EASTReflectionType_Type, &m_pReturnType );
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
 		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
+
+		AddCondition( "HasParameters", [&](){ return !m_apParameters.empty(); } );
 	}
 
 	const char* GetElementName() const { return "Prototype"; }
@@ -27,6 +30,7 @@ public:
 
 private:
 
+	CType*		m_pReturnType; //Workaround for the type expecting CType** in AddReflection
 	CType		m_tReturnType;
 	std::string m_tName;
 	std::vector< CASTVariableDefinition* > m_apParameters;
@@ -41,8 +45,8 @@ public:
 	, m_pPrototype( pPrototype )
 	, m_pBody( pBody )
 	{
-		AddReflection( "Prototype", EASTReflectionType_ASTNode, m_pPrototype );
-		AddReflection( "Body", EASTReflectionType_ASTNode, m_pBody );
+		AddReflection( "Prototype", EASTReflectionType_ASTNode, &m_pPrototype );
+		AddReflection( "Body", EASTReflectionType_ASTNode, &m_pBody );
 	}
 
 	const char* GetElementName() const { return "Function"; }

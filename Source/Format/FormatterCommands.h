@@ -127,15 +127,26 @@ public:
 		auto pList = pRefType->GetData<std::vector< CReflectionObject* >>();
 
 		pContext->atNodeVariables.CreateValue( tVariableName );
+		pContext->atStringVariables.CreateValue( "IsFirst(" + tVariableName + ")" );
+		pContext->atStringVariables.CreateValue( "IsLast(" + tVariableName + ")" );
+
+		size_t uItemCount = (*pList).size();
+		size_t uItem = 0;
 
 		for( auto pItem : (*pList) )
 		{
 			pContext->atNodeVariables.SetValue( tVariableName, pItem );
+			pContext->atStringVariables.SetValue( "IsFirst(" + tVariableName + ")", (uItem == 0) ? std::string("true") : std::string("false") );
+			pContext->atStringVariables.SetValue( "IsLast(" + tVariableName + ")", (uItem == (uItemCount - 1)) ? std::string("true") : std::string("false") );
 
 			m_pFormatter->Action( pContext, pItem );
+
+			uItem++;
 		}
 
 		pContext->atNodeVariables.DestroyValue( tVariableName );
+		pContext->atStringVariables.DestroyValue( "IsFirst(" + tVariableName + ")" );
+		pContext->atStringVariables.DestroyValue( "IsLast(" + tVariableName + ")" );
 	}
 
 private:
@@ -230,6 +241,11 @@ public:
 		else if( GetValue( "IfFalse", tConditionalPath ) )
 		{
 			bExpect = false;
+		}
+		else
+		{
+			Error_Linker( EError_Error, "Neither IfTrue or IfFalse specified for Condition" );
+			return;
 		}
 
 		if( IsReflectedConditionTrue( tConditionalPath, pContext, pASTNode ) == bExpect )

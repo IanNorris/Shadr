@@ -2,6 +2,7 @@
 #define SHADR_SCOPE_H
 
 #include "Utility/Error.h"
+#include "Reflection.h"
 
 enum EVariableFlag
 {
@@ -9,12 +10,23 @@ enum EVariableFlag
 	EVariableFlag_Written		= 1 << 1,
 };
 
-struct SVariable
+class CASTExpressionStatement;
+
+struct SVariable : public CReflectionObject
 {
 	SVariable()
 	: pType( nullptr )
+	, pAssignment( nullptr )
 	, uFlags( 0 )
-	{}
+	{
+		AddReflection( "Type", EASTReflectionType_Type, &pType );
+		AddReflection( "Name", EASTReflectionType_SString, &tName );
+		AddReflection( "Assignment", EASTReflectionType_ASTNode, &pAssignment );
+
+		AddCondition( "HasAssignment", [&]() { return pAssignment != nullptr; } );
+	}
+
+	const char* GetElementName() const { return "Variable"; }
 
 	static SVariable* CreateDummyVariable()
 	{
@@ -27,6 +39,9 @@ struct SVariable
 	std::string tName;
 
 	CType* pType;
+
+	CASTExpressionStatement* pAssignment;
+
 	unsigned int uFlags;
 };
 

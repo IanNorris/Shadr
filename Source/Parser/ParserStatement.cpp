@@ -18,6 +18,8 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 	bool bContinue = false;
 	do
 	{
+		SVariable* pVar = nullptr;
+
 		std::string tName;
 		bool bCommaAcceptable = false;
 
@@ -33,7 +35,7 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 
 			if( pVariableDef )
 			{
-				SVariable* pVar = new SVariable();
+				pVar = new SVariable();
 				pVar->tName = tName;
 				pVar->pType = pType;
 
@@ -42,6 +44,7 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 			else
 			{
 				pVariableDef = new CASTVariableDefinition( *pType, tName );
+				pVar = pVariableDef->GetVariables()[0];
 			}
 
 			pParentScope->AddVariable( rtContext, pVariableDef->GetVariables().back() );
@@ -59,7 +62,9 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 			CASTExpression* pExpression = ParseExpression( rtContext, pParentScope );
 			if( pExpression )
 			{
-				pVariableDef->GetAssignments().push_back( new CASTExpressionStatement( pExpression ) );
+				pVar->pAssignment = new CASTExpressionStatement( pExpression );
+
+				pVariableDef->GetAssignments().push_back( pVar->pAssignment );
 			}
 			else
 			{

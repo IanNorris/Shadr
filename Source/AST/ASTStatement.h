@@ -162,6 +162,7 @@ public:
 	CASTVariableDefinition( const CType& rtType, const std::string& rtName )
 	: CASTStatement()
 	, m_tType( rtType )
+	, m_pType( &m_tType )
 	{
 		SVariable* pVariable = new SVariable();
 		pVariable->tName = rtName;
@@ -169,7 +170,9 @@ public:
 
 		m_tVariables.push_back( pVariable );
 
-		AddReflection( "Type", EASTReflectionType_Type, &m_tType );
+		AddReflection( "Type", EASTReflectionType_Type, &m_pType );
+		AddReflection( "Variables", EASTReflectionType_ASTNodeArray, &m_tVariables );
+		AddReflection( "Assignments", EASTReflectionType_ASTNodeArray, &m_tAssignments );
 	}
 
 	const char* GetElementName() const { return "VariableDef"; }
@@ -188,6 +191,7 @@ public:
 
 private:
 
+	CType*		m_pType;
 	CType		m_tType;
 
 	std::vector<SVariable*>	m_tVariables;
