@@ -61,7 +61,7 @@ class CASTExpressionFunctionCall : public CASTExpression
 {
 public:
 	CASTExpressionFunctionCall( const std::string& rtName )
-	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
+	: CASTExpression( CType::GetVoidType() )
 	, m_tName( rtName )
 	{
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );

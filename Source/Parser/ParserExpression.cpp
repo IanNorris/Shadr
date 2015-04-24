@@ -28,7 +28,7 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext, CScope* pP
 		ParserError( rtContext, "Mismatched (, expected )" );
 	}
 
-	return pSubExpression;
+	return new CASTExpressionParen( pSubExpression );
 }
 
 CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLeftPrecedence, CASTExpression* pLeft, CScope* pParentScope )

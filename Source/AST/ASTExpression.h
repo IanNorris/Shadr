@@ -5,10 +5,9 @@ class CASTExpression : public CASTBase
 {
 public:
 
-	CASTExpression( const CType& rtType, EShaderToken eToken )
+	CASTExpression( const CType& rtType )
 	: CASTBase()
 	, m_tType( rtType )
-	, m_eToken( eToken )
 	{}
 
 	const CType& GetType() const { return m_tType; }
@@ -17,7 +16,26 @@ public:
 private:
 
 	CType			m_tType;
-	EShaderToken	m_eToken;
+};
+
+class CASTExpressionParen : public CASTExpression
+{
+public:
+
+	CASTExpressionParen( CASTExpression* pExpression )
+	: CASTExpression( pExpression->GetType() )
+	, m_pExpression( pExpression )
+	{
+		AddReflection( "Expression", EASTReflectionType_ASTNode, &m_pExpression );
+	}
+
+	const char* GetElementName() const { return "ExpressionParen"; }
+
+private:
+
+	CASTExpression* m_pExpression;
+	EShaderToken	m_eOperator;
+	bool			m_bPre;
 };
 
 class CASTExpressionUnary : public CASTExpression
@@ -25,7 +43,7 @@ class CASTExpressionUnary : public CASTExpression
 public:
 
 	CASTExpressionUnary( EShaderToken eToken, bool bPre, CASTExpression* pExpression )
-	: CASTExpression( EvaluateType( pExpression ), eToken )
+	: CASTExpression( EvaluateType( pExpression ) )
 	, m_pExpression( pExpression )
 	, m_eOperator( eToken )
 	, m_bPre( bPre )
@@ -37,8 +55,6 @@ public:
 	}
 
 	const char* GetElementName() const { return "UnaryOp"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 protected:
 
@@ -56,7 +72,7 @@ class CASTExpressionBinary : public CASTExpression
 public:
 
 	CASTExpressionBinary( EShaderToken eToken, CASTExpression* pLeft, CASTExpression* pRight )
-	: CASTExpression( EvaluateType( pLeft, pRight ), eToken )
+	: CASTExpression( EvaluateType( pLeft, pRight ) )
 	, m_pLeft( pLeft )
 	, m_pRight( pRight )
 	, m_eOperator( eToken )
@@ -72,8 +88,6 @@ public:
 	}
 
 	const char* GetElementName() const { return "BinaryOp"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 protected:
 
@@ -91,15 +105,13 @@ class CASTExpressionSwizzleMask : public CASTExpression
 public:
 
 	CASTExpressionSwizzleMask( const std::string& rtSwizzle )
-	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
+	: CASTExpression( CType::GetVoidType() )
 	, m_tSwizzle( rtSwizzle )
 	{
 		AddReflection( "Mask", EASTReflectionType_SString, &m_tSwizzle );
 	}
 
 	const char* GetElementName() const { return "Swizzle"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 
@@ -111,15 +123,13 @@ class CASTExpressionMemberAccess : public CASTExpression
 public:
 
 	CASTExpressionMemberAccess( const std::string& rtIdentifier )
-	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
+	: CASTExpression( CType::GetVoidType() )
 	, m_tIdentifier( rtIdentifier )
 	{
 		AddReflection( "Identifier", EASTReflectionType_SString, &m_tIdentifier );
 	}
 
 	const char* GetElementName() const { return "MemberAccess"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 

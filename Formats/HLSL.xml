@@ -77,8 +77,13 @@
 		<Print Literal=")"/>
 	</FunctionCall>
 	
+	<ExpressionParen>
+		<Print Literal="( "/>
+		<PrintChild Target="Expression"/>
+		<Print Literal=" )"/>
+	</ExpressionParen>
+	
 	<BinaryOp>
-		<Print Literal="("/>
 		<PrintChild Target="Left"/>
 		<Condition IfFalse="IsTightlyBound">
 			<Print Literal=" "/>
@@ -88,7 +93,6 @@
 			<Print Literal=" "/>
 		</Condition>
 		<PrintChild Target="Right"/>
-		<Print Literal=")"/>
 	</BinaryOp>
 	
 	<UnaryOp>

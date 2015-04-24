@@ -9,7 +9,7 @@ class CASTConstantInt : public CASTExpression
 public:
 
 	CASTConstantInt( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetConstIntType(), EShaderToken_Int )
+	: CASTExpression( CType::GetConstIntType() )
 	, m_uValue( 0 )
 	, m_uBits( 0 )
 	, m_bSigned( 0 )
@@ -43,7 +43,7 @@ class CASTConstantFloat : public CASTExpression
 public:
 
 	CASTConstantFloat( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetConstFloatType(), EShaderToken_Float )
+	: CASTExpression( CType::GetConstFloatType() )
 	, m_fValue( 0.0 )
 	{
 		AddReflection( "Value", EASTReflectionType_Double, &m_fValue );
@@ -66,7 +66,7 @@ class CASTConstantBool : public CASTExpression
 public:
 
 	CASTConstantBool( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetConstFloatType(), EShaderToken_Float )
+	: CASTExpression( CType::GetConstFloatType() )
 	, m_bValue( false )
 	{
 		AddReflection( "Value", EASTReflectionType_Bool, &m_bValue );
@@ -99,7 +99,7 @@ class CASTVariableReference : public CASTExpression
 public:
 
 	CASTVariableReference( SVariable* pVariable )
-	: CASTExpression( *pVariable->pType, EShaderToken_Identifier )
+	: CASTExpression( *pVariable->pType )
 	, m_pVariable( pVariable )
 	{
 		AddReflection( "Variable", EASTReflectionType_Variable, &m_pVariable );
