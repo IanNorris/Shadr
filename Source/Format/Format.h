@@ -6,6 +6,8 @@ typedef std::unordered_map< std::string, std::string > TDictionary;
 class CFormatter;
 class CReflectionObject;
 
+#define DEBUG_STOP { std::string tTemp; if( GetValue("Debug", tTemp ) ) { __debugbreak(); } }
+
 class CFormatterBucket
 {
 public:
@@ -67,8 +69,15 @@ public:
 		}
 		else
 		{
-			rtValueOut = (*tIter).second.back();
-			return true;
+			if( (*tIter).second.empty() )
+			{
+				return false;
+			}
+			else
+			{
+				rtValueOut = (*tIter).second.back();
+				return true;
+			}
 		}
 	}
 
@@ -101,6 +110,7 @@ public:
 	CFormatterContext( CFormatter* _pFormatter )
 	: pFormatter( _pFormatter )
 	, uCurrentIndent( 0 )
+	, bNeedsIndent( true )
 	{}
 
 	CValueStack<std::string> atStringVariables;
@@ -111,6 +121,8 @@ public:
 	CFormatter* pFormatter;
 	unsigned int uCurrentIndent;
 	CFormatterBucket tBuckets;
+
+	bool bNeedsIndent;
 };
 
 class CFormatterStore
@@ -173,6 +185,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP;
+
 		for( auto pCommand : m_apCommands )
 		{
 			pCommand->Action( pContext, pASTNode );
@@ -196,6 +210,62 @@ public:
 		m_tASTTypes[ pszName ] = pFormatter;
 	}
 
+	void Initialise( void )
+	{
+		std::string tIndentType;
+		if( GetValue( "IndentType", tIndentType ) )
+		{
+			if( tIndentType.compare( "Tabs" ) == 0 )
+			{
+				m_tIndent = "\t";
+			}
+			else if( tIndentType.compare( "Spaces" ) == 0 )
+			{
+				std::string tSpaceCount = "4";
+				if( !GetValue( "SpacesPerIndent", tSpaceCount ) )
+				{
+					Error_Linker( EError_Error, "Failed to get SpacesPerIndent.\n" );
+				}
+
+				int iCount = atoi( tSpaceCount.c_str() );
+
+				m_tIndent = std::string( iCount, ' ' );
+			}
+			else
+			{
+				m_tIndent = "\t";
+
+				Error_Linker( EError_Error, "Unrecognised indent type %s.\n", tIndentType.c_str() );
+			}
+		}
+		else
+		{
+			m_tIndent = "\t";
+
+			Error_Linker( EError_Error, "Failed to get IndentType.\n" );
+			return;
+		}
+
+		std::string tNewlineType;
+		if( GetValue( "NewlineType", tNewlineType ) )
+		{
+			if( tNewlineType.compare( "Windows" ) == 0 )
+			{
+				m_tNewline = "\r\n";
+			}
+			else if( tNewlineType.compare( "Unix" ) == 0 )
+			{
+				m_tNewline = "\n";
+			}
+			else
+			{
+				Error_Linker( EError_Error, "Unrecognised newline type %s.\n", tNewlineType.c_str() );
+			}
+		}
+	}
+
+		
+
 	CASTFormatter* GetASTType( const std::string& rtName )
 	{
 		auto tIter = m_tASTTypes.find( rtName );
@@ -216,11 +286,17 @@ public:
 		return m_tIndent;
 	}
 
+	const std::string& GetNewline()
+	{
+		return m_tNewline;
+	}
+
 private:
 
 	TASTMap m_tASTTypes;
 
 	std::string m_tIndent;
+	std::string m_tNewline;
 };
 
 class CASTReflectionType;

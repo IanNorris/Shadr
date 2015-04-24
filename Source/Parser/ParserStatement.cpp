@@ -43,7 +43,7 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 			}
 			else
 			{
-				pVariableDef = new CASTVariableDefinition( *pType, tName );
+				pVariableDef = new CASTVariableDefinition( *pType, tName, false );
 				pVar = pVariableDef->GetVariables()[0];
 			}
 
@@ -62,7 +62,7 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 			CASTExpression* pExpression = ParseExpression( rtContext, pParentScope );
 			if( pExpression )
 			{
-				pVar->pAssignment = new CASTExpressionStatement( pExpression );
+				pVar->pAssignment = new CASTExpressionStatement( pExpression, true );
 
 				pVariableDef->GetAssignments().push_back( pVar->pAssignment );
 			}
@@ -174,7 +174,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 			ParserError( rtContext, "Expected semi-colon (;)");
 		}
 
-		return new CASTExpressionStatement( pExpression );
+		return new CASTExpressionStatement( pExpression, false );
 	}
 
 	rtContext = tContextCopy;

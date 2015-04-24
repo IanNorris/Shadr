@@ -66,6 +66,8 @@ public:
 	{
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
 		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
+
+		AddCondition( "HasParameters", [&](){ return !m_apParameters.empty(); } );
 	}
 
 	const char* GetElementName() const { return "FunctionCall"; }

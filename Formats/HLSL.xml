@@ -1,7 +1,7 @@
-<ShaderSyntax IndentType="Tabs" NewlineType="Windows" Buckets="Header;Prototypes;Globals;Functions">
+<ShaderSyntax IndentType="Spaces" SpacesPerIndent="4" NewlineType="Windows" Buckets="Header;Prototypes;Globals;Functions">
 	<Program>
-		<Iterate Target="Elements" Variable="Element">
-			<PrintChild Target="Element"/>
+		<Iterate Target="Elements" Variable="$Element">
+			<PrintChild Target="$Element"/>
 		</Iterate>
 	</Program>
 	
@@ -12,17 +12,17 @@
 		
 		<Condition IfTrue="Prototype.HasParameters">
 			<Print Literal="("/>
-			<Iterate Target="Prototype.Parameters" Variable="Parameter">
-				<Condition IfTrue="IfFirst(Parameter)">
+			<Iterate Target="Prototype.Parameters" Variable="$Parameter">
+				<Condition IfTrue="IsFirst($Parameter)">
 					<Print Literal=" "/>
 				</Condition>
 				
-				<PrintChild Target="Parameter"/>
+				<PrintChild Target="$Parameter"/>
 				
-				<Condition IfTrue="IsLast(Parameter)">
+				<Condition IfTrue="IsLast($Parameter)">
 					<Print Literal=" "/>
 				</Condition>
-				<Condition IfFalse="IsLast(Parameter)">
+				<Condition IfFalse="IsLast($Parameter)">
 					<Print Literal=", "/>
 				</Condition>
 			</Iterate>
@@ -32,46 +32,178 @@
 			<Print Literal="( void )"/>
 		</Condition>
 		
+		<Newline/>
 		<PrintChild Target="Body"/>
 		<Newline/>
 		<Newline/>
 	</Function>
 	
 	<Block>
-		<Newline/>
 		<Print Literal="{"/>
 		<Newline/>
 		<AddIndent/>
-		<Iterate Target="Statements" Variable="Statement">
-			<PrintChild Target="Statement"/>
-			<SemiColon/>
+		<Iterate Target="Statements" Variable="$Statement">
+			<PrintChild Target="$Statement"/>
 			<InsertOriginalNewlines Min="1"/>
 		</Iterate>
 		<RemoveIndent/>
 		<Print Literal="}"/>
 	</Block>
 	
+	<ExpressionStatement>
+		<PrintChild Target="Expression"/>
+		<Condition IfFalse="IsChild">
+			<SemiColon/>
+		</Condition>
+	</ExpressionStatement>
+	
+	<FunctionCall>
+		<Print Value="Name"/>
+		<Print Literal="("/>
+		<Iterate Target="Parameters" Variable="$Parameter">
+			<Condition IfTrue="IsFirst($Parameter)">
+				<Print Literal=" "/>
+			</Condition>
+			
+			<PrintChild Target="$Parameter"/>
+			
+			<Condition IfTrue="IsLast($Parameter)">
+				<Print Literal=" "/>
+			</Condition>
+			<Condition IfFalse="IsLast($Parameter)">
+				<Print Literal=", "/>
+			</Condition>
+		</Iterate>
+		<Print Literal=")"/>
+	</FunctionCall>
+	
+	<BinaryOp>
+		<Print Literal="("/>
+		<PrintChild Target="Left"/>
+		<Condition IfFalse="IsTightlyBound">
+			<Print Literal=" "/>
+		</Condition>
+		<Print Value="Token"/>
+		<Condition IfFalse="IsTightlyBound">
+			<Print Literal=" "/>
+		</Condition>
+		<PrintChild Target="Right"/>
+		<Print Literal=")"/>
+	</BinaryOp>
+	
+	<UnaryOp>
+		<Condition IfTrue="IsPre">
+			<Print Value="Token"/>
+		</Condition>
+		<PrintChild Target="Expression"/>
+		<Condition IfFalse="IsPre">
+			<Print Value="Token"/>
+		</Condition>
+	</UnaryOp>
+	
 	<ConstFloat>
-		<Print Value="m_fValue"/>
+		<Print Value="Value"/>
 		<Print Literal="f"/>
 	</ConstFloat>
+	
+	<ConstInt>
+		<Condition IfTrue="IsSigned">
+			<Print Value="ValueSigned"/>
+		</Condition>
+		<Condition IfFalse="IsSigned">
+			<Print Value="ValueUnsigned"/>
+		</Condition>
+	</ConstInt>
+	
+	<ConstBool>
+		<Print Value="Value"/>
+	</ConstBool>
+	
+	<Swizzle>
+		<Print Value="Mask"/>
+	</Swizzle>
+	
+	<MemberAccess>
+		<Print Value="Identifier"/>
+	</MemberAccess>
+	
+	<Return>
+		<Print Literal="return "/>
+		<PrintChild Target="Expression"/>
+		<SemiColon/>
+	</Return>
+	
+	<DoWhile>
+		<Print Literal="do"/>
+		<Newline/>
+		<PrintChild Target="Statement"/>
+		<Newline/>
+		<Print Literal="while( "/>
+		<PrintChild Target="Condition"/>
+		<Print Literal=" )"/>
+		<SemiColon/>
+	</DoWhile>
+	
+	<While>
+		<Print Literal="while( "/>
+		<PrintChild Target="Condition"/>
+		<Print Literal=" )"/>
+		<Newline/>
+		<PrintChild Target="Statement"/>
+	</While>
+	
+	<For>
+		<Print Literal="for( "/>
+		<PrintChild Target="InitialStatement"/>
+		<Print Literal=" "/>
+		<PrintChild Target="Condition"/>
+		<Print Literal="; "/>
+		<PrintChild Target="IterationExpression"/>
+		<Print Literal=" )"/>
+		<Newline/>
+		<PrintChild Target="Body"/>
+	</For>
+	
+	<If>
+		<Print Literal="if( "/>
+		<PrintChild Target="Condition"/>
+		<Print Literal=" )"/>
+		<Newline/>
+		<PrintChild Target="Statement"/>
+		<Newline/>
+		<Condition IfTrue="HasElse">
+			<Print Literal="else"/>
+			<Newline/>
+			<PrintChild Target="ElseStatement"/>
+		</Condition>
+	</If>
+	
+	<Nop>
+	</Nop>
 	
 	<VariableDef>
 		<PrintChild Use="TypeGenerator" Target="Type"/>
 		<Print Literal=" "/>
-		<Iterate Target="Variables" Variable="Variable">
-			<Condition IfTrue="Variable.HasAssignment">
-				<PrintChild Target="Variable.Assignment"/>
+		<Iterate Target="Variables" Variable="$Variable">
+			<Condition IfTrue="$Variable.HasAssignment">
+				<PrintChild Target="$Variable.Assignment"/>
 			</Condition>
-			<Condition IfFalse="Variable.HasAssignment">
-				<Print Value="Variable.Name"/>
+			<Condition IfFalse="$Variable.HasAssignment">
+				<Print Value="$Variable.Name"/>
 			</Condition>
-			<Condition IfFalse="IsLast(Variable)">
+			<Condition IfFalse="IsLast($Variable)">
 				<Print Literal=", "/>
 			</Condition>
 		</Iterate>
 		
+		<Condition IfFalse="IsChild">
+			<SemiColon/>
+		</Condition>
 	</VariableDef>
+	
+	<VariableRef>
+		<Print Value="Variable.Name"/>
+	</VariableRef>
 	
 	<!-- Custom types -->
 	

@@ -40,7 +40,7 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 		ParserFatal( rtContext, "Encountered semantic, this is not implemented yet." );
 	}
 
-	return new CASTVariableDefinition( *pType, tName );
+	return new CASTVariableDefinition( *pType, tName, true );
 }
 
 CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, const std::string& rtFunctionName, CScope* pParentScope )

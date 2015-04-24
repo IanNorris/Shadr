@@ -14,6 +14,11 @@ public:
 	, m_uBits( 0 )
 	, m_bSigned( 0 )
 	{
+		AddReflection( "ValueUnsigned", EASTReflectionType_UInt, &m_uValue );
+		AddReflection( "ValueSigned", EASTReflectionType_Int, &m_iValue );
+
+		AddCondition( "IsSigned", [&](){ return m_bSigned; } );
+
 		ParseString( pszString, uCharacters );
 		GetType().SetScalarType( m_bSigned ? EScalarType_Int : EScalarType_UnsignedInt);
 	}
@@ -21,8 +26,6 @@ public:
 	const char* GetElementName() const { return "ConstInt"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 
@@ -43,6 +46,8 @@ public:
 	: CASTExpression( CType::GetConstFloatType(), EShaderToken_Float )
 	, m_fValue( 0.0 )
 	{
+		AddReflection( "Value", EASTReflectionType_Double, &m_fValue );
+
 		ParseString( pszString, uCharacters );
 		GetType().SetScalarType( EScalarType_Double );
 	}
@@ -50,8 +55,6 @@ public:
 	const char* GetElementName() const { return "ConstFloat"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 
@@ -66,6 +69,8 @@ public:
 	: CASTExpression( CType::GetConstFloatType(), EShaderToken_Float )
 	, m_bValue( false )
 	{
+		AddReflection( "Value", EASTReflectionType_Bool, &m_bValue );
+
 		if( strncmp( pszString, "true", uCharacters) == 0 || strncmp( pszString, "TRUE", uCharacters) == 0 )
 		{
 			m_bValue = true;
@@ -84,8 +89,6 @@ public:
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
-
 private:
 
 	bool m_bValue;
@@ -99,11 +102,10 @@ public:
 	: CASTExpression( *pVariable->pType, EShaderToken_Identifier )
 	, m_pVariable( pVariable )
 	{
+		AddReflection( "Variable", EASTReflectionType_Variable, &m_pVariable );
 	}
 
 	const char* GetElementName() const { return "VariableRef"; }
-
-	//virtual llvm::Value* GenerateCode( CModule* pModule );
 
 private:
 

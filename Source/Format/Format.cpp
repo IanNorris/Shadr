@@ -116,12 +116,12 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 	TiXmlElement* pASTFormatter = pRoot->FirstChildElement();
 	while( pASTFormatter )
 	{
-		
-
 		pFormat->AddASTType( pASTFormatter->Value(), ProcessASTFormatter( pASTFormatter, pASTFormatter->Value() ) );
 
 		pASTFormatter = pASTFormatter->NextSiblingElement();
 	}
+
+	pFormat->Initialise();
 
 	return pFormat;
 }
@@ -205,7 +205,12 @@ bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterCo
 	std::string tToFirstObject = rtReflectionPath.substr( 0, uFirstDot );
 	std::string tRestOfPath = uFirstDot != std::string::npos ? rtReflectionPath.substr( uFirstDot + 1 ) : std::string();
 
+	CReflectionObject* pTestNode = nullptr;
 	std::string tTestString;
+	if( bRoot && pContext->atNodeVariables.GetValue( tToFirstObject, pTestNode ) )
+	{
+		return IsReflectedConditionTrue( tRestOfPath, pContext, pTestNode, false );
+	}
 	if( bRoot && pContext->atStringVariables.GetValue( tToFirstObject, tTestString ) )
 	{
 		return tTestString.compare( "true" ) == 0;
@@ -404,10 +409,29 @@ std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormat
 			Assert( 0, "Arrays cannot be printed, you should iterate" );
 			return "";
 
-		case EASTReflectionType_UInt:
-		case EASTReflectionType_Int:
-		case EASTReflectionType_Bool:
+		case EASTReflectionType_Double:
+			{
+				char szBuffer[ 128 ] = {0};
+				sprintf_s( szBuffer, 128, "%lf", *(pReflectionType->GetData<double>()) );
+				return szBuffer;
+			}
 
+		case EASTReflectionType_UInt:
+			{
+				char szBuffer[ 128 ] = {0};
+				sprintf_s( szBuffer, 128, "%llu", *(pReflectionType->GetData<uint64_t>()) );
+				return szBuffer;
+			}
+
+		case EASTReflectionType_Int:
+			{
+				char szBuffer[ 128 ] = {0};
+				sprintf_s( szBuffer, 128, "%lld", *(pReflectionType->GetData<int64_t>()) );
+				return szBuffer;
+			}
+
+		case EASTReflectionType_Bool:
+			return *(pReflectionType->GetData<bool>()) ? "true" : "false";
 		
 
 		default:

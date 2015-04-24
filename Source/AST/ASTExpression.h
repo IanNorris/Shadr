@@ -29,7 +29,12 @@ public:
 	, m_pExpression( pExpression )
 	, m_eOperator( eToken )
 	, m_bPre( bPre )
-	{}
+	{
+		AddReflection( "Expression", EASTReflectionType_ASTNode, &m_pExpression );
+		AddReflection( "Token", EASTReflectionType_Token, &m_eOperator );
+		
+		AddCondition( "IsPre", [&](){ return m_bPre; } );
+	}
 
 	const char* GetElementName() const { return "UnaryOp"; }
 
@@ -55,7 +60,16 @@ public:
 	, m_pLeft( pLeft )
 	, m_pRight( pRight )
 	, m_eOperator( eToken )
-	{}
+	{
+		AddReflection( "Left", EASTReflectionType_ASTNode, &m_pLeft );
+		AddReflection( "Right", EASTReflectionType_ASTNode, &m_pRight );
+		AddReflection( "Token", EASTReflectionType_Token, &m_eOperator );
+
+		AddCondition( "IsTightlyBound", [&]()
+		{ 
+			return m_eOperator == EShaderToken_Dot;
+		} );
+	}
 
 	const char* GetElementName() const { return "BinaryOp"; }
 
@@ -79,7 +93,9 @@ public:
 	CASTExpressionSwizzleMask( const std::string& rtSwizzle )
 	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
 	, m_tSwizzle( rtSwizzle )
-	{}
+	{
+		AddReflection( "Mask", EASTReflectionType_SString, &m_tSwizzle );
+	}
 
 	const char* GetElementName() const { return "Swizzle"; }
 
@@ -97,7 +113,9 @@ public:
 	CASTExpressionMemberAccess( const std::string& rtIdentifier )
 	: CASTExpression( CType::GetVoidType(), EShaderToken_Identifier )
 	, m_tIdentifier( rtIdentifier )
-	{}
+	{
+		AddReflection( "Identifier", EASTReflectionType_SString, &m_tIdentifier );
+	}
 
 	const char* GetElementName() const { return "MemberAccess"; }
 

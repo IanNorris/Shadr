@@ -23,7 +23,9 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
-		pContext->tCurrentElement.push_back( '\n' );
+		DEBUG_STOP
+
+		pContext->tCurrentElement += pContext->pFormatter->GetNewline();
 
 		for( unsigned int uIndent = 0; uIndent < pContext->uCurrentIndent; uIndent++ )
 		{
@@ -45,6 +47,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		std::string tTemp;
 
 		if( GetValue( "Literal", tTemp ) )
@@ -55,11 +59,6 @@ public:
 		if( GetValue( "Value", tTemp ) )
 		{
 			pContext->tCurrentElement += ReflectedValueToString(tTemp, pContext, pASTNode );
-		}
-
-		for( unsigned int uIndent = 0; uIndent < pContext->uCurrentIndent; uIndent++ )
-		{
-			pContext->tCurrentElement += pContext->pFormatter->GetIndent();
 		}
 	}
 };
@@ -77,6 +76,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		pContext->uCurrentIndent++;
 	}
 };
@@ -94,6 +95,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		pContext->uCurrentIndent--;
 	}
 };
@@ -116,11 +119,16 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		std::string tTarget;
 		GET( "Target", tTarget );
 
 		std::string tVariableName;
 		GET( "Variable", tVariableName );
+
+		Assert( tVariableName.length() >= 2, "User variables must be at least one character long.", tVariableName.c_str() );
+		Assert( tVariableName[0] == '$', "User variables must start with a $, %s does not.", tVariableName.c_str() );
 
 		const CASTReflectionType* pRefType = ReflectedValueToReflectionType( tTarget, pContext, pASTNode );
 
@@ -166,6 +174,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		const char* pszUseOverride = nullptr;
 		std::string tUseOverride;
 		if( GetValue( "Use", tUseOverride ) )
@@ -193,6 +203,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		pContext->tCurrentElement += ";";
 	}
 };
@@ -209,6 +221,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		pContext->tCurrentElement += "\n";
 	}
 };
@@ -231,6 +245,8 @@ public:
 
 	void Action( CFormatterContext* pContext, const CReflectionObject* pASTNode )
 	{
+		DEBUG_STOP
+
 		bool bExpect = true;
 
 		std::string tConditionalPath;
