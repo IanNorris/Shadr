@@ -100,6 +100,34 @@ private:
 	EShaderToken	m_eOperator;
 };
 
+class CASTExpressionTernary : public CASTExpression
+{
+public:
+
+	CASTExpressionTernary( CASTExpression* pCondition, CASTExpression* pTrue, CASTExpression* pFalse )
+	: CASTExpression( EvaluateType( pCondition, pTrue, pFalse ) )
+	, m_pCondition( pCondition )
+	, m_pTrue( pTrue )
+	, m_pFalse( pFalse )
+	{
+		AddReflection( "Condition", EASTReflectionType_ASTNode, &m_pCondition );
+		AddReflection( "TrueBranch", EASTReflectionType_ASTNode, &m_pTrue );
+		AddReflection( "FalseBranch", EASTReflectionType_Token, &m_pFalse );
+	}
+
+	const char* GetElementName() const { return "TernaryOp"; }
+
+protected:
+
+	CType EvaluateType( CASTExpression* pCondition, CASTExpression* pTrue, CASTExpression* pFalse );
+
+private:
+
+	CASTExpression* m_pCondition;
+	CASTExpression* m_pTrue;
+	CASTExpression* m_pFalse;
+};
+
 class CASTExpressionSwizzleMask : public CASTExpression
 {
 public:

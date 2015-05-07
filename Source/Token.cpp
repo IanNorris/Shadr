@@ -109,6 +109,8 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	{ "open square bracket",	"[", 0 },				// EShaderToken_Square_Open	
 	{ "close square bracket",	"]", 0 },				// EShaderToken_Square_Close	
 
+	{ "ternary",				"?", 0 },				// EShaderToken_Ternary_QMark
+
 	//Special tokens to resolve disambiguity
 	{ "+++",					"+++", 0 },				//EShaderToken_Special_TriplePlus
 	{ "---",					"---", 0 },				//EShaderToken_Special_TripleMinus
@@ -511,7 +513,7 @@ void InitialiseTokenTables( void )
 
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Lazy_Or ] = SPrecedence( 14 );
 
-	//TODO: Ternary
+	g_atTokenPrecedence[ EOperatorType_Ternary ][ EShaderToken_Ternary_QMark ] = SPrecedence( 15 );
 
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign ] = SPrecedence( 15, EAssociativity_RightToLeft );
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Add ] = SPrecedence( 15, EAssociativity_RightToLeft );

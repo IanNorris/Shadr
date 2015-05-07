@@ -120,10 +120,12 @@ enum EShaderToken
 	EShaderToken_Square_Open				= -55,
 	EShaderToken_Square_Close				= -56,
 
-	EShaderToken_Special_TriplePlus			= -57,
-	EShaderToken_Special_TripleMinus		= -58,
+	EShaderToken_Ternary_QMark				= -57,
 
-	EShaderToken_EndBasic					= -58,
+	EShaderToken_Special_TriplePlus			= -58,
+	EShaderToken_Special_TripleMinus		= -59,
+
+	EShaderToken_EndBasic					= -59,
 
 	//Callback based tokens
 	EShaderToken_BeginCallback				= -1000,

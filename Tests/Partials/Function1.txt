@@ -1,3 +1,10 @@
+void TestTernary( void )
+{
+	float f0 = 0.0f, f1 = 1.0f, f2 = 2.0f;
+
+	int i = f1 > (f2-f1) ? f0+3 : f2-3;
+}
+
 const float TestWhile()
 {
 	int i,j,l;
