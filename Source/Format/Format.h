@@ -98,7 +98,7 @@ public:
 
 private:
 
-	std::unordered_map< std::string, std::vector< const T > > atTempVariableStack; 
+	std::unordered_map< std::string, std::vector< T > > atTempVariableStack; 
 };
 
 class CASTBase;

@@ -66,14 +66,11 @@
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
     <ClCompile Include="Source\Utility\Error.cpp" />
     <ClCompile Include="Source\Utility\Utility.cpp" />
-    <ClCompile Include="Source\AST\Function.cpp" />
-    <ClCompile Include="Source\AST\Numeric.cpp" />
     <ClCompile Include="Source\LLVM.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Token.cpp" />
@@ -192,7 +189,6 @@
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
     <ClInclude Include="Source\Utility\Error.h" />
     <ClInclude Include="Source\Utility\Utility.h" />
-    <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />
     <ClInclude Include="Source\UnitTests\UnitTesting.h" />
@@ -201,9 +197,6 @@
     <ClInclude Include="Source\AST\AST.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\AST\Expression.h" />
-    <ClInclude Include="Source\AST\Function.h" />
-    <ClInclude Include="Source\AST\Numeric.h" />
     <ClInclude Include="Source\LLVM.h" />
     <ClInclude Include="Source\Tokens.h" />
     <ClInclude Include="Source\Type.h" />

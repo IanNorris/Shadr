@@ -93,7 +93,7 @@ void TokenTest( const char* pszFilename, const char* pszFullFilename, const char
 					fprintf( stderr, "\tTest %s failed, expected to match %s, matched instead:\n", rtTest.c_str(), pszFilename );
 					for( auto& rtResult : tResults )
 					{
-						fprintf( stderr, "\t\t\n", GetTokenName( rtResult.eToken ) );
+						fprintf( stderr, "%s\t\t\n", GetTokenName( rtResult.eToken ) );
 					}
 
 					ruTestsFailed++;
