@@ -112,7 +112,7 @@ public:
 	{
 		AddReflection( "Condition", EASTReflectionType_ASTNode, &m_pCondition );
 		AddReflection( "TrueBranch", EASTReflectionType_ASTNode, &m_pTrue );
-		AddReflection( "FalseBranch", EASTReflectionType_Token, &m_pFalse );
+		AddReflection( "FalseBranch", EASTReflectionType_ASTNode, &m_pFalse );
 	}
 
 	const char* GetElementName() const { return "TernaryOp"; }

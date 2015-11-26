@@ -83,6 +83,14 @@
 		<Print Literal=" )"/>
 	</ExpressionParen>
 	
+	<TernaryOp>
+		<PrintChild Target="Condition"/>
+		<Print Literal=" ? "/>
+		<PrintChild Target="TrueBranch"/>
+		<Print Literal=" : "/>
+		<PrintChild Target="FalseBranch"/>
+	</TernaryOp>
+	
 	<BinaryOp>
 		<PrintChild Target="Left"/>
 		<Condition IfFalse="IsTightlyBound">

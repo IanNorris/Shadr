@@ -10,7 +10,12 @@ void TestTernary( void )
 	int i = f1 > (f2-f1) ? f0 + 3 : f2 - 3;
 	
 	//This one previously failed because f2-3 was interpreted as "identifier int" and not "identifier minus int"
-	int j = f1 > (f2-f1) ? f0+3 : f2-3;
+	//int j = f1 > (f2-f1) ? f0+3 : f2-3;
+	
+	int k = f1 > (f2 - f1) ? (f2 <= f1 ? f0 : f1) : f2 - 3;
+	int l = f1 > (f2 - f1) ? (f2 <= f1 ? f0 : f1) : (f0 <= 3 ? f2 : 1.0f);
+	int m = f1 > (f2 - f1) ? f2 <= f1 ? f0 / 4 : f1 * 2 + 1 : f0 <= 3 ? k + 3.0f : 1.0f;
+	
 }
 
 const float TestWhile()
@@ -69,7 +74,10 @@ float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIs
 float4 PSMain()
 {
 	int i = 3;
-	float4 f4Val = MakeFloat4( 2.0, 1.0f, -3.0f, 1 );
+	
+	//Token ambiguity here
+	//float4 f4Val = MakeFloat4( 2.0, 1.0f, -3.0f, 1 );
+	float4 f4Val = MakeFloat4( 2.0, 1.0f, 3.0f, 1 );
 
 	float4 f4Result = MyFunction( f4Val.xyz, i, f4Val, f4Val.x, true );
 	float fIn1 = 4;
