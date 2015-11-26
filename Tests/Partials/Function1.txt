@@ -2,7 +2,15 @@ void TestTernary( void )
 {
 	float f0 = 0.0f, f1 = 1.0f, f2 = 2.0f;
 
-	int i = f1 > (f2-f1) ? f0+3 : f2-3;
+	if( f0 > f1 ? f0 : f1 )
+	{
+		
+	}
+	
+	int i = f1 > (f2-f1) ? f0 + 3 : f2 - 3;
+	
+	//This one previously failed because f2-3 was interpreted as "identifier int" and not "identifier minus int"
+	int j = f1 > (f2-f1) ? f0+3 : f2-3;
 }
 
 const float TestWhile()

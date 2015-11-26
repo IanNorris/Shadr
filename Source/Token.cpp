@@ -78,7 +78,7 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 
 	{ "semi-colon",				";", 0 },				// EShaderToken_SemiColon				
 	{ "colon",					":", 0 },				// EShaderToken_Colon					
-	{ "dot",					".", 0 },				// EShaderToken_Colon					
+	{ "dot",					".", 0 },				// EShaderToken_Dot
 	
 	{ "return",					"return", 0 },			// EShaderToken_Return					
 	{ "if",						"if", 0 },				// EShaderToken_If						
@@ -440,9 +440,7 @@ void InitialiseTokenTables( void )
 	g_tIgnoreTokens[ EShaderToken_Int ].push_back( EShaderToken_Float );
 	g_tIgnoreTokens[ EShaderToken_Dot ].push_back( EShaderToken_Float );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Minus ].push_back( EShaderToken_Float );
-	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Minus ].push_back( EShaderToken_Int );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Float );
-	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Plus ].push_back( EShaderToken_Int );
 	g_tIgnoreTokens[ EShaderToken_Binary_Operator_Divide ].push_back( EShaderToken_Comment );
 	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_And ].push_back( EShaderToken_Binary_Bitwise_Lazy_And );
 	g_tIgnoreTokens[ EShaderToken_Binary_Bitwise_Or ].push_back( EShaderToken_Binary_Bitwise_Lazy_Or );
@@ -472,6 +470,7 @@ void InitialiseTokenTables( void )
 
 	g_atTokenPrecedence[ EOperatorType_None ][ EShaderToken_Identifier ] = SPrecedence( 0 );
 	g_atTokenPrecedence[ EOperatorType_None ][ EShaderToken_Parenthesis_Open ] = SPrecedence( 2 );
+	g_atTokenPrecedence[ EOperatorType_None ][ EShaderToken_Parenthesis_Close ] = SPrecedence( INT_MAX );
 
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Dot ] = SPrecedence( 2 );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Square_Open ] = SPrecedence( 2 );
@@ -513,23 +512,24 @@ void InitialiseTokenTables( void )
 
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Bitwise_Lazy_Or ] = SPrecedence( 14 );
 
-	g_atTokenPrecedence[ EOperatorType_Ternary ][ EShaderToken_Ternary_QMark ] = SPrecedence( 15 );
+	g_atTokenPrecedence[ EOperatorType_Ternary ][ EShaderToken_Ternary_QMark ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Ternary ][ EShaderToken_Colon ] = SPrecedence( 16, EAssociativity_RightToLeft );
 
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Add ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Subtract ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Multiply ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Divide ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Modulo ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Shift_Left ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Shift_Right ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Add ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Subtract ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Multiply ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Divide ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Modulo ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Shift_Left ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Shift_Right ] = SPrecedence( 17, EAssociativity_RightToLeft );
 
 	//TODO
-	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_And ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Xor ] = SPrecedence( 15, EAssociativity_RightToLeft );
-	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Or ] = SPrecedence( 15, EAssociativity_RightToLeft );
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_And ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Xor ] = SPrecedence( 17, EAssociativity_RightToLeft );
+	//g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Assign_Or ] = SPrecedence( 17, EAssociativity_RightToLeft );
 
-	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Comma ] = SPrecedence( 17 );
+	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Comma ] = SPrecedence( 18 );
 }
 
 void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens )

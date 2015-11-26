@@ -31,7 +31,7 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext, CScope* pP
 	return new CASTExpressionParen( pSubExpression );
 }
 
-CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLTRPrecedence, int iRTLPrecedence, CASTExpression* pLeft, CScope* pParentScope )
+CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL, int iLTRPrecedence, int iRTLPrecedence, CASTExpression* pLeft, CScope* pParentScope )
 {
 	bool bRejectComma = rtContext.IsFlagSet( EParseFlag_RejectComma );
 
@@ -42,8 +42,20 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLTRPr
 			return pLeft;
 		}
 
+		//Reject a colon, we will explicitly skip it
+		if( rtContext.sNextToken.eToken == EShaderToken_Colon )
+		{
+			return pLeft;
+		}
+
 		EOperatorType eType;
 		int iRightPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, false ).iPrecedence;
+
+		//Not an operator, 
+		if( iRightPrecedence == -1 )
+		{
+
+		}
 
 		//Left to Right Precedence
 		if( iRightPrecedence < iLTRPrecedence )
@@ -89,7 +101,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLTRPr
 			EOperatorType eTypeTernary;
 			int iTernaryPrecedence = GetOperatorPrecedence( eTypeTernary, EShaderToken_Ternary_QMark, false ).iPrecedence;
 
-			CASTExpression* pExpressionFalse = ParseExpression( rtContext, pParentScope, iRTLPrecedence );
+			CASTExpression* pExpressionFalse = ParseExpression( rtContext, pParentScope );
 
 			pLeft = new CASTExpressionTernary( pLeft, pExpressionTrue, pExpressionFalse );
 		}
@@ -110,7 +122,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, int iLTRPr
 			int iNextPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, false ).iPrecedence;
 			if( iRightPrecedence < iNextPrecedence )
 			{
-				pRight = ParseBinaryExpressionRight( rtContext, iRightPrecedence + 1, iRTLPrecedence, pRight, pParentScope );
+				pRight = ParseBinaryExpressionRight( rtContext, bRTL, iRightPrecedence + 1, iRTLPrecedence, pRight, pParentScope );
 				if( !pRight )
 				{
 					ParserError( rtContext, "Expected expression." );
@@ -231,7 +243,7 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 	return pResult;
 }
 
-CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope, int iRTLPrecedence )
+CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope, int iRTLPrecedence, bool bRTL )
 {
 	CASTExpression* pLeft = ParsePrimary( rtContext, EShaderToken_Invalid, pParentScope );
 	if( !pLeft )
@@ -239,7 +251,7 @@ CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope,
 		return nullptr;
 	}
 
-	return ParseBinaryExpressionRight( rtContext, 0, iRTLPrecedence, pLeft, pParentScope );
+	return ParseBinaryExpressionRight( rtContext, 0, bRTL, iRTLPrecedence, pLeft, pParentScope );
 }
 
 CASTExpression* ParseFunctionCall( SParseContext& rtContext, const std::string& rtFunctionName, CScope* pParentScope )
