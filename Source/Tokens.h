@@ -195,6 +195,7 @@ struct SParseContext
 	, uCurrentCol( 0 )
 	, uFlags( 0 )
 	, pCompilationUnit( pCU )
+	, bIgnoreAmbiguity( false )
 	{}
 
 	const char* pszBuffer;
@@ -203,9 +204,23 @@ struct SParseContext
 	unsigned int uCurrentCol;
 	unsigned int uFlags;
 
+	bool		bIgnoreAmbiguity;
+
 	void SetFlag( EParseFlag eFlag ) { uFlags |= eFlag; }
 	void UnsetFlag( EParseFlag eFlag ) { uFlags &= ~eFlag; }
 	bool IsFlagSet( EParseFlag eFlag ) { return (uFlags & eFlag) != 0; }
+
+	std::string GetLinePreview()
+	{
+		std::string tShortString( pszBuffer, 30 );
+		size_t uPos = tShortString.find_first_of( '\n' );
+		if( uPos != std::string::npos )
+		{
+			tShortString = tShortString.substr( 0, uPos );
+		}
+
+		return tShortString;
+	}
 
 	SPossibleToken sNextToken;
 
@@ -227,6 +242,9 @@ void FilterTokens( std::vector<SPossibleToken>& rsPossibleTokens );
 
 SPrecedence GetOperatorPrecedence( EOperatorType& reOperatorType, EShaderToken eToken, bool bForceUnary );
 
+void ReportErrorOnAmbiguousToken( SParseContext& rtContext );
+void ResolveTokenAmbiguity( SParseContext& rtContext, bool bExpectOperator );
+void AdvanceToken( SParseContext& rtContext, SPossibleToken& rtToken );
 bool ConsumeToken( SParseContext& rtContext );
 
 #endif //SHADR_TOKEN_H

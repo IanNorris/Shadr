@@ -118,7 +118,7 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
 {
-	{ "float",		std::regex( "[\\-]?(?:(?:[0-9]+\\.[0-9]*)|(?:[0-9]*\\.[0-9]+))(?:f|(?:e[+\\-]?[0-9]+))?" ) }, //Allow .3f or 3.f but not .f
+	{ "float",		std::regex( "-?(?:(?:[0-9]+\\.[0-9]*)|(?:[0-9]*\\.[0-9]+))(?:f|(?:e[+\\-]?[0-9]+f?))?" ) }, //Allow .3f or 3.f but not .f
 	{ "int",		std::regex( "-?(?:(?:0[Xx](?:[0-9a-fA-F]+))|(?:[0-9]+))" ) },
 	{ "boolean",	std::regex( "(?:true|TRUE|false|FALSE)" ) },
 	{ "identifier", std::regex( "[a-zA-Z_][a-zA-Z0-9_]*" ) },
@@ -591,38 +591,141 @@ SPrecedence GetOperatorPrecedence( EOperatorType& reOperatorType, EShaderToken e
 	return -1;
 }
 
+void ReportErrorOnAmbiguousToken( SParseContext& rtContext )
+{
+	if( rtContext.asPossibleTokens.size() > 1 && !rtContext.bIgnoreAmbiguity )
+	{
+		std::string tTokens;
+		for( auto sToken : rtContext.asPossibleTokens )
+		{
+			tTokens += GetTokenName( sToken.eToken );
+			tTokens += " ";
+		}
+
+		Error_Compiler( EError_Warning, rtContext.uCurrentRow, rtContext.uCurrentCol, "Token ambiguity, could be: %s at %s", tTokens.c_str(), rtContext.GetLinePreview().c_str() );
+	}
+}
+
+void ResolveTokenAmbiguity( SParseContext& rtContext, bool bExpectOperator )
+{
+	//If the user specified a specific token type to consume and we have an ambiguity
+	//then we can use this hint to resolve it.
+	if( rtContext.asPossibleTokens.size() > 1 )
+	{
+		int foundCount = 0;
+		int foundIndex = 0;
+
+		int foundNotOfCount = 0;
+		int foundNotOfIndex = 0;
+
+		int index = 0;
+		for( auto sToken : rtContext.asPossibleTokens )
+		{
+			bool found = false;
+			for( unsigned int uType = EOperatorType_Ternary; uType <= EOperatorType_Unary; uType++ )
+			{
+				auto tIter = g_atTokenPrecedence[ uType ].find( sToken.eToken );
+	
+				if( tIter != g_atTokenPrecedence[ uType ].end() )
+				{
+					found = true;
+				}
+			}
+
+			if( found )
+			{
+				foundCount++;
+				foundIndex = index;
+			}
+			else
+			{
+				foundNotOfCount++;
+				foundNotOfIndex = index;
+			}
+
+			index++;
+		}
+
+		if( bExpectOperator )
+		{
+			if( foundCount == 0 )
+			{
+				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected an operator at %s", rtContext.GetLinePreview().c_str() );
+			}
+			else if( foundCount == 1 )
+			{
+				rtContext.bIgnoreAmbiguity = true;
+
+				rtContext.sNextToken = rtContext.asPossibleTokens[ foundIndex ];
+
+				AdvanceToken( rtContext, rtContext.sNextToken );
+			}
+			else
+			{
+				ReportErrorOnAmbiguousToken( rtContext );
+				Assert( foundCount <= 1, "Expected an operator, but was unable to resolve token ambiguity." );
+			}
+		}
+		else
+		{
+			if( foundNotOfCount == 0 )
+			{
+				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Did not expect an operator at %s", rtContext.GetLinePreview().c_str() );
+			}
+			else if( foundNotOfCount == 1 )
+			{
+				rtContext.bIgnoreAmbiguity = true;
+
+				rtContext.sNextToken = rtContext.asPossibleTokens[ foundNotOfIndex ];
+
+				AdvanceToken( rtContext, rtContext.sNextToken );
+			}
+			else
+			{
+				ReportErrorOnAmbiguousToken( rtContext );
+				Assert( foundNotOfCount <= 1, "Did not expect an operator, and was unable to resolve token ambiguity." );
+			}
+		}
+
+		
+	}
+}
+
+void AdvanceToken( SParseContext& rtContext, SPossibleToken& rtToken )
+{
+	rtContext.pszBuffer += rtToken.uLength;
+	rtContext.uCurrentRow = rtToken.uAfterTokenRow;
+	rtContext.uCurrentCol = rtToken.uAfterTokenColumn;
+	rtContext.uBytesLeft -= rtToken.uLength;
+}
+
 bool ConsumeToken( SParseContext& rtContext )
 {
+	ReportErrorOnAmbiguousToken( rtContext );
+
+	rtContext.bIgnoreAmbiguity = false;
 	rtContext.asPossibleTokens.clear();
 
 	while( rtContext.uBytesLeft && GetPossibleTokens( rtContext.pszBuffer, rtContext.uBytesLeft, rtContext.uCurrentRow, rtContext.uCurrentCol, rtContext.asPossibleTokens ) )
 	{
 		SPossibleToken& rtToken = rtContext.asPossibleTokens[0];
 
-		rtContext.pszBuffer += rtToken.uLength;
-		rtContext.uCurrentRow = rtToken.uAfterTokenRow;
-		rtContext.uCurrentCol = rtToken.uAfterTokenColumn;
-		rtContext.uBytesLeft -= rtToken.uLength;
-
-		if( rtContext.asPossibleTokens.size() > 1 )
-		{
-			std::string tTokens;
-			for( auto sToken : rtContext.asPossibleTokens )
-			{
-				tTokens += GetTokenName( sToken.eToken );
-				tTokens += " ";
-			}
-
-			Error_Compiler( EError_Warning, rtContext.uCurrentRow, rtContext.uCurrentCol, "Token ambiguity, could be: %s", tTokens.c_str() );
-		}
-		
 		if( rtToken.eToken == EShaderToken_Whitespace || rtToken.eToken == EShaderToken_Comment )
 		{
+			AdvanceToken( rtContext, rtToken );
+
 			rtContext.asPossibleTokens.clear();
 			continue;
 		}
 		else
 		{
+			if( rtContext.asPossibleTokens.size() == 1 )
+			{
+				AdvanceToken( rtContext, rtToken );
+			}
+
+			//Don't advance if we have ambiguity
+
 			rtContext.sNextToken = rtContext.asPossibleTokens[0];
 			return true;
 		}
@@ -630,9 +733,7 @@ bool ConsumeToken( SParseContext& rtContext )
 
 	if( rtContext.uBytesLeft )
 	{
-		std::string tShortString( rtContext.pszBuffer, 30 );
-
-		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unable to parse at %s", tShortString.c_str() );
+		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unable to parse at %s", rtContext.GetLinePreview().c_str() );
 	}
 
 	rtContext.sNextToken.eToken = EShaderToken_Invalid;

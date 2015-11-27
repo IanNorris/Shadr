@@ -48,6 +48,8 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL,
 			return pLeft;
 		}
 
+		ResolveTokenAmbiguity( rtContext, true );
+
 		EOperatorType eType;
 		int iRightPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, false ).iPrecedence;
 
@@ -101,22 +103,21 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL,
 			EOperatorType eTypeTernary;
 			int iTernaryPrecedence = GetOperatorPrecedence( eTypeTernary, EShaderToken_Ternary_QMark, false ).iPrecedence;
 
+			ResolveTokenAmbiguity( rtContext, false );
+
 			CASTExpression* pExpressionFalse = ParseExpression( rtContext, pParentScope );
 
 			pLeft = new CASTExpressionTernary( pLeft, pExpressionTrue, pExpressionFalse );
 		}
 		else
 		{
+			SParseContext oldContext = rtContext;
+
 			pRight = ParsePrimary( rtContext, eOperator, pParentScope );
 			if( !pRight )
 			{
-			
-
-				if( !pRight )
-				{
-					ParserError( rtContext, "Expected expression." );
-					return nullptr;
-				}
+				ParserError( rtContext, "Expected expression." );
+				return nullptr;
 			}
 
 			int iNextPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, false ).iPrecedence;
@@ -141,6 +142,8 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 
 	bool bConsumedToken = false;
 
+	ResolveTokenAmbiguity( rtContext, false );
+
 	EOperatorType eType;
 	int iPrecedence = GetOperatorPrecedence( eType, rtContext.sNextToken.eToken, true ).iPrecedence;
 
@@ -150,11 +153,13 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 
 		ConsumeToken( rtContext );
 
+		SParseContext oldContext = rtContext;
+
 		CASTExpression* pChild = ParsePrimary( rtContext, EShaderToken_Invalid, pParentScope );
 
 		if( pChild == nullptr )
 		{
-			ParserError( rtContext, "Expected expression." );
+			ParserError( rtContext, "Expected expression at: %s", rtContext.GetLinePreview().c_str() );
 			return nullptr;
 		}
 
@@ -245,11 +250,15 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 
 CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope, int iRTLPrecedence, bool bRTL )
 {
+	SParseContext oldContext1 = rtContext;
+
 	CASTExpression* pLeft = ParsePrimary( rtContext, EShaderToken_Invalid, pParentScope );
 	if( !pLeft )
 	{
 		return nullptr;
 	}
+
+	SParseContext oldContext2 = rtContext;
 
 	return ParseBinaryExpressionRight( rtContext, 0, bRTL, iRTLPrecedence, pLeft, pParentScope );
 }

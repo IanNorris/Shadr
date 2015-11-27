@@ -1,3 +1,19 @@
+void TestUnarySignEdgeCases( void )
+{
+	int i = 0;
+	-i;
+	+i;
+	-3-3;
+	+3-+3;
+	-3-3;
+	-4+-4;
+	-i+++4;
+	3+1;
+	3-1;
+	3.0f-1.0f;
+	1111.e4f+1151.12e13f;
+}
+
 void TestTernary( void )
 {
 	float f0 = 0.0f, f1 = 1.0f, f2 = 2.0f;
@@ -10,7 +26,7 @@ void TestTernary( void )
 	int i = f1 > (f2-f1) ? f0 + 3 : f2 - 3;
 	
 	//This one previously failed because f2-3 was interpreted as "identifier int" and not "identifier minus int"
-	//int j = f1 > (f2-f1) ? f0+3 : f2-3;
+	int j = f1 > (f2-f1) ? f0+3 : f2-3;
 	
 	int k = f1 > (f2 - f1) ? (f2 <= f1 ? f0 : f1) : f2 - 3;
 	int l = f1 > (f2 - f1) ? (f2 <= f1 ? f0 : f1) : (f0 <= 3 ? f2 : 1.0f);

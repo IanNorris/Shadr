@@ -4,11 +4,11 @@
 #include "Utility/Utility.h"
 #include "Utility/Error.h"
 
-#define ParserFatal( context, description, ... ) Error_Compiler( EError_Fatal, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
-#define ParserError( context, description, ... ) Error_Compiler( EError_Error, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
-#define ParserWarning( context, description, ... ) Error_Compiler( EError_Warning, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
-#define ParserInfo( context, description, ... ) Error_Compiler( EError_Information, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
-#define ParserDebug( context, description, ... ) Error_Compiler( EError_Debug, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
+#define ParserFatal( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Fatal, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
+#define ParserError( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Error, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
+#define ParserWarning( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Warning, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
+#define ParserInfo( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Information, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
+#define ParserDebug( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Debug, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
 
 CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU );
 CASTProgram* ParseFile( const char* pszFilename, CCompilationUnit* pCU );
