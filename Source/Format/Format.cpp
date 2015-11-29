@@ -413,6 +413,32 @@ std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormat
 			{
 				char szBuffer[ 128 ] = {0};
 				sprintf_s( szBuffer, 128, "%lf", *(pReflectionType->GetData<double>()) );
+				
+				//Trim trailing zeroes
+				size_t uDotPos = (size_t)-1;
+				bool encounteredExponent = false;
+				size_t uLen = strlen(szBuffer);
+				for( size_t uPos = 0; uPos < uLen; uPos++ )
+				{
+					if( szBuffer[uPos] == '.' )
+					{
+						uDotPos = uPos;
+					}
+					else if( szBuffer[uPos] == 'e' )
+					{
+						encounteredExponent = true;
+					}
+				}
+				if( !encounteredExponent )
+				{
+					size_t uMinLength = uDotPos != (size_t)-1 ? uDotPos : 2;
+					while( uLen > uMinLength && szBuffer[uLen-2] != '.' && szBuffer[uLen-1] == '0' )
+					{
+						szBuffer[uLen-1] = '\0';
+						uLen--;
+					}
+				}
+
 				return szBuffer;
 			}
 

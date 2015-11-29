@@ -27,8 +27,10 @@ int main( int iArgCount, char** apszArguments )
 
 		CASTProgram* pProgram = ParseFile( apszArguments[1], &tCU );
 
-		const char* pszFormatter = "HLSL";
-		CFormatter* pFormatter = GetFormatter( "HLSL" );
+		
+
+		const char* pszFormatter = apszArguments[2];
+		CFormatter* pFormatter = GetFormatter( pszFormatter );
 		if( pFormatter )
 		{
 			CASTFormatter* pProgramFormatter = pFormatter->GetASTType( "Program" );
