@@ -1,8 +1,7 @@
 #include "CompilationUnit.h"
 #include "AST/AST.h"
 #include "Parser.h"
-
-std::vector< SParseContext > g_tParseContextStack;
+#include "Reconcile.h"
 
 CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU )
 {
@@ -17,6 +16,9 @@ CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, C
 	if( ConsumeToken( tContext ) )
 	{
 		CASTProgram* pProgram = ParseProgram( tContext );
+
+		Reconcile( pProgram, nullptr );
+
 		return pProgram;
 	}
 
@@ -35,17 +37,4 @@ CASTProgram* ParseFile( const char* pszFilename, CCompilationUnit* pCU )
 	PopCurrentFile();
 
 	return pProgram;
-}
-
-void PushParseContext( SParseContext& rtContext )
-{
-	g_tParseContextStack.push_back( rtContext );
-}
-
-SParseContext PopParseContext( void )
-{
-	SParseContext tContext = g_tParseContextStack.back();
-	g_tParseContextStack.pop_back();
-
-	return tContext;
 }

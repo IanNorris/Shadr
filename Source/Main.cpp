@@ -27,7 +27,7 @@ int main( int iArgCount, char** apszArguments )
 
 		CASTProgram* pProgram = ParseFile( apszArguments[1], &tCU );
 
-		
+		//NOTE: At this point all the pointers from the file data will be invalidated. Do all the work in ParseBuffer.
 
 		const char* pszFormatter = apszArguments[2];
 		CFormatter* pFormatter = GetFormatter( pszFormatter );

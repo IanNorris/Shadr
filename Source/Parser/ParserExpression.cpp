@@ -28,7 +28,7 @@ CASTExpression* ParseParenthesisExpression( SParseContext& rtContext, CScope* pP
 		ParserError( rtContext, "Mismatched (, expected )" );
 	}
 
-	return new CASTExpressionParen( pSubExpression );
+	return new CASTExpressionParen( rtContext, pSubExpression );
 }
 
 CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL, int iLTRPrecedence, int iRTLPrecedence, CASTExpression* pLeft, CScope* pParentScope )
@@ -81,7 +81,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL,
 
 		if( eType == EOperatorType_Unary )
 		{
-			pLeft = new CASTExpressionUnary( eOperator, false, pLeft );
+			pLeft = new CASTExpressionUnary( rtContext, eOperator, false, pLeft );
 		}
 		else if( eType == EOperatorType_Ternary )
 		{
@@ -107,7 +107,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL,
 
 			CASTExpression* pExpressionFalse = ParseExpression( rtContext, pParentScope );
 
-			pLeft = new CASTExpressionTernary( pLeft, pExpressionTrue, pExpressionFalse );
+			pLeft = new CASTExpressionTernary( rtContext, pLeft, pExpressionTrue, pExpressionFalse );
 		}
 		else
 		{
@@ -131,7 +131,7 @@ CASTExpression* ParseBinaryExpressionRight( SParseContext& rtContext, bool bRTL,
 				}
 			}
 
-			pLeft = new CASTExpressionBinary( eOperator, pLeft, pRight );
+			pLeft = new CASTExpressionBinary( rtContext, eOperator, pLeft, pRight );
 		}
 	}
 }
@@ -163,7 +163,7 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 			return nullptr;
 		}
 
-		pResult = new CASTExpressionUnary( eUnaryToken, true, pChild );
+		pResult = new CASTExpressionUnary( rtContext, eUnaryToken, true, pChild );
 	}
 	else
 	{
@@ -174,15 +174,15 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 				break;
 
 			case EShaderToken_Float:
-				pResult = new CASTConstantFloat( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+				pResult = new CASTConstantFloat( rtContext, rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
 				break;
 
 			case EShaderToken_Int:
-				pResult = new CASTConstantInt( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+				pResult = new CASTConstantInt( rtContext, rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
 				break;
 
 			case EShaderToken_Boolean:
-				pResult = new CASTConstantBool( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+				pResult = new CASTConstantBool( rtContext, rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
 				break;
 
 			case EShaderToken_Identifier:
@@ -197,11 +197,11 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 					{
 						if( IsSwizzle( tIdentifierName ) )
 						{
-							pResult = new CASTExpressionSwizzleMask( tIdentifierName );
+							pResult = new CASTExpressionSwizzleMask( rtContext, tIdentifierName );
 						}
 						else
 						{
-							pResult = new CASTExpressionMemberAccess( tIdentifierName );
+							pResult = new CASTExpressionMemberAccess( rtContext, tIdentifierName );
 						}
 					}
 					else
@@ -226,11 +226,11 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 								SVariable* pDummy = SVariable::CreateDummyVariable();
 								pDummy->tName = tIdentifierName;
 								pParentScope->AddVariable( rtContext, pDummy );
-								pResult = new CASTVariableReference( pDummy );
+								pResult = new CASTVariableReference( rtContext, pDummy );
 							}
 							else
 							{
-								pResult = new CASTVariableReference( pVariable );
+								pResult = new CASTVariableReference( rtContext, pVariable );
 							}
 						}
 					}
@@ -265,7 +265,7 @@ CASTExpression* ParseExpression( SParseContext& rtContext, CScope* pParentScope,
 
 CASTExpression* ParseFunctionCall( SParseContext& rtContext, const std::string& rtFunctionName, CScope* pParentScope )
 {
-	CASTExpressionFunctionCall* pCall = new CASTExpressionFunctionCall( rtFunctionName );
+	CASTExpressionFunctionCall* pCall = new CASTExpressionFunctionCall( rtContext, rtFunctionName );
 
 	bool bFirst = true;
 

@@ -172,6 +172,12 @@
     <ClCompile Include="Source\Format\Format.cpp">
       <Filter>Source Files\Format</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Reconcile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Tokens.h" />
@@ -318,6 +324,9 @@
       <Filter>Header Files\Format</Filter>
     </ClInclude>
     <ClInclude Include="Source\Reflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Reconcile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

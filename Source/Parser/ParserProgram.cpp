@@ -4,7 +4,7 @@
 
 CASTProgram* ParseProgram( SParseContext& rtContext )
 {
-	CASTProgram* pProgram = new CASTProgram();
+	CASTProgram* pProgram = new CASTProgram( rtContext );
 
 	do 
 	{

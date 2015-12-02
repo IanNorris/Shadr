@@ -59,7 +59,7 @@ public:
 		}
 		else
 		{
-			Error_Linker( EError_Error, "Neither Literal or Value specified for Print command.\n" );
+			Error_Linker( EError_Error, GetCurrentFilename(), "Neither Literal or Value specified for Print command.\n" );
 		}
 	}
 };
@@ -271,7 +271,7 @@ public:
 		}
 		else
 		{
-			Error_Linker( EError_Error, "Neither IfTrue or IfFalse specified for Condition" );
+			Error_Linker( EError_Error, GetCurrentFilename(), "Neither IfTrue or IfFalse specified for Condition" );
 			return;
 		}
 

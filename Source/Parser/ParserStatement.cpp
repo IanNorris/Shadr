@@ -43,7 +43,7 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 			}
 			else
 			{
-				pVariableDef = new CASTVariableDefinition( *pType, tName, false );
+				pVariableDef = new CASTVariableDefinition( rtContext, *pType, tName, false );
 				pVar = pVariableDef->GetVariables()[0];
 			}
 
@@ -62,7 +62,7 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 			CASTExpression* pExpression = ParseExpression( rtContext, pParentScope );
 			if( pExpression )
 			{
-				pVar->pAssignment = new CASTExpressionStatement( pExpression, true );
+				pVar->pAssignment = new CASTExpressionStatement( rtContext, pExpression, true );
 
 				pVariableDef->GetAssignments().push_back( pVar->pAssignment );
 			}
@@ -122,7 +122,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 
 		if( pExpression )
 		{
-			return new CASTReturnStatement( pExpression );
+			return new CASTReturnStatement( rtContext, pExpression );
 		}
 		else
 		{
@@ -157,7 +157,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 	{
 		ConsumeToken( rtContext );
 
-		return new CASTNopStatement();
+		return new CASTNopStatement( rtContext );
 	}
 
 	rtContext = tContextCopy;
@@ -174,7 +174,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 			ParserError( rtContext, "Expected semi-colon (;)");
 		}
 
-		return new CASTExpressionStatement( pExpression, false );
+		return new CASTExpressionStatement( rtContext, pExpression, false );
 	}
 
 	rtContext = tContextCopy;
@@ -190,7 +190,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 
 CASTBlockStatement* ParseBlockStatement( SParseContext& rtContext, CScope* pParentScope )
 {
-	CASTBlockStatement* pBlock = new CASTBlockStatement( pParentScope );
+	CASTBlockStatement* pBlock = new CASTBlockStatement( rtContext, pParentScope );
 
 	while( rtContext.sNextToken.eToken != EShaderToken_Brace_Close )
 	{
@@ -242,7 +242,7 @@ CASTIfStatement* ParseIfStatement( SParseContext& rtContext, CScope* pParentScop
 		pElseStatement = ParseStatement( rtContext, pParentScope );
 	}
 
-	return new CASTIfStatement( pCondition, pStatement, pElseStatement );
+	return new CASTIfStatement( rtContext, pCondition, pStatement, pElseStatement );
 }
 
 CASTWhileStatement* ParseWhileStatement( SParseContext& rtContext, CScope* pParentScope )
@@ -272,7 +272,7 @@ CASTWhileStatement* ParseWhileStatement( SParseContext& rtContext, CScope* pPare
 		return NULL;
 	}
 
-	return new CASTWhileStatement( pCondition, pStatement );
+	return new CASTWhileStatement( rtContext, pCondition, pStatement );
 }
 
 CASTDoWhileStatement* ParseDoWhileStatement( SParseContext& rtContext, CScope* pParentScope )
@@ -314,7 +314,7 @@ CASTDoWhileStatement* ParseDoWhileStatement( SParseContext& rtContext, CScope* p
 	}
 	ConsumeToken( rtContext );
 
-	return new CASTDoWhileStatement( pCondition, pStatement );
+	return new CASTDoWhileStatement( rtContext, pCondition, pStatement );
 }
 
 CASTForStatement* ParseForStatement( SParseContext& rtContext, CScope* pParentScope )
@@ -365,5 +365,5 @@ CASTForStatement* ParseForStatement( SParseContext& rtContext, CScope* pParentSc
 		return NULL;
 	}
 
-	return new CASTForStatement( pInitialStatement, pCondition, pIteration, pStatement, pForScope );
+	return new CASTForStatement( rtContext, pInitialStatement, pCondition, pIteration, pStatement, pForScope );
 }

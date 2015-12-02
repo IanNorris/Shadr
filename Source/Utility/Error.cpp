@@ -15,7 +15,7 @@ void PopCurrentFile()
 	g_tFilenameStack.pop_back();
 }
 
-void Error_Compiler( EError eLevel, unsigned int uSourceRow, unsigned int uSourceCol, const char* pszDescription, ... )
+const char* GetCurrentFilename()
 {
 	const char* pszFile = "Internal Error";
 	if( !g_tFilenameStack.empty() )
@@ -23,6 +23,11 @@ void Error_Compiler( EError eLevel, unsigned int uSourceRow, unsigned int uSourc
 		pszFile = g_tFilenameStack.back().c_str();
 	}
 
+	return pszFile;
+}
+
+void Error_Compiler( EError eLevel, const char* pszFilename, unsigned int uSourceRow, unsigned int uSourceCol, const char* pszDescription, ... )
+{
 	va_list argList;
 	va_start( argList, pszDescription );
 
@@ -61,21 +66,15 @@ void Error_Compiler( EError eLevel, unsigned int uSourceRow, unsigned int uSourc
 			Assert( 0, "Unexpected value %d as error level", eLevel );
 	}
 
-	fprintf( pFile, "%s:%u:%u: %s: ", pszFile, uSourceRow+1, uSourceCol+1, pszErrorType );
+	fprintf( pFile, "%s:%u:%u: %s: ", pszFilename, uSourceRow+1, uSourceCol+1, pszErrorType );
 
 	vfprintf( pFile, pszDescription, argList );
 
 	fprintf( pFile, "\n");
 }
 
-void Error_Linker( EError eLevel, const char* pszDescription, ... )
+void Error_Linker( EError eLevel, const char* pszFilename, const char* pszDescription, ... )
 {
-	const char* pszFile = "Internal Error";
-	if( !g_tFilenameStack.empty() )
-	{
-		pszFile = g_tFilenameStack.back().c_str();
-	}
-
 	va_list argList;
 	va_start( argList, pszDescription );
 
@@ -114,7 +113,7 @@ void Error_Linker( EError eLevel, const char* pszDescription, ... )
 			Assert( 0, "Unexpected value %d as error level", eLevel );
 	}
 
-	fprintf( pFile, "%s: %s: ", pszFile, pszErrorType );
+	fprintf( pFile, "%s: %s: ", pszFilename, pszErrorType );
 
 	vfprintf( pFile, pszDescription, argList );
 
@@ -127,20 +126,14 @@ void Error_Linker( EError eLevel, const char* pszDescription, ... )
 	}
 }
 
-void Error_Fatal( const char* pszDescription, ... )
+void Error_Fatal( const char* pszFilename, const char* pszDescription, ... )
 {
 	g_bErrors = true;
-
-	const char* pszFile = "Internal Error";
-	if( !g_tFilenameStack.empty() )
-	{
-		pszFile = g_tFilenameStack.back().c_str();
-	}
 
 	va_list argList;
 	va_start( argList, pszDescription );
 
-	fprintf( stderr, "%s: fatal error: ", pszFile );
+	fprintf( stderr, "%s: fatal error: ", pszFilename );
 
 	vfprintf( stderr, pszDescription, argList );
 

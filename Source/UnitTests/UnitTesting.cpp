@@ -164,7 +164,7 @@ void TokenChainTest( const char* pszFilename, const char* pszFullFilename, const
 					tOptions += " ";
 				}
 
-				Error_Compiler( EError_Debug, uCurrentRow, uCurrentCol, "Token ambiguity, matched: ", tOptions.c_str() );
+				Error_Compiler( EError_Debug, pszFilename, uCurrentRow, uCurrentCol, "Token ambiguity, matched: ", tOptions.c_str() );
 			}
 
 			tTokens += GetTokenName( rtToken.eToken );
@@ -180,7 +180,7 @@ void TokenChainTest( const char* pszFilename, const char* pszFullFilename, const
 	}
 	else
 	{
-		Error_Compiler( EError_Error, uCurrentRow, uCurrentCol, "Parse failed at %s\n", pszBuffer );
+		Error_Compiler( EError_Error, pszFilename, uCurrentRow, uCurrentCol, "Parse failed at %s\n", pszBuffer );
 	}
 
 	if( tTokens.compare( tExpectedTokens ) == 0 )

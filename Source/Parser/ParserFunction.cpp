@@ -40,12 +40,13 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 		ParserFatal( rtContext, "Encountered semantic, this is not implemented yet." );
 	}
 
-	return new CASTVariableDefinition( *pType, tName, true );
+	return new CASTVariableDefinition( rtContext, *pType, tName, true );
 }
 
 CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, const std::string& rtFunctionName, CScope* pParentScope )
 {
-	CASTPrototype* pPrototype = new CASTPrototype( rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType, pParentScope );
+	CASTPrototype* pPrototype = new CASTPrototype( rtContext, rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType, pParentScope );
+	pParentScope->AddPrototype( rtContext, pPrototype );
 
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
@@ -114,7 +115,7 @@ CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype
 
 	if( pBlock )
 	{
-		return new CASTFunction( pPrototype, pBlock );
+		return new CASTFunction( rtContext, pPrototype, pBlock );
 	}
 	
 	return NULL;

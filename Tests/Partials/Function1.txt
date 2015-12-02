@@ -20,6 +20,11 @@ void TestFloatFormatting( void )
 	12.e0f;
 }
 
+void TestIntrinsics( void )
+{
+	float f1 = clamp( 0.5f, 1.0f, 100.0f );
+}
+
 void TestUnarySignEdgeCases( void )
 {
 	int i = 0;

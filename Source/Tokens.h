@@ -9,6 +9,8 @@
 
 #include "Utility/Error.h"
 
+const char* GetCurrentFilename();
+
 class CCompilationUnit;
 
 enum EOperatorType
@@ -186,22 +188,42 @@ enum EParseFlag
 	EParseFlag_RejectComma		= 1 << 0,
 };
 
-struct SParseContext
+struct SParsePosition
 {
-	SParseContext( const char* pszInputString, CCompilationUnit* pCU )
-	: pszBuffer( pszInputString )
+	SParsePosition( const char* pszInputString )
+	: pszFilename( GetCurrentFilename() )
+	, pszBuffer( pszInputString )
 	, uBytesLeft( strlen( pszInputString ) )
 	, uCurrentRow( 0 )
 	, uCurrentCol( 0 )
-	, uFlags( 0 )
-	, pCompilationUnit( pCU )
-	, bIgnoreAmbiguity( false )
 	{}
+
+	SParsePosition()
+	: pszFilename( GetCurrentFilename() )
+	, pszBuffer( nullptr )
+	, uBytesLeft( 0 )
+	, uCurrentRow( 0 )
+	, uCurrentCol( 0 )
+	{}
+
+	const char* pszFilename;
 
 	const char* pszBuffer;
 	unsigned int uBytesLeft;
 	unsigned int uCurrentRow;
 	unsigned int uCurrentCol;
+};
+
+struct SParseContext : public SParsePosition
+{
+	SParseContext( const char* pszInputString, CCompilationUnit* pCU )
+	: SParsePosition( pszInputString )
+	, uFlags( 0 )
+	, pCompilationUnit( pCU )
+	, bIgnoreAmbiguity( false )
+	{}
+
+	
 	unsigned int uFlags;
 
 	bool		bIgnoreAmbiguity;

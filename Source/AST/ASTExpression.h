@@ -5,8 +5,8 @@ class CASTExpression : public CASTBase
 {
 public:
 
-	CASTExpression( const CType& rtType )
-	: CASTBase()
+	CASTExpression( const SParsePosition& rtParsePosition, const CType& rtType )
+	: CASTBase( rtParsePosition )
 	, m_tType( rtType )
 	{}
 
@@ -22,14 +22,21 @@ class CASTExpressionParen : public CASTExpression
 {
 public:
 
-	CASTExpressionParen( CASTExpression* pExpression )
-	: CASTExpression( pExpression->GetType() )
+	CASTExpressionParen( const SParsePosition& rtParsePosition, CASTExpression* pExpression )
+	: CASTExpression( rtParsePosition, pExpression->GetType() )
 	, m_pExpression( pExpression )
 	{
 		AddReflection( "Expression", EASTReflectionType_ASTNode, &m_pExpression );
 	}
 
 	const char* GetElementName() const { return "ExpressionParen"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pExpression );
+		return tChildren;
+	}
 
 private:
 
@@ -42,8 +49,8 @@ class CASTExpressionUnary : public CASTExpression
 {
 public:
 
-	CASTExpressionUnary( EShaderToken eToken, bool bPre, CASTExpression* pExpression )
-	: CASTExpression( EvaluateType( pExpression ) )
+	CASTExpressionUnary( const SParsePosition& rtParsePosition, EShaderToken eToken, bool bPre, CASTExpression* pExpression )
+	: CASTExpression( rtParsePosition, EvaluateType( pExpression ) )
 	, m_pExpression( pExpression )
 	, m_eOperator( eToken )
 	, m_bPre( bPre )
@@ -55,6 +62,13 @@ public:
 	}
 
 	const char* GetElementName() const { return "UnaryOp"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pExpression );
+		return tChildren;
+	}
 
 protected:
 
@@ -71,8 +85,8 @@ class CASTExpressionBinary : public CASTExpression
 {
 public:
 
-	CASTExpressionBinary( EShaderToken eToken, CASTExpression* pLeft, CASTExpression* pRight )
-	: CASTExpression( EvaluateType( pLeft, pRight ) )
+	CASTExpressionBinary( const SParsePosition& rtParsePosition, EShaderToken eToken, CASTExpression* pLeft, CASTExpression* pRight )
+	: CASTExpression( rtParsePosition, EvaluateType( pLeft, pRight ) )
 	, m_pLeft( pLeft )
 	, m_pRight( pRight )
 	, m_eOperator( eToken )
@@ -89,6 +103,14 @@ public:
 
 	const char* GetElementName() const { return "BinaryOp"; }
 
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pLeft );
+		tChildren.push_back( m_pRight );
+		return tChildren;
+	}
+
 protected:
 
 	CType EvaluateType( CASTExpression* pLeft, CASTExpression* pRight );
@@ -104,8 +126,8 @@ class CASTExpressionTernary : public CASTExpression
 {
 public:
 
-	CASTExpressionTernary( CASTExpression* pCondition, CASTExpression* pTrue, CASTExpression* pFalse )
-	: CASTExpression( EvaluateType( pCondition, pTrue, pFalse ) )
+	CASTExpressionTernary( const SParsePosition& rtParsePosition, CASTExpression* pCondition, CASTExpression* pTrue, CASTExpression* pFalse )
+	: CASTExpression( rtParsePosition, EvaluateType( pCondition, pTrue, pFalse ) )
 	, m_pCondition( pCondition )
 	, m_pTrue( pTrue )
 	, m_pFalse( pFalse )
@@ -116,6 +138,15 @@ public:
 	}
 
 	const char* GetElementName() const { return "TernaryOp"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pCondition );
+		tChildren.push_back( m_pTrue );
+		tChildren.push_back( m_pFalse );
+		return tChildren;
+	}
 
 protected:
 
@@ -132,14 +163,20 @@ class CASTExpressionSwizzleMask : public CASTExpression
 {
 public:
 
-	CASTExpressionSwizzleMask( const std::string& rtSwizzle )
-	: CASTExpression( CType::GetVoidType() )
+	CASTExpressionSwizzleMask( const SParsePosition& rtParsePosition, const std::string& rtSwizzle )
+	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_tSwizzle( rtSwizzle )
 	{
 		AddReflection( "Mask", EASTReflectionType_SString, &m_tSwizzle );
 	}
 
 	const char* GetElementName() const { return "Swizzle"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
 
 private:
 
@@ -150,14 +187,20 @@ class CASTExpressionMemberAccess : public CASTExpression
 {
 public:
 
-	CASTExpressionMemberAccess( const std::string& rtIdentifier )
-	: CASTExpression( CType::GetVoidType() )
+	CASTExpressionMemberAccess( const SParsePosition& rtParsePosition, const std::string& rtIdentifier )
+	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_tIdentifier( rtIdentifier )
 	{
 		AddReflection( "Identifier", EASTReflectionType_SString, &m_tIdentifier );
 	}
 
 	const char* GetElementName() const { return "MemberAccess"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
 
 private:
 

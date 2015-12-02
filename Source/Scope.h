@@ -11,6 +11,7 @@ enum EVariableFlag
 };
 
 class CASTExpressionStatement;
+class CASTPrototype;
 
 struct SVariable : public CReflectionObject
 {
@@ -70,6 +71,23 @@ public:
 		return nullptr;
 	}
 
+	CASTPrototype* FindPrototype( const std::string& rtName )
+	{
+		auto tIter = m_pPrototypes.find( rtName );
+
+		if( tIter != m_pPrototypes.end() )
+		{
+			return (*tIter).second;
+		}
+
+		if( m_pParentScope )
+		{
+			return m_pParentScope->FindPrototype( rtName );
+		}
+
+		return nullptr;
+	}
+
 	void AddVariable( SParseContext& rtContext, SVariable* pVariable )
 	{
 		auto tIter = m_pVariables.find( pVariable->tName );
@@ -77,17 +95,20 @@ public:
 		{
 			if( (*tIter).second->pType->GetScalarType() != EScalarType_Dummy )
 			{
-				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Identifier %s is already defined in this scope.", pVariable->tName.c_str() );
+				Error_Compiler( EError_Error, rtContext.pszFilename, rtContext.uCurrentRow, rtContext.uCurrentCol, "Identifier %s is already defined in this scope.", pVariable->tName.c_str() );
 			}
 		}
 
 		m_pVariables[ pVariable->tName ] = pVariable;
 	}
 
+	void AddPrototype( SParseContext& rtContext, CASTPrototype* pPrototype );
+
 private:
 
 	CScope*											m_pParentScope;
 	std::unordered_map< std::string, SVariable* >	m_pVariables;
+	std::unordered_map< std::string, CASTPrototype* >	m_pPrototypes;
 };
 
 #endif //SHADR_SCOPE_H

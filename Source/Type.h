@@ -5,6 +5,10 @@
 
 void InitialiseBasicTypes( void );
 
+class CType;
+
+inline bool operator==(const CType& lhs, const CType& rhs);
+
 enum EScalarType
 {
 	EScalarType_Dummy,
@@ -39,8 +43,13 @@ enum ETypeFlag
 
 class CSemantic
 {
-	
+	//TODO: update operator== below	
 };
+
+inline bool operator==(const CSemantic& lhs, const CSemantic& rhs)
+{
+	return true;
+}
 
 class CRegister
 {
@@ -105,6 +114,39 @@ public:
 
 	void SetScalarType( EScalarType eType ) { m_eType = eType; }
 
+	bool CompareTo( const CType& other ) const
+	{
+		if(		m_eType != other.m_eType
+			||	m_uFlags != other.m_uFlags
+			||	m_uVectorWidth != other.m_uVectorWidth
+			||	m_uVectorHeight != other.m_uVectorHeight
+			||	m_uArrayCount != other.m_uArrayCount )
+		{
+			return false;
+		}
+
+		if( !(*m_pSemantic == *other.m_pSemantic) )
+		{
+			return false;
+		}
+
+		if( m_tChildren.size() != other.m_tChildren.size() )
+		{
+			return false;
+		}
+
+		size_t uChildCount = m_tChildren.size();
+		for( size_t uChild = 0; uChild < uChildCount; uChild++ )
+		{
+			if( !(*m_tChildren[ uChild ].pType == *other.m_tChildren[ uChild ].pType) )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 private:
 
 	struct SChild
@@ -126,6 +168,11 @@ private:
 	unsigned int	m_uVectorHeight;
 	unsigned int	m_uArrayCount;
 };
+
+inline bool operator==(const CType& lhs, const CType& rhs)
+{
+	return lhs.CompareTo( rhs );
+}
 
 void AddTypeDefinition( CType* pType );
 CType* GetType( const std::string& rtName );

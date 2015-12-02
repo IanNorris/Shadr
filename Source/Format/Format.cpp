@@ -97,10 +97,13 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 {
 	CFormatter* pFormat = new CFormatter();
 
+	PushCurrentFile( rtFormatFilename.c_str() );
+
 	TiXmlDocument tDoc;
 	if( !tDoc.LoadFile( rtFormatFilename.c_str() ) )
 	{
 		fprintf( stderr, "Unable to parse XML document %s.\n", rtFormatFilename.c_str() );
+		PopCurrentFile();
 		return nullptr;
 	}
 
@@ -108,6 +111,7 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 	if( !pRoot )
 	{
 		fprintf( stderr, "Format file %s has no root node 'ShaderSyntax'.\n", rtFormatFilename.c_str() );
+		PopCurrentFile();
 		return nullptr;
 	}
 
@@ -122,6 +126,8 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 	}
 
 	pFormat->Initialise();
+
+	PopCurrentFile();
 
 	return pFormat;
 }
@@ -244,7 +250,7 @@ bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterCo
 			case EASTReflectionType_TypeRegister:		
 
 			default:
-				Error_Linker( EError_Error, "Type does not support introspection.\n" );
+				Error_Linker( EError_Error, GetCurrentFilename(), "Type does not support introspection.\n" );
 				return nullptr;
 		}
 	}

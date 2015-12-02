@@ -7,8 +7,8 @@ class CASTStatement : public CASTBase
 {
 public:
 
-	CASTStatement()
-	: CASTBase()
+	CASTStatement( const SParsePosition& rtParsePosition )
+	: CASTBase( rtParsePosition )
 	{}
 };
 
@@ -18,23 +18,36 @@ public:
 
 	const char* GetElementName() const { return "Nop"; }
 
-	CASTNopStatement()
-	: CASTStatement()
+	CASTNopStatement( const SParsePosition& rtParsePosition )
+	: CASTStatement( rtParsePosition )
 	{}
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
 };
 
 class CASTReturnStatement : public CASTStatement
 {
 public:
 
-	CASTReturnStatement( CASTExpression* pExpression )
-	: CASTStatement()
+	CASTReturnStatement( const SParsePosition& rtParsePosition, CASTExpression* pExpression )
+	: CASTStatement( rtParsePosition )
 	, m_pExpression( pExpression )
 	{
 		AddReflection( "Expression", EASTReflectionType_ASTNode, &m_pExpression );
 	}
 
 	const char* GetElementName() const { return "Return"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pExpression );
+		return tChildren;
+	}
 
 private:
 
@@ -45,8 +58,8 @@ class CASTExpressionStatement : public CASTStatement
 {
 public:
 
-	CASTExpressionStatement( CASTExpression* pExpression, bool bChild )
-	: CASTStatement()
+	CASTExpressionStatement( const SParsePosition& rtParsePosition, CASTExpression* pExpression, bool bChild )
+	: CASTStatement( rtParsePosition )
 	, m_pExpression( pExpression )
 	, m_bChild( bChild )
 	{
@@ -56,6 +69,13 @@ public:
 	}
 
 	const char* GetElementName() const { return "ExpressionStatement"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pExpression );
+		return tChildren;
+	}
 
 private:
 
@@ -67,8 +87,8 @@ class CASTIfStatement : public CASTStatement
 {
 public:
 
-	CASTIfStatement( CASTExpression* pCondition, CASTStatement* pStatement, CASTStatement* pElseStatement )
-	: CASTStatement()
+	CASTIfStatement( const SParsePosition& rtParsePosition, CASTExpression* pCondition, CASTStatement* pStatement, CASTStatement* pElseStatement )
+	: CASTStatement( rtParsePosition )
 	, m_pCondition( pCondition )
 	, m_pStatement( pStatement )
 	, m_pElseStatement( pElseStatement )
@@ -82,6 +102,15 @@ public:
 
 	const char* GetElementName() const { return "If"; }
 
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pCondition );
+		tChildren.push_back( m_pStatement );
+		tChildren.push_back( m_pElseStatement );
+		return tChildren;
+	}
+
 private:
 
 	CASTExpression* m_pCondition;
@@ -93,8 +122,8 @@ class CASTWhileStatement : public CASTStatement
 {
 public:
 
-	CASTWhileStatement( CASTExpression* pCondition, CASTStatement* pStatement )
-	: CASTStatement()
+	CASTWhileStatement( const SParsePosition& rtParsePosition, CASTExpression* pCondition, CASTStatement* pStatement )
+	: CASTStatement( rtParsePosition )
 	, m_pCondition( pCondition )
 	, m_pStatement( pStatement )
 	{
@@ -103,6 +132,14 @@ public:
 	}
 
 	const char* GetElementName() const { return "While"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pCondition );
+		tChildren.push_back( m_pStatement );
+		return tChildren;
+	}
 
 private:
 
@@ -114,8 +151,8 @@ class CASTDoWhileStatement : public CASTStatement
 {
 public:
 
-	CASTDoWhileStatement( CASTExpression* pCondition, CASTStatement* pStatement )
-	: CASTStatement()
+	CASTDoWhileStatement( const SParsePosition& rtParsePosition, CASTExpression* pCondition, CASTStatement* pStatement )
+	: CASTStatement( rtParsePosition )
 	, m_pCondition( pCondition )
 	, m_pStatement( pStatement )
 	{
@@ -124,6 +161,14 @@ public:
 	}
 
 	const char* GetElementName() const { return "DoWhile"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pCondition );
+		tChildren.push_back( m_pStatement );
+		return tChildren;
+	}
 
 private:
 
@@ -135,8 +180,8 @@ class CASTForStatement : public CASTStatement
 {
 public:
 
-	CASTForStatement( CASTStatement* pInitialStatement, CASTExpression* pCondition, CASTExpression* pIterationExpression, CASTStatement* pBodyStatement, CScope* pForScope )
-	: CASTStatement()
+	CASTForStatement( const SParsePosition& rtParsePosition, CASTStatement* pInitialStatement, CASTExpression* pCondition, CASTExpression* pIterationExpression, CASTStatement* pBodyStatement, CScope* pForScope )
+	: CASTStatement( rtParsePosition )
 	, m_pScope( pForScope )
 	, m_pInitialStatement( pInitialStatement )
 	, m_pCondition( pCondition )
@@ -151,6 +196,16 @@ public:
 
 	const char* GetElementName() const { return "For"; }
 
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pInitialStatement );
+		tChildren.push_back( m_pCondition );
+		tChildren.push_back( m_pIterationExpression );
+		tChildren.push_back( m_pBody );
+		return tChildren;
+	}
+
 private:
 
 	CScope* m_pScope;
@@ -164,8 +219,8 @@ class CASTBlockStatement : public CASTStatement, public CASTScope
 {
 public:
 
-	CASTBlockStatement( CScope* pParentScope )
-	: CASTStatement()
+	CASTBlockStatement( const SParsePosition& rtParsePosition, CScope* pParentScope )
+	: CASTStatement( rtParsePosition )
 	, CASTScope( pParentScope )
 	{
 		AddReflection( "Statements", EASTReflectionType_ASTNodeArray, &m_apStatements );
@@ -174,6 +229,16 @@ public:
 	const char* GetElementName() const { return "Block"; }
 
 	void AddStatement( CASTStatement* pStatement ) { m_apStatements.push_back( pStatement ); }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		for( auto& child : m_apStatements )
+		{
+			tChildren.push_back( child );
+		}
+		return tChildren;
+	}
 
 private:
 
@@ -184,8 +249,8 @@ class CASTVariableDefinition : public CASTStatement
 {
 public:
 
-	CASTVariableDefinition( const CType& rtType, const std::string& rtName, bool bIsChild )
-	: CASTStatement()
+	CASTVariableDefinition( const SParsePosition& rtParsePosition, const CType& rtType, const std::string& rtName, bool bIsChild )
+	: CASTStatement( rtParsePosition )
 	, m_tType( rtType )
 	, m_pType( &m_tType )
 	, m_bChild( bIsChild )
@@ -210,6 +275,16 @@ public:
 
 	std::vector<SVariable*>& GetVariables() { return m_tVariables; }
 	std::vector<CASTStatement*>& GetAssignments() { return m_tAssignments; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		for( auto& child : m_tAssignments )
+		{
+			tChildren.push_back( child );
+		}
+		return tChildren;
+	}
 
 private:
 

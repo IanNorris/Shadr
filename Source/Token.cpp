@@ -246,7 +246,7 @@ SCallbackTokenMap g_asCallbackTokens[  GetCountFromTokenRange(EShaderToken_Begin
 						uCharactersLeft--;
 					}
 
-					Error_Compiler( EError_Fatal, uStartRow, uStartCol, "End of file reached before comment closed." );
+					Error_Compiler( EError_Fatal, GetCurrentFilename(), uStartRow, uStartCol, "End of file reached before comment closed." );
 				}
 			}
 
@@ -602,7 +602,7 @@ void ReportErrorOnAmbiguousToken( SParseContext& rtContext )
 			tTokens += " ";
 		}
 
-		Error_Compiler( EError_Warning, rtContext.uCurrentRow, rtContext.uCurrentCol, "Token ambiguity, could be: %s at %s", tTokens.c_str(), rtContext.GetLinePreview().c_str() );
+		Error_Compiler( EError_Warning, rtContext.pszFilename, rtContext.uCurrentRow, rtContext.uCurrentCol, "Token ambiguity, could be: %s at %s", tTokens.c_str(), rtContext.GetLinePreview().c_str() );
 	}
 }
 
@@ -650,7 +650,7 @@ void ResolveTokenAmbiguity( SParseContext& rtContext, bool bExpectOperator )
 		{
 			if( foundCount == 0 )
 			{
-				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected an operator at %s", rtContext.GetLinePreview().c_str() );
+				Error_Compiler( EError_Error, rtContext.pszFilename, rtContext.uCurrentRow, rtContext.uCurrentCol, "Expected an operator at %s", rtContext.GetLinePreview().c_str() );
 			}
 			else if( foundCount == 1 )
 			{
@@ -670,7 +670,7 @@ void ResolveTokenAmbiguity( SParseContext& rtContext, bool bExpectOperator )
 		{
 			if( foundNotOfCount == 0 )
 			{
-				Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Did not expect an operator at %s", rtContext.GetLinePreview().c_str() );
+				Error_Compiler( EError_Error, rtContext.pszFilename, rtContext.uCurrentRow, rtContext.uCurrentCol, "Did not expect an operator at %s", rtContext.GetLinePreview().c_str() );
 			}
 			else if( foundNotOfCount == 1 )
 			{
@@ -733,7 +733,7 @@ bool ConsumeToken( SParseContext& rtContext )
 
 	if( rtContext.uBytesLeft )
 	{
-		Error_Compiler( EError_Error, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unable to parse at %s", rtContext.GetLinePreview().c_str() );
+		Error_Compiler( EError_Error, rtContext.pszFilename, rtContext.uCurrentRow, rtContext.uCurrentCol, "Unable to parse at %s", rtContext.GetLinePreview().c_str() );
 	}
 
 	rtContext.sNextToken.eToken = EShaderToken_Invalid;

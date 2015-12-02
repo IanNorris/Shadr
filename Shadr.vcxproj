@@ -112,6 +112,8 @@
     <ClCompile Include="Source\Parser\ParserProgram.cpp" />
     <ClCompile Include="Source\Parser\ParserStatement.cpp" />
     <ClCompile Include="Source\Parser\ParserType.cpp" />
+    <ClCompile Include="Source\Reconcile.cpp" />
+    <ClCompile Include="Source\Scope.cpp" />
     <ClCompile Include="Source\Token.cpp" />
     <ClCompile Include="Source\Type.cpp" />
     <ClCompile Include="Source\UnitTests\UnitTesting.cpp" />
@@ -138,6 +140,7 @@
     <ClInclude Include="Source\Parser\ParserProgram.h" />
     <ClInclude Include="Source\Parser\ParserStatement.h" />
     <ClInclude Include="Source\Parser\ParserType.h" />
+    <ClInclude Include="Source\Reconcile.h" />
     <ClInclude Include="Source\Reflection.h" />
     <ClInclude Include="Source\Scope.h" />
     <ClInclude Include="Source\Tokens.h" />

@@ -16,9 +16,9 @@ enum EError
 void PushCurrentFile( const char* pszFilename );
 void PopCurrentFile();
 
-void Error_Compiler( EError eLevel, unsigned int uSourceRow, unsigned int uSourceCol, const char* pszDescription, ... );
-void Error_Linker( EError eLevel, const char* pszDescription, ... );
-void Error_Fatal( const char* pszDescription, ... );
+void Error_Compiler( EError eLevel, const char* pszFilename, unsigned int uSourceRow, unsigned int uSourceCol, const char* pszDescription, ... );
+void Error_Linker( EError eLevel, const char* pszFilename, const char* pszDescription, ... );
+void Error_Fatal( const char* pszFilename, const char* pszDescription, ... );
 
 void Error_Assert( const char* pszExpression, const char* pszSourceFile, int iLine, const char* pszDescription, ... );
 

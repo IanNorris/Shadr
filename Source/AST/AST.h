@@ -26,14 +26,27 @@ private:
 
 class CASTBase : public CReflectionObject
 {
+public:
+	CASTBase( const SParsePosition& rtParsePosition )
+	: m_tParserPosition( rtParsePosition )
+	{
+	}
+
+	virtual std::vector< CASTBase* > GetChildren( void ) = 0;
+
+	const SParsePosition& GetParserPosition(){ return m_tParserPosition; }
+
+private:
+
+	SParsePosition m_tParserPosition;
 };
 
 class CASTProgram : public CASTBase, public CASTScope
 {
 public:
 
-	CASTProgram()
-	: CASTBase()
+	CASTProgram( const SParsePosition& rtParsePosition )
+	: CASTBase( rtParsePosition )
 	, CASTScope( NULL )
 	{
 		AddReflection( "Elements", EASTReflectionType_ASTNodeArray, &m_apElements );
@@ -42,6 +55,8 @@ public:
 	const char* GetElementName() const { return "Program"; }
 
 	void AddElement( CASTBase* pElement ) { m_apElements.push_back( pElement ); }
+
+	std::vector< CASTBase* > GetChildren( void ) { return m_apElements; }
 
 private:
 

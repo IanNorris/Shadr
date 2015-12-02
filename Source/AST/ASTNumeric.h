@@ -8,8 +8,8 @@ class CASTConstantInt : public CASTExpression
 {
 public:
 
-	CASTConstantInt( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetConstIntType() )
+	CASTConstantInt( const SParsePosition& rtParsePosition, const char* pszString, unsigned int uCharacters )
+	: CASTExpression( rtParsePosition, CType::GetConstIntType() )
 	, m_uValue( 0 )
 	, m_uBits( 0 )
 	, m_bSigned( 0 )
@@ -27,6 +27,12 @@ public:
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
+
 private:
 
 	union
@@ -42,8 +48,8 @@ class CASTConstantFloat : public CASTExpression
 {
 public:
 
-	CASTConstantFloat( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetConstFloatType() )
+	CASTConstantFloat( const SParsePosition& rtParsePosition, const char* pszString, unsigned int uCharacters )
+	: CASTExpression( rtParsePosition, CType::GetConstFloatType() )
 	, m_fValue( 0.0 )
 	{
 		AddReflection( "Value", EASTReflectionType_Double, &m_fValue );
@@ -56,6 +62,12 @@ public:
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
+
 private:
 
 	double m_fValue;
@@ -65,8 +77,8 @@ class CASTConstantBool : public CASTExpression
 {
 public:
 
-	CASTConstantBool( const char* pszString, unsigned int uCharacters )
-	: CASTExpression( CType::GetConstFloatType() )
+	CASTConstantBool( const SParsePosition& rtParsePosition, const char* pszString, unsigned int uCharacters )
+	: CASTExpression( rtParsePosition, CType::GetConstFloatType() )
 	, m_bValue( false )
 	{
 		AddReflection( "Value", EASTReflectionType_Bool, &m_bValue );
@@ -89,6 +101,12 @@ public:
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
 
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
+
 private:
 
 	bool m_bValue;
@@ -98,14 +116,20 @@ class CASTVariableReference : public CASTExpression
 {
 public:
 
-	CASTVariableReference( SVariable* pVariable )
-	: CASTExpression( *pVariable->pType )
+	CASTVariableReference( const SParsePosition& rtParsePosition, SVariable* pVariable )
+	: CASTExpression( rtParsePosition, *pVariable->pType )
 	, m_pVariable( pVariable )
 	{
 		AddReflection( "Variable", EASTReflectionType_Variable, &m_pVariable );
 	}
 
 	const char* GetElementName() const { return "VariableRef"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		return tChildren;
+	}
 
 private:
 

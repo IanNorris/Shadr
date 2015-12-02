@@ -5,8 +5,8 @@ class CASTPrototype : public CASTBase, public CASTScope
 {
 public:
 
-	CASTPrototype( const char* pszName, unsigned int uNameLength, const CType& rtReturnType, CScope* pParentScope )
-	: CASTBase()
+	CASTPrototype( const SParsePosition& rtParsePosition, const char* pszName, unsigned int uNameLength, const CType& rtReturnType, CScope* pParentScope )
+	: CASTBase( rtParsePosition )
 	, CASTScope( pParentScope )
 	, m_tReturnType( rtReturnType )
 	, m_pReturnType( &m_tReturnType )
@@ -26,7 +26,21 @@ public:
 		m_apParameters.push_back( pParameter );
 	}
 
+	const CType& GetReturnType() { return m_tReturnType; }
+
 	const std::vector< CASTVariableDefinition* >& GetParameters() const { return m_apParameters; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		for( auto& child : m_apParameters )
+		{
+			tChildren.push_back( child );
+		}
+		return tChildren;
+	}
+
+	const std::string& GetFunctionName() const { return m_tName; }
 
 private:
 
@@ -40,8 +54,8 @@ class CASTFunction : public CASTBase
 {
 public:
 
-	CASTFunction( CASTPrototype* pPrototype, CASTBlockStatement* pBody )
-	: CASTBase()
+	CASTFunction( const SParsePosition& rtParsePosition, CASTPrototype* pPrototype, CASTBlockStatement* pBody )
+	: CASTBase( rtParsePosition )
 	, m_pPrototype( pPrototype )
 	, m_pBody( pBody )
 	{
@@ -50,6 +64,14 @@ public:
 	}
 
 	const char* GetElementName() const { return "Function"; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.push_back( m_pPrototype );
+		tChildren.push_back( m_pBody );
+		return tChildren;
+	}
 
 private:
 
@@ -60,8 +82,8 @@ private:
 class CASTExpressionFunctionCall : public CASTExpression
 {
 public:
-	CASTExpressionFunctionCall( const std::string& rtName )
-	: CASTExpression( CType::GetVoidType() )
+	CASTExpressionFunctionCall( const SParsePosition& rtParsePosition, const std::string& rtName )
+	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_tName( rtName )
 	{
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
@@ -69,6 +91,8 @@ public:
 
 		AddCondition( "HasParameters", [&](){ return !m_apParameters.empty(); } );
 	}
+
+	const std::string& GetFunctionName() const { return m_tName; }
 
 	const char* GetElementName() const { return "FunctionCall"; }
 
@@ -78,6 +102,16 @@ public:
 	}
 
 	const std::vector< CASTExpression* >& GetParameters() const { return m_apParameters; }
+
+	std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		for( auto& child : m_apParameters )
+		{
+			tChildren.push_back( child );
+		}
+		return tChildren;
+	}
 
 private:
 

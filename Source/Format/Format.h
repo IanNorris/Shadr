@@ -226,7 +226,7 @@ public:
 				std::string tSpaceCount = "4";
 				if( !GetValue( "SpacesPerIndent", tSpaceCount ) )
 				{
-					Error_Linker( EError_Error, "Failed to get SpacesPerIndent.\n" );
+					Error_Linker( EError_Error, GetCurrentFilename(), "Failed to get SpacesPerIndent.\n" );
 				}
 
 				int iCount = atoi( tSpaceCount.c_str() );
@@ -237,14 +237,14 @@ public:
 			{
 				m_tIndent = "\t";
 
-				Error_Linker( EError_Error, "Unrecognised indent type %s.\n", tIndentType.c_str() );
+				Error_Linker( EError_Error, GetCurrentFilename(), "Unrecognised indent type %s.\n", tIndentType.c_str() );
 			}
 		}
 		else
 		{
 			m_tIndent = "\t";
 
-			Error_Linker( EError_Error, "Failed to get IndentType.\n" );
+			Error_Linker( EError_Error, GetCurrentFilename(), "Failed to get IndentType.\n" );
 			return;
 		}
 
@@ -261,7 +261,7 @@ public:
 			}
 			else
 			{
-				Error_Linker( EError_Error, "Unrecognised newline type %s.\n", tNewlineType.c_str() );
+				Error_Linker( EError_Error, GetCurrentFilename(), "Unrecognised newline type %s.\n", tNewlineType.c_str() );
 			}
 		}
 	}
@@ -278,7 +278,7 @@ public:
 		}
 		else
 		{
-			Error_Linker( EError_Error, "No formatter specified for AST type %s", rtName.c_str() );
+			Error_Linker( EError_Error, GetCurrentFilename(), "No formatter specified for AST type %s", rtName.c_str() );
 			return nullptr;
 		}		
 	}
