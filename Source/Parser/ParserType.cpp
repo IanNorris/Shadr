@@ -52,6 +52,14 @@ CType* ParseType( SParseContext& rtContext )
 				uTypeFlags |= ETypeFlag_SNorm;
 				break;
 
+			case EShaderToken_In:
+				//Token is syntactic sugar only
+				break;
+
+			case EShaderToken_Out:
+				uTypeFlags |= ETypeFlag_Reference;
+				break;
+
 			default:
 				bAteSomething = false;
 				bFinishEatingModifiers = true;

@@ -2,9 +2,9 @@
 #include "AST/AST.h"
 #include "Parser.h"
 
-CASTProgram* ParseProgram( SParseContext& rtContext )
+CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 {
-	CASTProgram* pProgram = new CASTProgram( rtContext );
+	CASTProgram* pProgram = new CASTProgram( rtContext, pParentScope );
 
 	do 
 	{
@@ -56,7 +56,8 @@ CASTProgram* ParseProgram( SParseContext& rtContext )
 
 				if( !ConsumeToken( rtContext ) )
 				{
-					ParserError( rtContext, "Unexpected end of file" );
+					//EOF!
+					return pProgram;
 				}
 			}
 		}

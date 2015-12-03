@@ -15,17 +15,43 @@
 
 int main( int iArgCount, char** apszArguments )
 {
+	std::string executablePath = apszArguments[0];
+#if defined( _WIN32 )
+	size_t rootPos = executablePath.find_last_of( '\\' );
+#else
+	size_t rootPos = executablePath.find_last_of( '/' );
+#endif
+	if( rootPos == std::string::npos )
+	{
+		fprintf( stderr, "Unable to calculate path of the current executable %s.\n", executablePath.c_str() );
+		exit( 1 );
+	}
+
+	std::string rootPath = executablePath.substr( 0, rootPos + 1 );
+
 	InitialiseTokenTables();
 	InitialiseBasicTypes();
-	InitialiseFormats();
+	InitialiseFormats( rootPath );
 
-	RunUnitTests();
+	RunUnitTests( rootPath );
+
+	//Parse intrinsics
+	std::string intrinsicsPath = rootPath + "Config\\Intrinsics.hlsl";
+	CCompilationUnit tIntrinsicsCU( intrinsicsPath.c_str() );
+	CASTProgram* pIntrinsics = ParseFile( intrinsicsPath.c_str(), &tIntrinsicsCU, nullptr );
+	if( pIntrinsics == nullptr )
+	{
+		fprintf( stderr, "Unable to find or parse %s.\n", intrinsicsPath.c_str() );
+		exit( 1 );
+	}
+
+	CScope* pIntrinsicsScope = &pIntrinsics->GetScope();
 	
 	if( iArgCount > 1 )
 	{
 		CCompilationUnit tCU( apszArguments[1] );
 
-		CASTProgram* pProgram = ParseFile( apszArguments[1], &tCU );
+		CASTProgram* pProgram = ParseFile( apszArguments[1], &tCU, pIntrinsicsScope );
 
 		//NOTE: At this point all the pointers from the file data will be invalidated. Do all the work in ParseBuffer.
 
@@ -55,7 +81,7 @@ int main( int iArgCount, char** apszArguments )
 
 			CCompilationUnit tCU( "stdin" );
 
-			ParseBuffer( "test", tLine, &tCU );
+			ParseBuffer( "test", tLine, &tCU, pIntrinsicsScope );
 		}
 
 		return 0;

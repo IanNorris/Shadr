@@ -1,0 +1,296 @@
+void abort( void );
+
+int  abs( int x );
+int2 abs( int2 x );
+int3 abs( int3 x );
+int4 abs( int4 x );
+float  abs( float x );
+float2 abs( float2 x );
+float3 abs( float3 x );
+float4 abs( float4 x );
+float2x2 abs( float2x2 x );
+float3x2 abs( float3x2 x );
+float4x2 abs( float4x2 x );
+float2x3 abs( float2x3 x );
+float3x3 abs( float3x3 x );
+float4x3 abs( float4x3 x );
+float2x4 abs( float2x4 x );
+float3x4 abs( float3x4 x );
+float4x4 abs( float4x4 x );
+double  abs( double x );
+double2 abs( double2 x );
+double3 abs( double3 x );
+double4 abs( double4 x );
+
+float  acos( float x );
+float2 acos( float2 x );
+float3 acos( float3 x );
+float4 acos( float4 x );
+float2x2 acos( float2x2 x );
+float3x2 acos( float3x2 x );
+float4x2 acos( float4x2 x );
+float2x3 acos( float2x3 x );
+float3x3 acos( float3x3 x );
+float4x3 acos( float4x3 x );
+float2x4 acos( float2x4 x );
+float3x4 acos( float3x4 x );
+float4x4 acos( float4x4 x );
+double  acos( double x );
+double2 acos( double2 x );
+double3 acos( double3 x );
+double4 acos( double4 x );
+
+bool all( bool x );
+bool all( bool2 x );
+bool all( bool3 x );
+bool all( bool4 x );
+bool all( int x );
+bool all( int2 x );
+bool all( int3 x );
+bool all( int4 x );
+bool all( uint x );
+bool all( uint2 x );
+bool all( uint3 x );
+bool all( uint4 x );
+bool all( float x );
+bool all( float2 x );
+bool all( float3 x );
+bool all( float4 x );
+bool all( float2x2 x );
+bool all( float3x2 x );
+bool all( float4x2 x );
+bool all( float2x3 x );
+bool all( float3x3 x );
+bool all( float4x3 x );
+bool all( float2x4 x );
+bool all( float3x4 x );
+bool all( float4x4 x );
+bool all( double x );
+bool all( double2 x );
+bool all( double3 x );
+bool all( double4 x );
+
+void AllMemoryBarrier( void );
+void AllMemoryBarrierWithGroupSync( void );
+
+bool any( bool x );
+bool any( bool2 x );
+bool any( bool3 x );
+bool any( bool4 x );
+bool any( int x );
+bool any( int2 x );
+bool any( int3 x );
+bool any( int4 x );
+bool any( uint x );
+bool any( uint2 x );
+bool any( uint3 x );
+bool any( uint4 x );
+bool any( float x );
+bool any( float2 x );
+bool any( float3 x );
+bool any( float4 x );
+bool any( float2x2 x );
+bool any( float3x2 x );
+bool any( float4x2 x );
+bool any( float2x3 x );
+bool any( float3x3 x );
+bool any( float4x3 x );
+bool any( float2x4 x );
+bool any( float3x4 x );
+bool any( float4x4 x );
+bool any( double x );
+bool any( double2 x );
+bool any( double3 x );
+bool any( double4 x );
+
+double asdouble( uint lowbits, uint highbits );
+double2 asdouble( uint2 lowbits, uint2 highbits );
+
+float  asfloat( bool x );
+float2 asfloat( bool2 x );
+float3 asfloat( bool3 x );
+float4 asfloat( bool4 x );
+
+float  asfloat( int x );
+float2 asfloat( int2 x );
+float3 asfloat( int3 x );
+float4 asfloat( int4 x );
+
+float  asfloat( float x );
+float2 asfloat( float2 x );
+float3 asfloat( float3 x );
+float4 asfloat( float4 x );
+
+float2x2 asfloat( float2x2 x );
+float3x2 asfloat( float3x2 x );
+float4x2 asfloat( float4x2 x );
+float2x3 asfloat( float2x3 x );
+float3x3 asfloat( float3x3 x );
+float4x3 asfloat( float4x3 x );
+float2x4 asfloat( float2x4 x );
+float3x4 asfloat( float3x4 x );
+float4x4 asfloat( float4x4 x );
+
+float  asfloat( uint x );
+float2 asfloat( uint2 x );
+float3 asfloat( uint3 x );
+float4 asfloat( uint4 x );
+
+float  asin( float x );
+float2 asin( float2 x );
+float3 asin( float3 x );
+float4 asin( float4 x );
+float2x2 asin( float2x2 x );
+float3x2 asin( float3x2 x );
+float4x2 asin( float4x2 x );
+float2x3 asin( float2x3 x );
+float3x3 asin( float3x3 x );
+float4x3 asin( float4x3 x );
+float2x4 asin( float2x4 x );
+float3x4 asin( float3x4 x );
+float4x4 asin( float4x4 x );
+double  asin( double x );
+double2 asin( double2 x );
+double3 asin( double3 x );
+double4 asin( double4 x );
+
+int  asint( bool x );
+int2 asint( bool2 x );
+int3 asint( bool3 x );
+int4 asint( bool4 x );
+
+int  asint( int x );
+int2 asint( int2 x );
+int3 asint( int3 x );
+int4 asint( int4 x );
+
+int  asint( float x );
+int2 asint( float2 x );
+int3 asint( float3 x );
+int4 asint( float4 x );
+
+int2x2 asint( float2x2 x );
+int3x2 asint( float3x2 x );
+int4x2 asint( float4x2 x );
+int2x3 asint( float2x3 x );
+int3x3 asint( float3x3 x );
+int4x3 asint( float4x3 x );
+int2x4 asint( float2x4 x );
+int3x4 asint( float3x4 x );
+int4x4 asint( float4x4 x );
+
+uint  asuint( bool x );
+uint2 asuint( bool2 x );
+uint3 asuint( bool3 x );
+uint4 asuint( bool4 x );
+
+uint  asuint( int x );
+uint2 asuint( int2 x );
+uint3 asuint( int3 x );
+uint4 asuint( int4 x );
+
+uint  asuint( float x );
+uint2 asuint( float2 x );
+uint3 asuint( float3 x );
+uint4 asuint( float4 x );
+
+uint2x2 asuint( float2x2 x );
+uint3x2 asuint( float3x2 x );
+uint4x2 asuint( float4x2 x );
+uint2x3 asuint( float2x3 x );
+uint3x3 asuint( float3x3 x );
+uint4x3 asuint( float4x3 x );
+uint2x4 asuint( float2x4 x );
+uint3x4 asuint( float3x4 x );
+uint4x4 asuint( float4x4 x );
+
+void asuint( double value, out uint lowbits, out uint highbits );
+
+float  atan( float x );
+float2 atan( float2 x );
+float3 atan( float3 x );
+float4 atan( float4 x );
+float2x2 atan( float2x2 x );
+float3x2 atan( float3x2 x );
+float4x2 atan( float4x2 x );
+float2x3 atan( float2x3 x );
+float3x3 atan( float3x3 x );
+float4x3 atan( float4x3 x );
+float2x4 atan( float2x4 x );
+float3x4 atan( float3x4 x );
+float4x4 atan( float4x4 x );
+double  atan( double x );
+double2 atan( double2 x );
+double3 atan( double3 x );
+double4 atan( double4 x );
+
+float  atan2( float y, float x );
+float2 atan2( float2 y, float2 x );
+float3 atan2( float3 y, float3 x );
+float4 atan2( float4 y, float4 x );
+float2x2 atan2( float2x2 y, float2x2 x );
+float3x2 atan2( float3x2 y, float3x2 x );
+float4x2 atan2( float4x2 y, float4x2 x );
+float2x3 atan2( float2x3 y, float2x3 x );
+float3x3 atan2( float3x3 y, float3x3 x );
+float4x3 atan2( float4x3 y, float4x3 x );
+float2x4 atan2( float2x4 y, float2x4 x );
+float3x4 atan2( float3x4 y, float3x4 x );
+float4x4 atan2( float4x4 y, float4x4 x );
+double  atan2( double y, double x );
+double2 atan2( double2 y, double2 x );
+double3 atan2( double3 y, double3 x );
+double4 atan2( double4 y, double4 x );
+
+float  ceil( float x );
+float2 ceil( float2 x );
+float3 ceil( float3 x );
+float4 ceil( float4 x );
+float2x2 ceil( float2x2 x );
+float3x2 ceil( float3x2 x );
+float4x2 ceil( float4x2 x );
+float2x3 ceil( float2x3 x );
+float3x3 ceil( float3x3 x );
+float4x3 ceil( float4x3 x );
+float2x4 ceil( float2x4 x );
+float3x4 ceil( float3x4 x );
+float4x4 ceil( float4x4 x );
+double  ceil( double x );
+double2 ceil( double2 x );
+double3 ceil( double3 x );
+double4 ceil( double4 x );
+
+bool CheckAccessFullyMapped( uint status );
+
+float  clamp( float x, float min, float max );
+float2 clamp( float2 x, float min2, float2 max );
+float3 clamp( float3 x, float3 min, float3 max );
+float4 clamp( float4 x, float4 min, float4 max );
+float2x2 clamp( float2x2 x, float2x2 min, float2x2 max );
+float3x2 clamp( float3x2 x, float3x2 min, float3x2 max );
+float4x2 clamp( float4x2 x, float4x2 min, float4x2 max );
+float2x3 clamp( float2x3 x, float2x3 min, float2x3 max );
+float3x3 clamp( float3x3 x, float3x3 min, float3x3 max );
+float4x3 clamp( float4x3 x, float4x3 min, float4x3 max );
+float2x4 clamp( float2x4 x, float2x4 min, float2x4 max );
+float3x4 clamp( float3x4 x, float3x4 min, float3x4 max );
+float4x4 clamp( float4x4 x, float4x4 min, float4x4 max );
+double  clamp( double x, double min, double max );
+double2 clamp( double2 x, double2 min, double2 max );
+double3 clamp( double3 x, double3 min, double3 max );
+double4 clamp( double4 x, double4 min, double4 max );
+
+void clip( float x );
+void clip( float2 x );
+void clip( float3 x );
+void clip( float4 x );
+void clip( float2x2 x );
+void clip( float3x2 x );
+void clip( float4x2 x );
+void clip( float2x3 x );
+void clip( float3x3 x );
+void clip( float4x3 x );
+void clip( float2x4 x );
+void clip( float3x4 x );
+void clip( float4x4 x );
+

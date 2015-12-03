@@ -196,14 +196,14 @@ void TokenChainTest( const char* pszFilename, const char* pszFullFilename, const
 	PopCurrentFile();
 }
 
-void RunUnitTests( void )
+void RunUnitTests( std::string rootPath )
 {
 	unsigned int uTestsRun = 0;
 	unsigned int uTestsPassed = 0;
 	unsigned int uTestsFailed = 0;
 
-	IterateDirectory( "Tests/Tokens", uTestsRun, uTestsPassed, uTestsFailed, TokenTest );
-	IterateDirectory( "Tests/TokenChains", uTestsRun, uTestsPassed, uTestsFailed, TokenChainTest );
+	IterateDirectory( std::string(rootPath + "Tests/Tokens").c_str(), uTestsRun, uTestsPassed, uTestsFailed, TokenTest );
+	IterateDirectory( std::string(rootPath + "Tests/TokenChains").c_str(), uTestsRun, uTestsPassed, uTestsFailed, TokenChainTest );
 
 	if( uTestsFailed == 0 )
 	{

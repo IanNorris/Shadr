@@ -114,6 +114,10 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	//Special tokens to resolve disambiguity
 	{ "+++",					"+++", 0 },				//EShaderToken_Special_TriplePlus
 	{ "---",					"---", 0 },				//EShaderToken_Special_TripleMinus
+
+	//Variable direction operators
+	{ "in",						"in", 0 },				//EShaderToken_In
+	{ "out",					"out", 0 },				//EShaderToken_Out
 };
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
@@ -124,7 +128,20 @@ SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex,
 	{ "identifier", std::regex( "[a-zA-Z_][a-zA-Z0-9_]*" ) },
 };
 
-
+inline bool IsWhitespace( char ch )
+{
+	switch( ch )
+	{
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\r':
+		case '\0':
+			return true;
+		default:
+			return false;
+	}
+}
 
 SCallbackTokenMap g_asCallbackTokens[  GetCountFromTokenRange(EShaderToken_BeginCallback, EShaderToken_EndCallback)  ] = 
 {
@@ -255,6 +272,10 @@ SCallbackTokenMap g_asCallbackTokens[  GetCountFromTokenRange(EShaderToken_Begin
 	},
 };
 
+std::string nextTokenString;
+
+std::cmatch regexMatches;
+
 bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft, unsigned int uCurrentRow, unsigned int uCurrentCol, std::vector<SPossibleToken>& rsPossibleTokens )
 {
 	unsigned int uBasicTokenCount = GetCountFromTokenRange( EShaderToken_BeginBasic, EShaderToken_EndBasic );
@@ -278,16 +299,20 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 
 	unsigned int uRegexTokenCount = GetCountFromTokenRange( EShaderToken_BeginRegex, EShaderToken_EndRegex );
 
+	const char* findNextWhitespace = pszInputString;
+	while( !IsWhitespace( *(findNextWhitespace++) ) );
+	size_t bytesUntilEndOfRange = findNextWhitespace - pszInputString;
+	nextTokenString.assign( pszInputString, bytesUntilEndOfRange );
+
 	for( unsigned int uToken = 0; uToken < uRegexTokenCount; ++uToken )
 	{
-		std::cmatch matches;
-		std::regex_search( pszInputString, matches, g_asRegexTokens[ uToken ].tRegex, std::regex_constants::match_continuous );
+		std::regex_search( nextTokenString.c_str(), regexMatches, g_asRegexTokens[ uToken ].tRegex, std::regex_constants::match_continuous );
 
-		if( matches.size() > 0 && matches.position() == 0 )
+		if( regexMatches.size() > 0 && regexMatches.position() == 0 )
 		{
 			SPossibleToken tToken;
 			tToken.eToken = (EShaderToken)(EShaderToken_BeginRegex - uToken);
-			tToken.uLength = matches[0].length();
+			tToken.uLength = regexMatches[0].length();
 
 			bool bKeepToken = true;
 

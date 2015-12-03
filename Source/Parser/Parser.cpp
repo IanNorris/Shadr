@@ -3,7 +3,7 @@
 #include "Parser.h"
 #include "Reconcile.h"
 
-CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU )
+CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU, CScope* pParentScope )
 {
 	unsigned int uBufferSize = tBuffer.length();
 	unsigned int uCurrentRow = 0;
@@ -15,7 +15,7 @@ CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, C
 
 	if( ConsumeToken( tContext ) )
 	{
-		CASTProgram* pProgram = ParseProgram( tContext );
+		CASTProgram* pProgram = ParseProgram( tContext, pParentScope );
 
 		Reconcile( pProgram, nullptr );
 
@@ -25,14 +25,14 @@ CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, C
 	return nullptr;
 }
 
-CASTProgram* ParseFile( const char* pszFilename, CCompilationUnit* pCU )
+CASTProgram* ParseFile( const char* pszFilename, CCompilationUnit* pCU, CScope* pParentScope )
 {
 	PushCurrentFile( pszFilename );
 
 	std::string tFile;
 	ReadFile( tFile, pszFilename );
 
-	CASTProgram* pProgram = ParseBuffer( pszFilename, tFile, pCU );
+	CASTProgram* pProgram = ParseBuffer( pszFilename, tFile, pCU, pParentScope );
 
 	PopCurrentFile();
 

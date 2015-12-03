@@ -14,6 +14,7 @@
     <ProjectGuid>{B3A1A92B-33D1-4938-B50D-7F86FD8CD370}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Shadr</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -43,11 +44,13 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);ThirdParty\TinyXML;ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);Source;%(AdditionalIncludeDirectories)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);ThirdParty\TinyXML;ThirdParty\DirEnt\include;$(WindowsSDK_IncludePath);Source;%(AdditionalIncludeDirectories)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,6 +91,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
     <PreBuildEvent>
       <Command>cmd /C move $(OutDir)$(TargetName).pdb $(OutDir)$(TargetName)-%RANDOM%.pdb &amp; exit 0</Command>

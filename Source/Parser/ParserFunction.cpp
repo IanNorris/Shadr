@@ -8,6 +8,11 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 
 	CType* pType = ParseType( rtContext );
 
+	if( pType == nullptr )
+	{
+		return NULL;
+	}
+
 	if( pType->GetScalarType() == EScalarType_Void )
 	{
 		return NULL;

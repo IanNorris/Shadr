@@ -127,7 +127,10 @@ enum EShaderToken
 	EShaderToken_Special_TriplePlus			= -58,
 	EShaderToken_Special_TripleMinus		= -59,
 
-	EShaderToken_EndBasic					= -59,
+	EShaderToken_In							= -60,
+	EShaderToken_Out						= -61,
+
+	EShaderToken_EndBasic					= -61,
 
 	//Callback based tokens
 	EShaderToken_BeginCallback				= -1000,

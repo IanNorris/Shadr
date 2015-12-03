@@ -313,7 +313,7 @@ const CReflectionObject* ReflectedValueToReflectionObject( const std::string& rt
 std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 bool ReflectedCondition( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 
-void InitialiseFormats();
+void InitialiseFormats( std::string rootPath );
 
 #include "FormatterCommands.h"
 

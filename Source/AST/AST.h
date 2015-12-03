@@ -45,9 +45,9 @@ class CASTProgram : public CASTBase, public CASTScope
 {
 public:
 
-	CASTProgram( const SParsePosition& rtParsePosition )
+	CASTProgram( const SParsePosition& rtParsePosition, CScope* pParentScope )
 	: CASTBase( rtParsePosition )
-	, CASTScope( NULL )
+	, CASTScope( pParentScope )
 	{
 		AddReflection( "Elements", EASTReflectionType_ASTNodeArray, &m_apElements );
 	}

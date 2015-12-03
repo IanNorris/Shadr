@@ -10,8 +10,8 @@
 #define ParserInfo( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Information, context.pszFilename, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
 #define ParserDebug( context, description, ... ) ReportErrorOnAmbiguousToken( context ); Error_Compiler( EError_Debug, context.pszFilename, context.uCurrentRow, context.uCurrentCol, description, __VA_ARGS__ )
 
-CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU );
-CASTProgram* ParseFile( const char* pszFilename, CCompilationUnit* pCU );
+CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU, CScope* pParentScope );
+CASTProgram* ParseFile( const char* pszFilename, CCompilationUnit* pCU, CScope* pParentScope );
 
 void PushParseContext( SParseContext& rtContext );
 SParseContext PopParseContext( void );

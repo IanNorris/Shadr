@@ -132,9 +132,9 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 	return pFormat;
 }
 
-void InitialiseFormats()
+void InitialiseFormats( std::string rootPath )
 {
-	std::string tPath = "Formats";
+	std::string tPath = rootPath + "Formats";
 
 	DIR* pDir = opendir( tPath.c_str() );
 	dirent* pEnt;
