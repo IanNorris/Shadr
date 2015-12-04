@@ -58,9 +58,11 @@ public:
 	: CASTBase( rtParsePosition )
 	, m_pPrototype( pPrototype )
 	, m_pBody( pBody )
+	, m_bInline( false )
 	{
 		AddReflection( "Prototype", EASTReflectionType_ASTNode, &m_pPrototype );
 		AddReflection( "Body", EASTReflectionType_ASTNode, &m_pBody );
+		AddReflection( "Inline", EASTReflectionType_Bool, &m_bInline );
 	}
 
 	const char* GetElementName() const { return "Function"; }
@@ -73,10 +75,16 @@ public:
 		return tChildren;
 	}
 
+	bool IsInline( void )
+	{
+		return m_bInline;
+	}
+
 private:
 
 	CASTPrototype* m_pPrototype;
 	CASTBlockStatement* m_pBody;
+	bool m_bInline;
 };
 
 class CASTExpressionFunctionCall : public CASTExpression

@@ -31,7 +31,6 @@ int main( int iArgCount, char** apszArguments )
 
 	InitialiseTokenTables();
 	InitialiseBasicTypes();
-	InitialiseFormats( rootPath );
 
 	RunUnitTests( rootPath );
 
@@ -44,19 +43,28 @@ int main( int iArgCount, char** apszArguments )
 		fprintf( stderr, "Unable to find or parse %s.\n", intrinsicsPath.c_str() );
 		exit( 1 );
 	}
-
 	CScope* pIntrinsicsScope = &pIntrinsics->GetScope();
 	
 	if( iArgCount > 1 )
 	{
-		CCompilationUnit tCU( apszArguments[1] );
+		//Our formatter may have some extensions we need to pull in.
+		const char* pszFormatter = apszArguments[2];
+		std::string pathToFormatterExtensions = rootPath + "Formats\\";
+		pathToFormatterExtensions += pszFormatter;
+		std::string pathToFormatterDefinition = pathToFormatterExtensions;
+		pathToFormatterExtensions += ".hlsl";
+		pathToFormatterDefinition += ".xml";
+		CCompilationUnit tFormatterCU( pathToFormatterExtensions.c_str() );
+		CASTProgram* pFormatterExtensions = ParseFile( pathToFormatterExtensions.c_str(), &tFormatterCU, &pIntrinsics->GetScope() );
 
+		CScope* pIntrinsicsScope = pFormatterExtensions ? &pFormatterExtensions->GetScope() : &pIntrinsics->GetScope();
+
+		CCompilationUnit tCU( apszArguments[1] );
 		CASTProgram* pProgram = ParseFile( apszArguments[1], &tCU, pIntrinsicsScope );
 
 		//NOTE: At this point all the pointers from the file data will be invalidated. Do all the work in ParseBuffer.
-
-		const char* pszFormatter = apszArguments[2];
-		CFormatter* pFormatter = GetFormatter( pszFormatter );
+		
+		CFormatter* pFormatter = InitialiseFormat( pathToFormatterDefinition.c_str() );
 		if( pFormatter )
 		{
 			CASTFormatter* pProgramFormatter = pFormatter->GetASTType( "Program" );

@@ -39,6 +39,8 @@ enum ETypeFlag
 	ETypeFlag_UNorm				= 1 << 3,
 	ETypeFlag_SNorm				= 1 << 4,
 	ETypeFlag_Reference			= 1 << 5,
+	ETypeFlag_Intrinsic			= 1 << 6,
+	ETypeFlag_Inline			= 1 << 7,
 };
 
 class CSemantic

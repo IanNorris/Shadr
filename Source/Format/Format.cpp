@@ -14,8 +14,6 @@
 #include "AST/AST.h"
 #include "ASTFormatters_Statement.h"
 
-std::unordered_map< std::string, CFormatter* > g_apFormats;
-
 void ProcessNode( CFormatterStore* pStore, TiXmlElement* pElement )
 {
 	TiXmlAttribute* pAttrib = pElement->FirstAttribute();
@@ -132,48 +130,6 @@ CFormatter* InitialiseFormat( const std::string& rtFormatFilename )
 	return pFormat;
 }
 
-void InitialiseFormats( std::string rootPath )
-{
-	std::string tPath = rootPath + "Formats";
-
-	DIR* pDir = opendir( tPath.c_str() );
-	dirent* pEnt;
-	if( pDir )
-	{
-		while( (pEnt = readdir( pDir )) != NULL )
-		{
-			//We only want files that don't start with a dot
-			if(  pEnt->d_name[0] != '.' )
-			{
-				std::string tFileContent;
-
-				std::string tFilename = tPath;
-				tFilename += "/";
-				tFilename += pEnt->d_name;
-
-				if( !ReadFile( tFileContent, tFilename.c_str() ))
-				{
-					fprintf( stderr, "\tUnable to open file %s\n", tFilename.c_str() );
-					continue;
-				}
-
-				std::string tFilenameOnly = pEnt->d_name;
-
-				std::string tNameWithoutExt = tFilenameOnly.substr( 0, tFilenameOnly.find_last_of( '.' ) );
-
-				CFormatter* pFormat = InitialiseFormat( tFilename );
-
-				if( pFormat )
-				{
-					g_apFormats[ tNameWithoutExt ] = pFormat;
-				}
-			}
-		}
-
-		closedir( pDir );
-	}
-}
-
 void ExecuteFormatter( CFormatterContext* pContext, const CReflectionObject* pASTNode, const char* pszOverrideFormatter )
 {
 	Assert( pASTNode, "AST node is null" );
@@ -188,20 +144,6 @@ void ExecuteFormatter( CFormatterContext* pContext, const CReflectionObject* pAS
 	else
 	{
 		fprintf( stderr, "Unable to find formatter for type %s.\n", pszName );
-	}
-}
-
-CFormatter* GetFormatter( const std::string& rtFormatName )
-{
-	auto tIter = g_apFormats.find( rtFormatName );
-	if( tIter != g_apFormats.end() )
-	{
-		return (*tIter).second;
-	}
-	else
-	{
-		Assert( 0, "No formatter found for format %s.", rtFormatName.c_str() );
-		return nullptr;
 	}
 }
 

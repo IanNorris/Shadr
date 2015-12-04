@@ -118,6 +118,10 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	//Variable direction operators
 	{ "in",						"in", 0 },				//EShaderToken_In
 	{ "out",					"out", 0 },				//EShaderToken_Out
+
+	//Function decorators
+	{ "intrinsic",				"intrinsic", 0 },		//EShaderToken_Intrinsic
+	{ "inline",					"inline", 0 },			//EShaderToken_Inline
 };
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
@@ -322,7 +326,7 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 				// yet we've already identified a keyword
 				if( !rsPossibleTokens.empty() )
 				{
-					for( auto tIter = rsPossibleTokens.begin(); tIter != rsPossibleTokens.end(); ++tIter )
+					for( auto tIter = rsPossibleTokens.begin(); tIter != rsPossibleTokens.end(); )
 					{
 						auto& rtToken = (*tIter);
 
@@ -334,14 +338,22 @@ bool GetPossibleTokens( const char* pszInputString, unsigned int uCharactersLeft
 							if( rtToken.uLength < tToken.uLength )
 							{
 								//Ditch the old token, keep the new one instead
-								rsPossibleTokens.erase( tIter );
+								tIter = rsPossibleTokens.erase( tIter );
 
-								break;
+								//Do not break here because multiple tokens may need to be rejected
+								//eg 'in' in 'inline'
+								//break;
 							}
 							else
 							{
 								bKeepToken = false;
+
+								++tIter;
 							}
+						}
+						else
+						{
+							++tIter;
 						}
 					}
 				}

@@ -306,14 +306,13 @@ class CASTReflectionType;
 void ProcessNode( CFormatterStore* pStore, TiXmlElement* pElement );
 CASTFormatter* ProcessASTFormatter( TiXmlElement* pElement, const char* pszName );
 void ExecuteFormatter( CFormatterContext* pContext, const CReflectionObject* pASTNode, const char* pszOverrideFormatter );
-CFormatter* GetFormatter( const std::string& rtFormatName );
 bool IsReflectedConditionTrue( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 const CASTReflectionType* ReflectedValueToReflectionType( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 const CReflectionObject* ReflectedValueToReflectionObject( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 std::string ReflectedValueToString( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 bool ReflectedCondition( const std::string& rtReflectionPath, CFormatterContext* pContext, const CReflectionObject* pReflectionObject, bool bRoot = true );
 
-void InitialiseFormats( std::string rootPath );
+CFormatter* InitialiseFormat( const std::string& rtFormatFilename );
 
 #include "FormatterCommands.h"
 

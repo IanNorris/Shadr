@@ -60,6 +60,14 @@ CType* ParseType( SParseContext& rtContext )
 				uTypeFlags |= ETypeFlag_Reference;
 				break;
 
+			case EShaderToken_Intrinsic:
+				uTypeFlags |= ETypeFlag_Intrinsic;
+				break;
+
+			case EShaderToken_Inline:
+				uTypeFlags |= ETypeFlag_Inline;
+				break;
+
 			default:
 				bAteSomething = false;
 				bFinishEatingModifiers = true;

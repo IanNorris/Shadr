@@ -129,8 +129,10 @@ enum EShaderToken
 
 	EShaderToken_In							= -60,
 	EShaderToken_Out						= -61,
+	EShaderToken_Intrinsic					= -62,
+	EShaderToken_Inline						= -63,
 
-	EShaderToken_EndBasic					= -61,
+	EShaderToken_EndBasic					= -63,
 
 	//Callback based tokens
 	EShaderToken_BeginCallback				= -1000,
