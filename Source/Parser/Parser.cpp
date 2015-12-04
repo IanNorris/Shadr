@@ -2,6 +2,7 @@
 #include "AST/AST.h"
 #include "Parser.h"
 #include "Reconcile.h"
+#include "Optimise.h"
 
 CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, CCompilationUnit* pCU, CScope* pParentScope )
 {
@@ -18,6 +19,8 @@ CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, C
 		CASTProgram* pProgram = ParseProgram( tContext, pParentScope );
 
 		Reconcile( pProgram, nullptr );
+		IdentifySideEffects( pProgram, nullptr );
+		Optimise( pProgram, nullptr );
 
 		return pProgram;
 	}

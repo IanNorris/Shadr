@@ -1,7 +1,7 @@
 #if !defined( SHADR_AST_FUNCTION_H )
 #define SHADR_AST_FUNCTION_H
 
-class CASTPrototype : public CASTBase, public CASTScope
+class CASTPrototype : public CASTBase, public CASTScope, public CASTAnnotationSupport
 {
 public:
 
@@ -50,7 +50,7 @@ private:
 	std::vector< CASTVariableDefinition* > m_apParameters;
 };
 
-class CASTFunction : public CASTBase
+class CASTFunction : public CASTBase, public CASTAnnotationSupport
 {
 public:
 

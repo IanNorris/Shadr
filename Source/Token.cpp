@@ -122,6 +122,10 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	//Function decorators
 	{ "intrinsic",				"intrinsic", 0 },		//EShaderToken_Intrinsic
 	{ "inline",					"inline", 0 },			//EShaderToken_Inline
+
+	//Annotations
+	{ "sideEffect",				"sideEffect", 0 },		//EShaderToken_Annotation_SideEffect
+	{ "unroll",					"unroll", 0 },			//EShaderToken_Annotation_Unroll
 };
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 

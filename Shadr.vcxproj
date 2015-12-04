@@ -102,6 +102,7 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Optimise.cpp" />
     <ClCompile Include="Source\AST\ASTBlock.cpp" />
     <ClCompile Include="Source\AST\ASTExpression.cpp" />
     <ClCompile Include="Source\AST\ASTFunction.cpp" />
@@ -129,6 +130,7 @@
     <ClCompile Include="ThirdParty\TinyXML\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Optimise.h" />
     <ClInclude Include="Source\AST\AST.h" />
     <ClInclude Include="Source\AST\ASTExpression.h" />
     <ClInclude Include="Source\AST\ASTFunction.h" />

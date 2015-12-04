@@ -1,3 +1,4 @@
+[sideEffect]
 intrinsic void abort( void );
 
 intrinsic int  abs( int x );
@@ -70,7 +71,10 @@ intrinsic bool all( double2 x );
 intrinsic bool all( double3 x );
 intrinsic bool all( double4 x );
 
+[sideEffect]
 intrinsic void AllMemoryBarrier( void );
+
+[sideEffect]
 intrinsic void AllMemoryBarrierWithGroupSync( void );
 
 intrinsic bool any( bool x );

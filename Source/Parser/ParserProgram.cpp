@@ -8,6 +8,15 @@ CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 
 	do 
 	{
+		SParseContext tContextCopy = rtContext;
+		CASTAnnotationGroup* pAnnotation = ParseAnnotation( rtContext, pParentScope );
+		if( !pAnnotation )
+		{
+			rtContext = tContextCopy;
+		}
+
+		SParseContext tPostAnnotationCopy = rtContext;
+
 		CType* pReturnType = ParseType( rtContext );
 
 		//If there's no return type, it can't be a function
@@ -43,6 +52,11 @@ CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 
 				if( pFunction )
 				{
+					if( pAnnotation )
+					{
+						pFunction->AddAnnotation( pAnnotation );
+					}
+
 					pProgram->AddElement( pFunction );
 				}
 				else
@@ -52,6 +66,11 @@ CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 			}
 			else if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
 			{
+				if( pAnnotation )
+				{
+					pPrototype->AddAnnotation( pAnnotation );
+				}
+
 				pProgram->AddElement( pPrototype );
 
 				if( !ConsumeToken( rtContext ) )
@@ -59,6 +78,27 @@ CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 					//EOF!
 					return pProgram;
 				}
+			}
+		}
+		else
+		{
+			//Need to backtrack as variable definitions will consume the type themselves.
+			rtContext = tPostAnnotationCopy;
+
+			CASTVariableDefinition* pVariableDefinition = ParseVariableDefinition( rtContext, &pProgram->GetScope() );
+			if( pVariableDefinition )
+			{
+				if( pAnnotation )
+				{
+					pVariableDefinition->AddAnnotation( pAnnotation );
+				}
+
+				pProgram->AddElement( pVariableDefinition );
+			}
+			else
+			{
+				ParserError( rtContext, "Expected global variable, type or function definition" );
+				break;
 			}
 		}
 	}

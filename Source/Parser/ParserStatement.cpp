@@ -2,9 +2,138 @@
 #include "AST/AST.h"
 #include "Parser.h"
 
+#define AnnotationCheckParamCount( expectedCountMin, expectedCountMax ) if( apParameters.size() < expectedCountMin || apParameters.size() > expectedCountMax ) { ParserError( rtContext, "%s annotation requires between %u and %u parameters, given %u", std::string(sAnnotation.pszToken,sAnnotation.uLength).c_str(), expectedCountMin, expectedCountMax, apParameters.size() ); }
+
+CASTAnnotationGroup* ParseAnnotation( SParseContext& rtContext, CScope* pParentScope )
+{
+	if( rtContext.sNextToken.eToken != EShaderToken_Square_Open )
+	{
+		return NULL;
+	}
+
+	if( !ConsumeToken( rtContext ) )
+	{
+		ParserError( rtContext, "Unexpected end of file." );
+		return NULL;
+	}
+
+	CASTAnnotationGroup* pNewGroup = new CASTAnnotationGroup( rtContext );
+
+	std::vector<CASTExpression*> apParameters;
+	
+	while( true )
+	{
+		apParameters.clear();
+
+		bool bFirst = true;
+
+		EShaderToken eAnnotationToken = rtContext.sNextToken.eToken;
+		SPossibleToken sAnnotation = rtContext.sNextToken;
+
+		if( !ConsumeToken( rtContext ) )
+		{
+			ParserError( rtContext, "Unexpected end of file" );
+			return pNewGroup;
+		}
+
+		if( rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Open )
+		{
+			if( !ConsumeToken( rtContext ) )
+			{
+				ParserError( rtContext, "Unexpected end of file" );
+			}
+
+			while( true )
+			{
+				if( rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Close )
+				{
+					break;
+				}
+
+				if( !bFirst )
+				{
+					if( rtContext.sNextToken.eToken == EShaderToken_Comma )
+					{
+						if( !ConsumeToken( rtContext ) )
+						{
+							ParserError( rtContext, "Unexpected end of file" );
+						}
+					}
+					else
+					{
+						ParserError( rtContext, "Expected comma." );
+					}
+				}
+				bFirst = false;
+
+				CASTExpression* pExpression = ParseExpression( rtContext, pParentScope, INT_MAX, false, true );
+				if( pExpression )
+				{
+					apParameters.push_back( pExpression );
+				}
+				else
+				{
+					ParserError( rtContext, "Expected expression." );
+					break;
+				}
+			}
+
+			if( !ConsumeToken( rtContext ) )
+			{
+				ParserError( rtContext, "Unexpected end of file" );
+			}
+		}
+
+		switch( eAnnotationToken )
+		{
+			case EShaderToken_Annotation_SideEffect:
+				AnnotationCheckParamCount( 0, 0 );
+				pNewGroup->GetChildren().push_back( new CASTAnnotation( rtContext, EAnnotation_SideEffect, apParameters ) );
+				break;
+
+			case EShaderToken_Annotation_Unroll:
+				AnnotationCheckParamCount( 0, 1 );
+				pNewGroup->GetChildren().push_back( new CASTAnnotation( rtContext, EAnnotation_Unroll, apParameters ) );
+				break;
+		}
+
+		if( rtContext.sNextToken.eToken != EShaderToken_Comma )
+		{
+			if( rtContext.sNextToken.eToken != EShaderToken_Square_Close )
+			{
+				ParserError( rtContext, "Unexpected end of file." );
+				return pNewGroup;
+			}
+
+			if( !ConsumeToken( rtContext ) )
+			{
+				ParserError( rtContext, "Unexpected end of file." );
+				return pNewGroup;
+			}
+
+			//There may be many annotations strung together [like][this]
+			if( rtContext.sNextToken.eToken == EShaderToken_Square_Open )
+			{
+				if( !ConsumeToken( rtContext ) )
+				{
+					ParserError( rtContext, "Unexpected end of file." );
+					return pNewGroup;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	return pNewGroup;
+
+}
+
 CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScope* pParentScope )
 {
-	//We're expecting to parse <Type> <Identifier> [ = <Expression> ]) [ (, <Identifier> [ = <Expression> ]))+ ]
+	//We're expecting to parse [Annotation] <Type> <Identifier> [ = <Expression> ]) [ (, <Identifier> [ = <Expression> ]))+ ]
 
 	CType* pType = ParseType( rtContext );
 
@@ -93,16 +222,32 @@ CASTVariableDefinition* ParseVariableDefinition( SParseContext& rtContext, CScop
 	return pVariableDef;
 }
 
+CASTStatement* ApplyAnnotation( CASTStatement* pStatement, CASTAnnotationGroup* pAnnotation )
+{
+	if( pStatement && pAnnotation )
+	{
+		pStatement->AddAnnotation( pAnnotation );
+	}
+
+	return pStatement;
+}
+
 CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 {
 	SParseContext tContextCopy = rtContext;
+
+	CASTAnnotationGroup* pAnnotation = ParseAnnotation( rtContext, pParentScope );
+	if( !pAnnotation )
+	{
+		rtContext = tContextCopy;
+	}
 
 	//Is it a block?
 	if( rtContext.sNextToken.eToken == EShaderToken_Brace_Open )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseBlockStatement( rtContext, pParentScope );
+		return ApplyAnnotation( ParseBlockStatement( rtContext, pParentScope ), pAnnotation );
 	}
 	else if( rtContext.sNextToken.eToken == EShaderToken_Return )
 	{
@@ -122,7 +267,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 
 		if( pExpression )
 		{
-			return new CASTReturnStatement( rtContext, pExpression );
+			return ApplyAnnotation( new CASTReturnStatement( rtContext, pExpression ), pAnnotation );
 		}
 		else
 		{
@@ -133,31 +278,31 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseIfStatement( rtContext, pParentScope );
+		return ApplyAnnotation( ParseIfStatement( rtContext, pParentScope ), pAnnotation );
 	}
 	else if( rtContext.sNextToken.eToken == EShaderToken_While )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseWhileStatement( rtContext, pParentScope );
+		return ApplyAnnotation( ParseWhileStatement( rtContext, pParentScope ), pAnnotation );
 	}
 	else if( rtContext.sNextToken.eToken == EShaderToken_Do )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseDoWhileStatement( rtContext, pParentScope );
+		return ApplyAnnotation( ParseDoWhileStatement( rtContext, pParentScope ), pAnnotation );
 	}
 	else if( rtContext.sNextToken.eToken == EShaderToken_For )
 	{
 		ConsumeToken( rtContext );
 
-		return ParseForStatement( rtContext, pParentScope );
+		return ApplyAnnotation( ParseForStatement( rtContext, pParentScope ), pAnnotation );
 	}
 	else if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
 	{
 		ConsumeToken( rtContext );
 
-		return new CASTNopStatement( rtContext );
+		return ApplyAnnotation( new CASTNopStatement( rtContext ), pAnnotation );
 	}
 
 	rtContext = tContextCopy;
@@ -174,7 +319,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 			ParserError( rtContext, "Expected semi-colon (;)");
 		}
 
-		return new CASTExpressionStatement( rtContext, pExpression, false );
+		return ApplyAnnotation( new CASTExpressionStatement( rtContext, pExpression, false ), pAnnotation );
 	}
 
 	rtContext = tContextCopy;
@@ -182,7 +327,7 @@ CASTStatement* ParseStatement( SParseContext& rtContext, CScope* pParentScope )
 	CASTVariableDefinition* pDefinition = ParseVariableDefinition( rtContext, pParentScope );
 	if( pDefinition )
 	{
-		return pDefinition;
+		return ApplyAnnotation( pDefinition, pAnnotation );
 	}
 
 	return NULL;

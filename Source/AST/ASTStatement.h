@@ -3,7 +3,105 @@
 
 #include "Tokens.h"
 
-class CASTStatement : public CASTBase
+enum EAnnotation
+{
+	EAnnotation_SideEffect, //!< The statement has a side-effect that may not be obvious to the compiler
+	EAnnotation_Unroll,		//!< This statement should be unrolled to a maximum of (param0) iterations
+};
+
+class CASTAnnotation : public CASTBase
+{
+public: 
+
+	CASTAnnotation( const SParsePosition& rtParsePosition, EAnnotation eAnnotation, const std::vector<CASTExpression*>& rtParameters )
+	: CASTBase( rtParsePosition )
+	, m_eAnnotation( eAnnotation )
+	, m_apParameters( rtParameters )
+	{}
+
+	EAnnotation GetType() { return m_eAnnotation; }
+
+	const char* GetElementName() const { return "Annotation"; }
+
+	virtual std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.resize( m_apParameters.size() );
+		for( auto& rpAnnotation : m_apParameters )
+		{
+			tChildren.push_back( rpAnnotation );
+		}
+		return tChildren;
+	}
+
+private:
+
+	EAnnotation m_eAnnotation;
+
+	std::vector<CASTExpression*> m_apParameters;
+};
+
+class CASTAnnotationGroup : public CASTBase
+{
+public: 
+
+	CASTAnnotationGroup( const SParsePosition& rtParsePosition )
+	: CASTBase( rtParsePosition )
+	{}
+
+	std::vector<CASTAnnotation*>& GetAnnotations() { return m_apAnnotations; }
+
+	const char* GetElementName() const { return "AnnotationGroup"; }
+
+	virtual std::vector< CASTBase* > GetChildren( void )
+	{
+		std::vector< CASTBase* > tChildren;
+		tChildren.reserve( m_apAnnotations.size() );
+		for( auto& rpAnnotation : m_apAnnotations )
+		{
+			tChildren.push_back( rpAnnotation );
+		}
+
+		return tChildren;
+	}
+
+private:
+
+	std::vector<CASTAnnotation*> m_apAnnotations;
+};
+
+class CASTAnnotationSupport
+{
+public:
+
+	void AddAnnotation( CASTAnnotationGroup* pAnnotation )
+	{
+		m_tAnnotations.push_back( pAnnotation );
+	}
+
+	CASTAnnotation* GetAnnotation( EAnnotation eAnnotation )
+	{
+		for( auto& rpAnnotationGroups : m_tAnnotations )
+		{
+			auto& rpAnnotationGroup = rpAnnotationGroups->GetAnnotations();
+			for( auto& rpAnnotation : rpAnnotationGroup )
+			{
+				if( rpAnnotation->GetType() == eAnnotation )
+				{
+					return rpAnnotation;
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+private:
+
+	std::vector< CASTAnnotationGroup* > m_tAnnotations;
+};
+
+class CASTStatement : public CASTBase, public CASTAnnotationSupport
 {
 public:
 
