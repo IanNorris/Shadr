@@ -31,6 +31,9 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+Shadr.exe
+Shadr.ipdb
+Shadr.iobj
 
 # Roslyn cache directories
 *.ide/
