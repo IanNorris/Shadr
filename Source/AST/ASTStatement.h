@@ -7,6 +7,7 @@ enum EAnnotation
 {
 	EAnnotation_SideEffect, //!< The statement has a side-effect that may not be obvious to the compiler
 	EAnnotation_Unroll,		//!< This statement should be unrolled to a maximum of (param0) iterations
+	EAnnotation_ForceInline,//!< Force this function to be inlined in all cases (even when optimisations are disabled)
 };
 
 class CASTAnnotation : public CASTBase

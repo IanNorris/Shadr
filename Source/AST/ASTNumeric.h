@@ -20,7 +20,24 @@ public:
 		AddCondition( "IsSigned", [&](){ return m_bSigned; } );
 
 		ParseString( pszString, uCharacters );
-		GetType().SetScalarType( m_bSigned ? EScalarType_Int : EScalarType_UnsignedInt);
+
+		if( m_iValue >= UINT_MAX )
+		{
+			Error_Compiler( EError_Error, rtParsePosition.pszFilename, rtParsePosition.uCurrentRow, rtParsePosition.uCurrentCol, "Numeric value %s is larger than a uint can hold", std::string(pszString, uCharacters).c_str() );
+		}
+		else if( m_iValue <= -INT_MAX )
+		{
+			Error_Compiler( EError_Error, rtParsePosition.pszFilename, rtParsePosition.uCurrentRow, rtParsePosition.uCurrentCol, "Numeric value %s is smaller than an int can hold", std::string(pszString, uCharacters).c_str() );
+		}
+
+		if( m_iValue > INT_MAX && m_iValue < UINT_MAX )
+		{
+			GetType().SetScalarType( EScalarType_UnsignedInt );
+		}
+		else
+		{
+			GetType().SetScalarType( EScalarType_Int );
+		}
 	}
 
 	const char* GetElementName() const { return "ConstInt"; }
@@ -31,6 +48,11 @@ public:
 	{
 		std::vector< CASTBase* > tChildren;
 		return tChildren;
+	}
+
+	void EvaluateType() override
+	{
+
 	}
 
 private:
@@ -66,6 +88,11 @@ public:
 	{
 		std::vector< CASTBase* > tChildren;
 		return tChildren;
+	}
+
+	void EvaluateType() override
+	{
+
 	}
 
 private:
@@ -107,6 +134,11 @@ public:
 		return tChildren;
 	}
 
+	void EvaluateType() override
+	{
+
+	}
+
 private:
 
 	bool m_bValue;
@@ -129,6 +161,11 @@ public:
 	{
 		std::vector< CASTBase* > tChildren;
 		return tChildren;
+	}
+
+	void EvaluateType() override
+	{
+		m_tType = *m_pVariable->pType;
 	}
 
 private:

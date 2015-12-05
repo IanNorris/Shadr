@@ -42,6 +42,18 @@ public:
 
 	const std::string& GetFunctionName() const { return m_tName; }
 
+	bool CanFitParameterCount( unsigned int uParameterCount )
+	{
+		//TODO: Implement default parameters here.
+
+		if( m_apParameters.size() == uParameterCount )
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 private:
 
 	CType*		m_pReturnType; //Workaround for the type expecting CType** in AddReflection
@@ -93,6 +105,7 @@ public:
 	CASTExpressionFunctionCall( const SParsePosition& rtParsePosition, const std::string& rtName )
 	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_tName( rtName )
+	, m_pPrototype( nullptr )
 	{
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
 		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
@@ -121,10 +134,27 @@ public:
 		return tChildren;
 	}
 
+	bool FindMatchingFunction( CScope* pScope );
+
+	void EvaluateType() override
+	{
+		//TODO
+		if( m_pPrototype )
+		{
+			m_tType = m_pPrototype->GetReturnType();
+		}
+		else
+		{
+			m_tType = CType::GetConstIntType();
+		}
+	}
+
 private:
 
 	std::string m_tName;
 	std::vector< CASTExpression* > m_apParameters;
+
+	CASTPrototype* m_pPrototype;
 };
 
 #endif //SHADR_AST_FUNCTION_H

@@ -5,6 +5,41 @@
 #include <algorithm>
 #include <unordered_map>
 
+const char* GetNameFromScalarType( EScalarType eScalarType )
+{
+	switch( eScalarType )
+	{
+	case EScalarType_Void:
+		return "void";
+
+	case EScalarType_Bool:
+		return "bool";
+
+	case EScalarType_Half:
+		return "half";
+
+	case EScalarType_Float:
+		return "float";
+
+	case EScalarType_Double:
+		return "double";
+
+	case EScalarType_Int:
+		return "int";
+
+	case EScalarType_UnsignedInt:
+		return "unsigned int";
+
+	case EScalarType_Dummy:
+	case EScalarType_ConstantBuffer:
+	case EScalarType_Buffer:
+	case EScalarType_Struct:
+	case EScalarType_MAX:
+	default:
+		return "<unknown>";
+	}
+}
+
 std::unordered_map< std::string, CType* > g_tTypeDatabase;
 
 void AddTypeDefinition( CType* pType )
@@ -16,7 +51,7 @@ void InitialiseBasicTypes( void )
 {
 	AddTypeDefinition( new CType( "void",  EScalarType_Void ) );
 
-	AddTypeDefinition( new CType( "float",  EScalarType_Float, 0, 0 ) );
+	AddTypeDefinition( new CType( "float",  EScalarType_Float, 0, 1 ) );
 	AddTypeDefinition( new CType( "float1", EScalarType_Float, 0, 1 ) );
 	AddTypeDefinition( new CType( "float2", EScalarType_Float, 0, 2 ) );
 	AddTypeDefinition( new CType( "float3", EScalarType_Float, 0, 3 ) );
@@ -38,13 +73,13 @@ void InitialiseBasicTypes( void )
 	AddTypeDefinition( new CType( "matrix4x4",  EScalarType_Float, 0, 4, 4 ) );
 	AddTypeDefinition( new CType( "matrix4x3",  EScalarType_Float, 0, 4, 3 ) );
 
-	AddTypeDefinition( new CType( "double",  EScalarType_Double, 0, 0 ) );
+	AddTypeDefinition( new CType( "double",  EScalarType_Double, 0, 1 ) );
 	AddTypeDefinition( new CType( "double1", EScalarType_Double, 0, 1 ) );
 	AddTypeDefinition( new CType( "double2", EScalarType_Double, 0, 2 ) );
 	AddTypeDefinition( new CType( "double3", EScalarType_Double, 0, 3 ) );
 	AddTypeDefinition( new CType( "double4", EScalarType_Double, 0, 4 ) );
 
-	AddTypeDefinition( new CType( "int",  EScalarType_Int, 0, 0 ) );
+	AddTypeDefinition( new CType( "int",  EScalarType_Int, 0, 1 ) );
 	AddTypeDefinition( new CType( "int1", EScalarType_Int, 0, 1 ) );
 	AddTypeDefinition( new CType( "int2", EScalarType_Int, 0, 2 ) );
 	AddTypeDefinition( new CType( "int3", EScalarType_Int, 0, 3 ) );
@@ -61,7 +96,7 @@ void InitialiseBasicTypes( void )
 	AddTypeDefinition( new CType( "int4x4",  EScalarType_Int, 0, 4, 4 ) );
 
 
-	AddTypeDefinition( new CType( "uint",  EScalarType_UnsignedInt, 0, 0 ) );
+	AddTypeDefinition( new CType( "uint",  EScalarType_UnsignedInt, 0, 1 ) );
 	AddTypeDefinition( new CType( "uint1", EScalarType_UnsignedInt, 0, 1 ) );
 	AddTypeDefinition( new CType( "uint2", EScalarType_UnsignedInt, 0, 2 ) );
 	AddTypeDefinition( new CType( "uint3", EScalarType_UnsignedInt, 0, 3 ) );
@@ -77,7 +112,7 @@ void InitialiseBasicTypes( void )
 	AddTypeDefinition( new CType( "uint4x3", EScalarType_UnsignedInt, 0, 4, 3 ) );
 	AddTypeDefinition( new CType( "uint4x4", EScalarType_UnsignedInt, 0, 4, 4 ) );
 
-	AddTypeDefinition( new CType( "bool",  EScalarType_Bool, 0, 0 ) );
+	AddTypeDefinition( new CType( "bool",  EScalarType_Bool, 0, 1 ) );
 	AddTypeDefinition( new CType( "bool1", EScalarType_Bool, 0, 1 ) );
 	AddTypeDefinition( new CType( "bool2", EScalarType_Bool, 0, 2 ) );
 	AddTypeDefinition( new CType( "bool3", EScalarType_Bool, 0, 3 ) );

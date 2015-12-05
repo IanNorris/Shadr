@@ -34,7 +34,7 @@ public:
 
 	virtual std::vector< CASTBase* > GetChildren( void ) = 0;
 
-	const SParsePosition& GetParserPosition(){ return m_tParserPosition; }
+	SParsePosition& GetParserPosition(){ return m_tParserPosition; }
 
 private:
 

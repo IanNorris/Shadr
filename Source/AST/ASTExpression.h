@@ -13,7 +13,9 @@ public:
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }
 
-private:
+	virtual void EvaluateType() = 0;
+
+protected:
 
 	CType			m_tType;
 };
@@ -23,7 +25,7 @@ class CASTExpressionParen : public CASTExpression
 public:
 
 	CASTExpressionParen( const SParsePosition& rtParsePosition, CASTExpression* pExpression )
-	: CASTExpression( rtParsePosition, pExpression->GetType() )
+	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_pExpression( pExpression )
 	{
 		AddReflection( "Expression", EASTReflectionType_ASTNode, &m_pExpression );
@@ -36,6 +38,11 @@ public:
 		std::vector< CASTBase* > tChildren;
 		tChildren.push_back( m_pExpression );
 		return tChildren;
+	}
+
+	void EvaluateType() override
+	{
+		m_tType = m_pExpression->GetType();
 	}
 
 private:
@@ -70,6 +77,11 @@ public:
 		return tChildren;
 	}
 
+	void EvaluateType() override
+	{
+		m_tType = EvaluateType( m_pExpression );
+	}
+
 protected:
 
 	CType EvaluateType( CASTExpression* pExpression );
@@ -86,7 +98,7 @@ class CASTExpressionBinary : public CASTExpression
 public:
 
 	CASTExpressionBinary( const SParsePosition& rtParsePosition, EShaderToken eToken, CASTExpression* pLeft, CASTExpression* pRight )
-	: CASTExpression( rtParsePosition, EvaluateType( pLeft, pRight ) )
+	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_pLeft( pLeft )
 	, m_pRight( pRight )
 	, m_eOperator( eToken )
@@ -111,6 +123,11 @@ public:
 		return tChildren;
 	}
 
+	void EvaluateType() override
+	{
+		m_tType = EvaluateType( m_pLeft, m_pRight );
+	}
+
 protected:
 
 	CType EvaluateType( CASTExpression* pLeft, CASTExpression* pRight );
@@ -127,7 +144,7 @@ class CASTExpressionTernary : public CASTExpression
 public:
 
 	CASTExpressionTernary( const SParsePosition& rtParsePosition, CASTExpression* pCondition, CASTExpression* pTrue, CASTExpression* pFalse )
-	: CASTExpression( rtParsePosition, EvaluateType( pCondition, pTrue, pFalse ) )
+	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_pCondition( pCondition )
 	, m_pTrue( pTrue )
 	, m_pFalse( pFalse )
@@ -146,6 +163,11 @@ public:
 		tChildren.push_back( m_pTrue );
 		tChildren.push_back( m_pFalse );
 		return tChildren;
+	}
+
+	void EvaluateType() override
+	{
+		m_tType = EvaluateType( m_pCondition, m_pTrue, m_pFalse );
 	}
 
 protected:
@@ -178,6 +200,21 @@ public:
 		return tChildren;
 	}
 
+	void EvaluateType() override
+	{
+		m_tType = CType::GetVoidType();
+	}
+
+	const char* GetSwizzle()
+	{
+		return m_tSwizzle.c_str();
+	}
+
+	unsigned int GetSwizzleSize()
+	{
+		return m_tSwizzle.size();
+	}
+
 private:
 
 	std::string m_tSwizzle;
@@ -200,6 +237,11 @@ public:
 	{
 		std::vector< CASTBase* > tChildren;
 		return tChildren;
+	}
+
+	void EvaluateType() override
+	{
+		m_tType = CType::GetVoidType();
 	}
 
 private:

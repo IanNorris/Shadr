@@ -43,6 +43,8 @@ enum ETypeFlag
 	ETypeFlag_Inline			= 1 << 7,
 };
 
+const char* GetNameFromScalarType( EScalarType eScalarType );
+
 class CSemantic
 {
 	//TODO: update operator== below	
@@ -62,7 +64,7 @@ class CType : public CReflectionObject
 {
 public:
 
-	CType( const std::string& rtTypeName, EScalarType eType, unsigned int uFlags = 0, unsigned int uVectorWidth = 0, unsigned int uVectorHeight = 0, unsigned int uArrayCount = 0, CType* pParentType = nullptr, CSemantic* pSemantic = nullptr, CRegister* pRegister = nullptr )
+	CType( const std::string& rtTypeName, EScalarType eType, unsigned int uFlags = 0, unsigned int uVectorWidth = 1, unsigned int uVectorHeight = 1, unsigned int uArrayCount = 0, CType* pParentType = nullptr, CSemantic* pSemantic = nullptr, CRegister* pRegister = nullptr )
 	: m_tName( rtTypeName )
 	, m_pParentType( pParentType )
 	, m_pSemantic( pSemantic )
@@ -73,8 +75,14 @@ public:
 	, m_uVectorHeight( uVectorHeight )
 	, m_uArrayCount( uArrayCount )
 	{
-		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
+		Assert( uVectorWidth >= 1, "Vector width set to zero" );
+		Assert( uVectorHeight >= 1, "Vector height set to zero" );
 
+		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
+		AddReflection( "VectorWidth", EASTReflectionType_UInt, &m_uVectorWidth );
+		AddReflection( "VectorHeight", EASTReflectionType_UInt, &m_uVectorHeight );
+		AddReflection( "ArrayCount", EASTReflectionType_UInt, &m_uArrayCount );
+		
 		AddCondition( "IsConst", [&](){ return (m_uFlags & ETypeFlag_Const) != 0; } );
 	}
 
@@ -83,6 +91,12 @@ public:
 	EScalarType GetScalarType( ) { return m_eType; }
 
 	const std::string& GetTypeName() { return m_tName; }
+
+	static const CType& GetFloatType()
+	{
+		static CType s_tFloat( "float", EScalarType_Float, 0 );
+		return s_tFloat;
+	}
 
 	static const CType& GetConstFloatType()
 	{
@@ -108,6 +122,12 @@ public:
 		return s_tUInt;
 	}
 
+	static const CType& GetBoolType()
+	{
+		static CType s_tBool( "bool", EScalarType_Bool, 0 );
+		return s_tBool;
+	}
+
 	static const CType& GetVoidType()
 	{
 		static CType s_tVoid( "void", EScalarType_Void );
@@ -118,11 +138,14 @@ public:
 
 	bool CompareTo( const CType& other ) const
 	{
+		unsigned int compareFlagMask = ETypeFlag_Const | ETypeFlag_Precision_Full | ETypeFlag_Precision_Half | ETypeFlag_UNorm | ETypeFlag_SNorm;
+
 		if(		m_eType != other.m_eType
 			||	m_uFlags != other.m_uFlags
 			||	m_uVectorWidth != other.m_uVectorWidth
 			||	m_uVectorHeight != other.m_uVectorHeight
-			||	m_uArrayCount != other.m_uArrayCount )
+			||	m_uArrayCount != other.m_uArrayCount
+			||  (m_uFlags & compareFlagMask) != (other.m_uFlags & compareFlagMask) )
 		{
 			return false;
 		}
@@ -148,6 +171,10 @@ public:
 
 		return true;
 	}
+
+	unsigned int GetVectorWidth() { return m_uVectorWidth; }
+	unsigned int GetVectorHeight() { return m_uVectorHeight; }
+	unsigned int GetArrayCount() { return m_uArrayCount; }
 
 private:
 

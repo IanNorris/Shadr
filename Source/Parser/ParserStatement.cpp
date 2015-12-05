@@ -95,6 +95,11 @@ CASTAnnotationGroup* ParseAnnotation( SParseContext& rtContext, CScope* pParentS
 				AnnotationCheckParamCount( 0, 1 );
 				pNewGroup->GetChildren().push_back( new CASTAnnotation( rtContext, EAnnotation_Unroll, apParameters ) );
 				break;
+
+			case EShaderToken_Annotation_ForceInline:
+				AnnotationCheckParamCount( 0, 0 );
+				pNewGroup->GetChildren().push_back( new CASTAnnotation( rtContext, EAnnotation_ForceInline, apParameters ) );
+				break;
 		}
 
 		if( rtContext.sNextToken.eToken != EShaderToken_Comma )

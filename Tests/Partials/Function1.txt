@@ -95,6 +95,15 @@ const float TestWhile()
 	return fVal;
 }
 
+void TestImplicitConversionWarning()
+{
+	float4 x;
+	float3 y;
+	
+	y = x;
+	y = x.xyz;
+}
+
 float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIsTrue )
 {
 	int3 myVar2;

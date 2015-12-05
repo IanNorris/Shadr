@@ -71,21 +71,21 @@ public:
 		return nullptr;
 	}
 
-	CASTPrototype* FindPrototype( const std::string& rtName )
+	void FindPrototypes( const std::string& rtName, std::vector<CASTPrototype*>& prototypes )
 	{
-		auto tIter = m_pPrototypes.find( rtName );
+		auto range = m_pPrototypes.equal_range( rtName );
 
-		if( tIter != m_pPrototypes.end() )
-		{
-			return (*tIter).second;
-		}
-
+		for_each( range.first, range.second,
+			[&prototypes]( std::unordered_multimap< std::string, CASTPrototype* >::value_type& x )
+			{
+				prototypes.push_back( x.second );
+			}
+		);
+		
 		if( m_pParentScope )
 		{
-			return m_pParentScope->FindPrototype( rtName );
+			m_pParentScope->FindPrototypes( rtName, prototypes );
 		}
-
-		return nullptr;
 	}
 
 	void AddVariable( SParseContext& rtContext, SVariable* pVariable )
@@ -106,9 +106,9 @@ public:
 
 private:
 
-	CScope*											m_pParentScope;
-	std::unordered_map< std::string, SVariable* >	m_pVariables;
-	std::unordered_map< std::string, CASTPrototype* >	m_pPrototypes;
+	CScope*													m_pParentScope;
+	std::unordered_map< std::string, SVariable* >			m_pVariables;
+	std::unordered_multimap< std::string, CASTPrototype* >	m_pPrototypes;
 };
 
 #endif //SHADR_SCOPE_H

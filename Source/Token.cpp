@@ -64,6 +64,7 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	{ "not equal",				"!=", 0 },				// EShaderToken_Binary_Comparison_NotEqual
 	
 	{ "not",					"!", 0 },				// EShaderToken_Unary_Not				
+	{ "bitwise not",			"~", 0 },				// EShaderToken_Unary_Bitwise_Not		
 	{ "increment",				"++", 0 },				// EShaderToken_Unary_Increment			
 	{ "decrement",				"--", 0 },				// EShaderToken_Unary_Deccrement		
 	
@@ -126,6 +127,7 @@ SBasicTokenMap g_asBasicTokens[  GetCountFromTokenRange(EShaderToken_BeginBasic,
 	//Annotations
 	{ "sideEffect",				"sideEffect", 0 },		//EShaderToken_Annotation_SideEffect
 	{ "unroll",					"unroll", 0 },			//EShaderToken_Annotation_Unroll
+	{ "forceInline",			"forceInline", 0 },		//EShaderToken_Annotation_ForceInline
 };
 
 SRegexTokenMap g_asRegexTokens[  GetCountFromTokenRange(EShaderToken_BeginRegex, EShaderToken_EndRegex)  ] = 
@@ -519,7 +521,8 @@ void InitialiseTokenTables( void )
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Binary_Operator_Plus ] = SPrecedence( 3, EAssociativity_RightToLeft );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Binary_Operator_Minus ] = SPrecedence( 3, EAssociativity_RightToLeft );
 	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Not ] = SPrecedence( 3, EAssociativity_RightToLeft );
-	//TODO: ~
+	g_atTokenPrecedence[ EOperatorType_Unary ][ EShaderToken_Unary_Bitwise_Not ] = SPrecedence( 3, EAssociativity_RightToLeft );
+
 	//TODO: Cast
 
 	g_atTokenPrecedence[ EOperatorType_Binary ][ EShaderToken_Binary_Operator_Multiply ] = SPrecedence( 5 );

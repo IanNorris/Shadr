@@ -26,38 +26,16 @@ void Reconcile( CASTBase* pNode, CASTScope* pScope )
 	{
 		Reconcile( pChild, pScope );
 	}
-
+	
 	auto pFunctionCall = dynamic_cast<CASTExpressionFunctionCall*>(pNode);
 	if( pFunctionCall )
 	{
-		CASTPrototype* pPrototype = pScope->GetScope().FindPrototype( pFunctionCall->GetFunctionName() );
+		pFunctionCall->FindMatchingFunction( &pScope->GetScope() );
+	}
 
-		if( !pPrototype )
-		{
-			Error_Compiler( 
-				EError_Error, 
-				pFunctionCall->GetParserPosition().pszFilename, 
-				pFunctionCall->GetParserPosition().uCurrentRow, 
-				pFunctionCall->GetParserPosition().uCurrentCol, 
-				"Function \"%s\" was not defined.", 
-				pFunctionCall->GetFunctionName().c_str()
-			);
-
-			return;
-		}
-
-		if( pPrototype->GetParameters().size() != pFunctionCall->GetParameters().size() )
-		{
-			Error_Compiler( 
-				EError_Error, 
-				pFunctionCall->GetParserPosition().pszFilename, 
-				pFunctionCall->GetParserPosition().uCurrentRow, 
-				pFunctionCall->GetParserPosition().uCurrentCol, 
-				"Function \"%s\" expects %d parameters, %d provided.", 
-				pFunctionCall->GetFunctionName().c_str(), 
-				pPrototype->GetParameters().size(), 
-				pFunctionCall->GetParameters().size()
-			);
-		}
+	auto pExpression = dynamic_cast<CASTExpression*>(pNode);
+	if( pExpression )
+	{
+		pExpression->EvaluateType();
 	}
 }

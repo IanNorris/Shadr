@@ -110,6 +110,6 @@ CType* ParseType( SParseContext& rtContext )
 		ConsumeToken( rtContext );
 	}
 
-	CType* pType = new CType( pParent->GetTypeName(), pParent->GetScalarType(), uTypeFlags, 0, 0, 0, pParent );
+	CType* pType = new CType( pParent->GetTypeName(), pParent->GetScalarType(), uTypeFlags, pParent->GetVectorWidth(), pParent->GetVectorHeight(), pParent->GetArrayCount(), pParent );
 	return pType;
 }
