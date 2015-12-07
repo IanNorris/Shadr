@@ -12,6 +12,7 @@ enum EVariableFlag
 
 class CASTExpressionStatement;
 class CASTPrototype;
+class CASTFunction;
 
 struct SVariable : public CReflectionObject
 {
@@ -88,6 +89,23 @@ public:
 		}
 	}
 
+	void FindFunctions( const std::string& rtName, std::vector<CASTFunction*>& functions )
+	{
+		auto range = m_pFunctions.equal_range( rtName );
+
+		for_each( range.first, range.second,
+			[&functions]( std::unordered_multimap< std::string, CASTFunction* >::value_type& x )
+			{
+				functions.push_back( x.second );
+			}
+		);
+		
+		if( m_pParentScope )
+		{
+			m_pParentScope->FindFunctions( rtName, functions );
+		}
+	}
+
 	void AddVariable( SParseContext& rtContext, SVariable* pVariable )
 	{
 		auto tIter = m_pVariables.find( pVariable->tName );
@@ -104,11 +122,16 @@ public:
 
 	void AddPrototype( SParseContext& rtContext, CASTPrototype* pPrototype );
 
+	void AddFunction( SParseContext& rtContext, CASTFunction* pFunction );
+
+	CScope* GetParentScope() { return m_pParentScope; }
+
 private:
 
 	CScope*													m_pParentScope;
 	std::unordered_map< std::string, SVariable* >			m_pVariables;
 	std::unordered_multimap< std::string, CASTPrototype* >	m_pPrototypes;
+	std::unordered_multimap< std::string, CASTFunction* >	m_pFunctions;
 };
 
 #endif //SHADR_SCOPE_H

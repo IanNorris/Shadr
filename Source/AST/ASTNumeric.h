@@ -77,7 +77,7 @@ public:
 		AddReflection( "Value", EASTReflectionType_Double, &m_fValue );
 
 		ParseString( pszString, uCharacters );
-		GetType().SetScalarType( EScalarType_Double );
+		GetType().SetScalarType( EScalarType_Float );
 	}
 
 	const char* GetElementName() const { return "ConstFloat"; }

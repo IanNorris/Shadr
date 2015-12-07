@@ -18,7 +18,7 @@ bool CASTExpressionFunctionCall::FindMatchingFunction( CScope* pScope )
 			GetParserPosition().pszFilename, 
 			GetParserPosition().uCurrentRow, 
 			GetParserPosition().uCurrentCol, 
-			"Function \"%s\" is not defined.", 
+			"Function \"%s\" is not declared.", 
 			GetFunctionName().c_str()
 		);
 
@@ -171,8 +171,148 @@ bool CASTExpressionFunctionCall::FindMatchingFunction( CScope* pScope )
 	{
 		m_pPrototype = apPrototypes[0];
 
+		if( m_pPrototype->IsIntrinsic() )
+		{
+			m_bIntrinsic = true;
+		}
+
+		return true;
+	}
+}
+
+bool CASTExpressionFunctionCall::FindMatchingFunctionBody( CScope* pScope )
+{
+	std::vector<CASTFunction*> apFunctions;
+	pScope->FindFunctions( m_tName, apFunctions );
+	
+	if( apFunctions.empty() )
+	{
+		//Intrinsics do not have a body normally, unless it has been overriden
+		if( !m_bIntrinsic )
+		{
+			Error_Compiler( 
+				EError_Error, 
+				GetParserPosition().pszFilename, 
+				GetParserPosition().uCurrentRow, 
+				GetParserPosition().uCurrentCol, 
+				"Function \"%s\" is not defined.", 
+				GetFunctionName().c_str()
+			);
+		}
+
+		return false;
+	}
+
+	size_t uParamCount = m_apParameters.size();
+
+	for( auto& protoIter = apFunctions.begin(); protoIter != apFunctions.end(); )
+	{
+		if( (*protoIter)->GetPrototype()->CanFitParameterCount( uParamCount ) )
+		{
+			++protoIter;
+		}
+		else
+		{
+			protoIter = apFunctions.erase( protoIter );
+		}
+	}
+
+	if( apFunctions.empty() )
+	{
+		//Intrinsics do not have a body normally, unless it has been overriden
+		if( !m_bIntrinsic )
+		{
+			Error_Compiler( 
+				EError_Error, 
+				GetParserPosition().pszFilename, 
+				GetParserPosition().uCurrentRow, 
+				GetParserPosition().uCurrentCol, 
+				"No function \"%s\" is defined that takes %u parameters.", 
+				GetFunctionName().c_str(),
+				uParamCount
+			);
+		}
+
+		return false;
+	}
+
+	for( auto& protoIter = apFunctions.begin(); protoIter != apFunctions.end(); )
+	{
+		auto& prototype = (*protoIter);
+		auto& prototypeParams = prototype->GetPrototype()->GetParameters();
+		int paramCount = prototypeParams.size();
+		auto& callParameters = m_pPrototype->GetParameters();
+		int callParamCount = callParameters.size();
+
+		bool passedTest = true;
+
+		if( !prototype->GetPrototype()->GetReturnType().CompareTo( m_pPrototype->GetReturnType() ) )
+		{
+			protoIter = apFunctions.erase( protoIter );
+			passedTest = false;
+		}
+		else
+		{
+			int commonParamCount = min( paramCount, callParamCount );
+			for( int paramIndex = 0; paramIndex < commonParamCount; paramIndex++ )
+			{
+				auto& callParam = callParameters[ paramIndex ];
+				auto& callParamType = callParameters[ paramIndex ]->GetType();
+
+				auto& prototypeParam = prototypeParams[ paramIndex ];
+				auto& prototypeParamType = prototypeParam->GetType();
+
+				if( callParamType.CompareTo( prototypeParamType ) )
+				{
+
+				}
+				else
+				{
+					protoIter = apFunctions.erase( protoIter );
+					passedTest = false;
+					break;
+				}
+			}
+		}
+
+		if( passedTest )
+		{
+			++protoIter;
+		}
+	}
+
+	if( apFunctions.size() == 1 )
+	{
+		m_pFunctionBody = apFunctions[0];
+		return true;
+	}
+	else if( apFunctions.size() > 1 )
+	{
+		Error_Compiler( 
+			EError_Error, 
+			GetParserPosition().pszFilename, 
+			GetParserPosition().uCurrentRow, 
+			GetParserPosition().uCurrentCol, 
+			"Function \"%s\" is multiply defined.", 
+			GetFunctionName().c_str()
+		);
+
+		m_pFunctionBody = apFunctions[0];
 		return true;
 	}
 
-	
+	//Intrinsics do not have a body normally, unless it has been overriden
+	if( !m_bIntrinsic )
+	{
+		Error_Compiler( 
+				EError_Error, 
+				GetParserPosition().pszFilename, 
+				GetParserPosition().uCurrentRow, 
+				GetParserPosition().uCurrentCol, 
+				"Function \"%s\" is declared but not defined.", 
+				GetFunctionName().c_str()
+			);
+	}
+
+	return false;
 }

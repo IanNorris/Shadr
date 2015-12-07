@@ -30,7 +30,10 @@ void Reconcile( CASTBase* pNode, CASTScope* pScope )
 	auto pFunctionCall = dynamic_cast<CASTExpressionFunctionCall*>(pNode);
 	if( pFunctionCall )
 	{
-		pFunctionCall->FindMatchingFunction( &pScope->GetScope() );
+		if( pFunctionCall->FindMatchingFunction( &pScope->GetScope() ) )
+		{
+			pFunctionCall->FindMatchingFunctionBody( &pScope->GetScope() );
+		}
 	}
 
 	auto pExpression = dynamic_cast<CASTExpression*>(pNode);

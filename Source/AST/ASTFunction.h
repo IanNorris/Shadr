@@ -5,18 +5,22 @@ class CASTPrototype : public CASTBase, public CASTScope, public CASTAnnotationSu
 {
 public:
 
-	CASTPrototype( const SParsePosition& rtParsePosition, const char* pszName, unsigned int uNameLength, const CType& rtReturnType, CScope* pParentScope )
+	CASTPrototype( const SParsePosition& rtParsePosition, const char* pszName, unsigned int uNameLength, const CType& rtReturnType, CScope* pParentScope, bool bIntrinsic, bool bInline )
 	: CASTBase( rtParsePosition )
 	, CASTScope( pParentScope )
 	, m_tReturnType( rtReturnType )
 	, m_pReturnType( &m_tReturnType )
 	, m_tName( pszName, uNameLength )
+	, m_bIntrinsic( bIntrinsic )
+	, m_bInline( bInline )
 	{
 		AddReflection( "ReturnType", EASTReflectionType_Type, &m_pReturnType );
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
 		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
 
 		AddCondition( "HasParameters", [&](){ return !m_apParameters.empty(); } );
+		AddCondition( "IsIntrinsic", [&](){ return m_bIntrinsic; } );
+		AddCondition( "IsInline", [&](){ return m_bInline; } );
 	}
 
 	const char* GetElementName() const { return "Prototype"; }
@@ -54,12 +58,25 @@ public:
 		return false;
 	}
 
+	bool IsIntrinsic()
+	{
+		return m_bIntrinsic;
+	}
+
+	bool IsInline()
+	{
+		return m_bInline;
+	}
+
 private:
 
 	CType*		m_pReturnType; //Workaround for the type expecting CType** in AddReflection
 	CType		m_tReturnType;
 	std::string m_tName;
 	std::vector< CASTVariableDefinition* > m_apParameters;
+
+	bool		m_bIntrinsic;
+	bool		m_bInline;
 };
 
 class CASTFunction : public CASTBase, public CASTAnnotationSupport
@@ -92,6 +109,8 @@ public:
 		return m_bInline;
 	}
 
+	CASTPrototype* GetPrototype() { return m_pPrototype; }
+
 private:
 
 	CASTPrototype* m_pPrototype;
@@ -106,6 +125,8 @@ public:
 	: CASTExpression( rtParsePosition, CType::GetVoidType() )
 	, m_tName( rtName )
 	, m_pPrototype( nullptr )
+	, m_pFunctionBody( nullptr )
+	, m_bIntrinsic( false )
 	{
 		AddReflection( "Name", EASTReflectionType_SString, &m_tName );
 		AddReflection( "Parameters", EASTReflectionType_ASTNodeArray, &m_apParameters );
@@ -135,6 +156,7 @@ public:
 	}
 
 	bool FindMatchingFunction( CScope* pScope );
+	bool FindMatchingFunctionBody( CScope* pScope );
 
 	void EvaluateType() override
 	{
@@ -149,12 +171,20 @@ public:
 		}
 	}
 
+	bool IsIntrinsic()
+	{
+		return m_bIntrinsic;
+	}
+
 private:
 
 	std::string m_tName;
 	std::vector< CASTExpression* > m_apParameters;
 
 	CASTPrototype* m_pPrototype;
+	CASTFunction* m_pFunctionBody;
+
+	bool			m_bIntrinsic;
 };
 
 #endif //SHADR_AST_FUNCTION_H

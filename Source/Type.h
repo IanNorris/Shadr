@@ -88,6 +88,8 @@ public:
 
 	const char* GetElementName() const { return "Type"; }
 
+	const unsigned int GetFlags() { return m_uFlags; }
+
 	EScalarType GetScalarType( ) { return m_eType; }
 
 	const std::string& GetTypeName();

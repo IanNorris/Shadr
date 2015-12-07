@@ -50,7 +50,7 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 
 CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, const std::string& rtFunctionName, CScope* pParentScope )
 {
-	CASTPrototype* pPrototype = new CASTPrototype( rtContext, rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType, pParentScope );
+	CASTPrototype* pPrototype = new CASTPrototype( rtContext, rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType, pParentScope, (pReturnType->GetFlags() & ETypeFlag_Intrinsic) != 0, (pReturnType->GetFlags() & ETypeFlag_Inline) != 0 );
 	pParentScope->AddPrototype( rtContext, pPrototype );
 
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
@@ -120,7 +120,9 @@ CASTFunction* ParseFunction( SParseContext& rtContext, CASTPrototype* pPrototype
 
 	if( pBlock )
 	{
-		return new CASTFunction( rtContext, pPrototype, pBlock );
+		CASTFunction* pFunction = new CASTFunction( rtContext, pPrototype, pBlock );
+		pGlobalScope->GetParentScope()->AddFunction( rtContext, pFunction );
+		return pFunction;
 	}
 	
 	return NULL;

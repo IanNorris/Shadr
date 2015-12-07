@@ -9,6 +9,10 @@
 
 void CScope::AddPrototype( SParseContext& rtContext, CASTPrototype* pPrototype )
 {
-	auto tIter = m_pPrototypes.find( pPrototype->GetFunctionName() );
 	m_pPrototypes.insert( std::pair< std::string, CASTPrototype* >( pPrototype->GetFunctionName(), pPrototype ) );
+}
+
+void CScope::AddFunction( SParseContext& rtContext, CASTFunction* pFunction )
+{
+	m_pFunctions.insert( std::pair< std::string, CASTFunction* >( pFunction->GetPrototype()->GetFunctionName(), pFunction ) );
 }
