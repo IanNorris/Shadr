@@ -20,6 +20,18 @@ void TestFloatFormatting( void )
 	12.e0f;
 }
 
+inline int factorial( int x )
+{
+	if( x > 1 )
+	{
+		return x * factorial( x - 1 );
+	}
+	else
+	{
+		return 1;
+	}
+}
+
 void TestIntrinsics( void )
 {
 	float f1 = clamp( 0.5f, 1.0f, 100.0f );
@@ -129,6 +141,8 @@ float4 MyFunction( float3 fIn1, int iCount, float4 fVal3, float fStuff, bool bIs
 float4 PSMain()
 {
 	int i = 3;
+	
+	int factorial6 = factorial( 6 );
 	
 	//Token ambiguity here
 	//float4 f4Val = MakeFloat4( 2.0, 1.0f, -3.0f, 1 );

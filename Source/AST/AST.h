@@ -29,6 +29,7 @@ class CASTBase : public CReflectionObject
 public:
 	CASTBase( const SParsePosition& rtParsePosition )
 	: m_tParserPosition( rtParsePosition )
+	, m_bSideEffects( false )
 	{
 	}
 
@@ -36,9 +37,16 @@ public:
 
 	SParsePosition& GetParserPosition(){ return m_tParserPosition; }
 
+	void SetHasSideEffect( bool bSideEffect ) { m_bSideEffects = bSideEffect; }
+	bool HasSideEffect() { return m_bSideEffects; }
+
 private:
 
 	SParsePosition m_tParserPosition;
+
+protected:
+
+	bool			m_bSideEffects;
 };
 
 class CASTProgram : public CASTBase, public CASTScope

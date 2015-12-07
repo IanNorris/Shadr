@@ -1,4 +1,4 @@
 #pragma once
 
-void IdentifySideEffects( CASTBase* pNode, CASTScope* pScope );
+bool IdentifySideEffects( CASTBase* pNode, CASTScope* pScope );
 void Optimise( CASTBase* pNode, CASTScope* pScope );

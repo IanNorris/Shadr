@@ -176,6 +176,28 @@ public:
 		return m_bIntrinsic;
 	}
 
+	bool IsInline()
+	{
+		if( m_pPrototype )
+		{
+			return m_pPrototype->IsInline();
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	CASTPrototype* GetPrototype()
+	{
+		return m_pPrototype;
+	}
+
+	CASTFunction* GetFunctionBody()
+	{
+		return m_pFunctionBody;
+	}
+
 private:
 
 	std::string m_tName;
