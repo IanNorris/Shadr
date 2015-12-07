@@ -90,7 +90,7 @@ public:
 
 	EScalarType GetScalarType( ) { return m_eType; }
 
-	const std::string& GetTypeName() { return m_tName; }
+	const std::string& GetTypeName();
 
 	static const CType& GetFloatType()
 	{

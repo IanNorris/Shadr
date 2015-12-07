@@ -28,7 +28,7 @@ const char* GetNameFromScalarType( EScalarType eScalarType )
 		return "int";
 
 	case EScalarType_UnsignedInt:
-		return "unsigned int";
+		return "uint";
 
 	case EScalarType_Dummy:
 	case EScalarType_ConstantBuffer:
@@ -128,4 +128,76 @@ CType* GetType( const std::string& rtName )
 	}
 
 	return NULL;
+}
+
+const std::string& CType::GetTypeName()
+{
+	char szTemp[ 32 ] = {0};
+	if( m_uVectorWidth > 1 )
+	{
+		if( m_uVectorHeight > 1 )
+		{
+			sprintf_s( szTemp, "%dx%d", m_uVectorWidth, m_uVectorHeight );
+		}
+		else
+		{
+			sprintf_s( szTemp, "%d", m_uVectorWidth );
+		}
+	}
+
+	switch( m_eType )
+	{
+		case EScalarType_Dummy:
+			m_tName = "int";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_Void:
+			m_tName = "void";
+			Assert( m_uVectorWidth == 1 && m_uVectorHeight == 1, "Void type cannot be a vector or matrix" );
+			break;
+
+		case EScalarType_Bool:
+			m_tName = "bool";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_Half:
+			m_tName = "half";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_Float:
+			m_tName = "float";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_Double:
+			m_tName = "double";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_Int:
+			m_tName = "int";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_UnsignedInt:
+			m_tName = "uint";
+			m_tName += szTemp;
+			break;
+
+		case EScalarType_ConstantBuffer:
+		case EScalarType_Buffer:
+		case EScalarType_Struct:
+			//TODO: Leave these alone for now
+			Assert( m_uVectorWidth == 1 && m_uVectorHeight == 1, "Complex types cannot be vectors or matrices" );
+			break;
+
+		case EScalarType_MAX:
+		default:
+			Assert( 0, "Unrecognised type" );
+	}
+
+	return m_tName;
 }

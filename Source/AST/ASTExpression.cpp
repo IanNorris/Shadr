@@ -111,7 +111,7 @@ CType GetBestTypeFromTypePair( SParsePosition& parserPos, CType tLeft, CType tRi
 	//TODO flags
 	unsigned int uFlags = 0;
 	
-	return CType( GetNameFromScalarType( eNewScalarType ), eNewScalarType, uFlags, width, height, 0 );
+	return CType( tLeft.GetTypeName(), eNewScalarType, uFlags, width, height, 0 );
 }
 
 bool CanCoerceType( const CType& from, const CType& to, bool bAllowWarnings )
