@@ -159,7 +159,7 @@ bool IdentifySideEffects( CASTBase* pNode, CASTScope* pScope )
 	return pNode->HasSideEffect();
 }
 
-void Optimise( CASTBase* pNode, CASTScope* pScope )
+void Optimise( CASTBase* pNode, CASTScope* pScope, CASTBase* pParent, std::vector< std::pair< CASTExpression*, CASTExpression* > >& toReplaceParent )
 {
 	if( !pNode )
 	{
@@ -173,15 +173,44 @@ void Optimise( CASTBase* pNode, CASTScope* pScope )
 		pScope = pNewScope;
 	}
 
+	std::vector< std::pair< CASTExpression*, CASTExpression* > > toReplace;
+
 	auto tChildren = pNode->GetChildren();
 	for( auto& pChild : tChildren )
 	{
-		Optimise( pChild, pScope );
+		Optimise( pChild, pScope, pNode, toReplace );
+	}
+
+	if( !toReplace.empty() )
+	{
+		//If we updated any nodes, we need to push those down
+		auto pExpr = dynamic_cast<CASTExpression*>(pNode);
+		if( pExpr )
+		{
+			pNode = CASTExpression::ReplaceAndCloneSingle( pExpr, toReplace, 1 /*Only recurse one level deep*/ );
+			toReplaceParent.push_back( std::pair< CASTExpression*, CASTExpression* >( pExpr, (CASTExpression*)pNode ) );
+		}
+
+		//If we updated any nodes, we need to push those down
+		auto pExprStatement = dynamic_cast<CASTExpressionStatement*>(pNode);
+		if( pExprStatement )
+		{
+			for( auto& tExpPair : toReplace )
+			{
+				if( pExprStatement->GetExpression() == tExpPair.first )
+				{
+					pExprStatement->SetExpression( tExpPair.second );
+					break;
+				}
+			}
+		}
 	}
 
 	auto pFunctionCall = dynamic_cast<CASTExpressionFunctionCall*>(pNode);
 	if( pFunctionCall && pFunctionCall->IsInline() )
 	{
+		Assert( pParent, "How did we get a function call on its own with no parent?" );
+
 		CASTFunction* pFunctionBody = pFunctionCall->GetFunctionBody();
 		if( pFunctionBody )
 		{
@@ -218,6 +247,49 @@ void Optimise( CASTBase* pNode, CASTScope* pScope )
 
 				if( !pFunctionBody->HasSideEffect() && !bAnyParameterModified && !bAnyInputExpressionModified && !bAnyGlobalModified )
 				{
+					auto tChildren = pFunctionBody->GetChildren();
+
+					Assert( tChildren.size() == 2, "Function implementation does not have two children: prototype and child, it has %u", tChildren.size() );
+
+					CASTPrototype* pPrototype = dynamic_cast<CASTPrototype*>(tChildren[0]);
+					CASTBlockStatement* pBody = dynamic_cast<CASTBlockStatement*>(tChildren[1]);
+					if( pPrototype && pBody )
+					{
+						auto tBodyChildren = pBody->GetChildren();
+
+						//For now we'll only inline functions that have a single expression in the return.
+						if( tBodyChildren.size() == 1 )
+						{
+							auto pReturnStatement = dynamic_cast<CASTReturnStatement*>(tBodyChildren[0]);
+							if( pReturnStatement )
+							{
+								CASTExpression* pReturnExpression = dynamic_cast<CASTExpression*>(pReturnStatement->GetChildren()[0]);
+								if( pReturnExpression )
+								{
+									std::vector< std::pair< CASTExpression*, CASTExpression* > > tExpressionReplacements;
+
+									auto& atParameters = pPrototype->GetParameters();
+
+									int iParamIndex = 0;
+									for( auto pParameter : atParameters )
+									{
+										auto& atVariables = pParameter->GetVariables();
+										Assert( atVariables.size() == 1, "Multiple variables defined per symbol, this shouldn't be possible with a function definition" );
+
+										for( auto pVariable : atVariables )
+										{
+											tExpressionReplacements.push_back( std::pair< CASTExpression*, CASTExpression* >( pVariable, parameterExpressions[ iParamIndex ] ) );
+										}
+
+										iParamIndex++;
+									}
+
+									toReplaceParent.push_back( std::pair< CASTExpression*, CASTExpression* >( pFunctionCall, CASTExpression::ReplaceAndCloneSingle( pReturnExpression, tExpressionReplacements, (unsigned int)-1 ) ) );
+								}
+							}
+						}
+					}
+
 					//Function passed all tests and is safe to inline
 				}
 

@@ -198,6 +198,23 @@ public:
 		return m_pFunctionBody;
 	}
 
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		auto pFC = new CASTExpressionFunctionCall( GetParserPosition(), m_tName );
+		
+		for( auto pParam : m_apParameters )
+		{
+			pFC->AddParameter( ReplaceAndCloneSingle( pParam, expressionsToReplace, uDepthToRecurse - 1 ) );
+		}
+
+		//Functions themselves should not be cloned
+		pFC->m_pPrototype = m_pPrototype;
+		pFC->m_pFunctionBody = m_pFunctionBody;
+		pFC->m_bIntrinsic = m_bIntrinsic;
+
+		return pFC;
+	}
+
 private:
 
 	std::string m_tName;

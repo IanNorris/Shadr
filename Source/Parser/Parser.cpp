@@ -20,7 +20,11 @@ CASTProgram* ParseBuffer( const char* pszFilename, const std::string& tBuffer, C
 
 		Reconcile( pProgram, nullptr );
 		IdentifySideEffects( pProgram, nullptr );
-		Optimise( pProgram, nullptr );
+
+		std::vector< std::pair< CASTExpression*, CASTExpression* > > tExpressionReplacements;
+		Optimise( pProgram, nullptr, nullptr, tExpressionReplacements );
+
+		Assert( tExpressionReplacements.empty(), "There should be no replacements at this level" );
 
 		return pProgram;
 	}

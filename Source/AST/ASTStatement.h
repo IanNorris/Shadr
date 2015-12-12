@@ -176,6 +176,9 @@ public:
 		return tChildren;
 	}
 
+	CASTExpression* GetExpression() { return m_pExpression; }
+	void SetExpression( CASTExpression* pExpression ) { m_pExpression = pExpression; }
+
 private:
 
 	CASTExpression* m_pExpression;

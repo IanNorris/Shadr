@@ -40,6 +40,27 @@ public:
 		}
 	}
 
+	CASTConstantInt( const SParsePosition& rtParsePosition, uint64_t uValue, unsigned int uBits, bool bSigned )
+	: CASTExpression( rtParsePosition, CType::GetConstIntType(), false )
+	, m_uValue( uValue )
+	, m_uBits( uBits )
+	, m_bSigned( bSigned )
+	{
+		AddReflection( "ValueUnsigned", EASTReflectionType_UInt, &m_uValue );
+		AddReflection( "ValueSigned", EASTReflectionType_Int, &m_iValue );
+
+		AddCondition( "IsSigned", [&](){ return m_bSigned; } );
+
+		if( m_iValue > INT_MAX && m_iValue < UINT_MAX )
+		{
+			GetType().SetScalarType( EScalarType_UnsignedInt );
+		}
+		else
+		{
+			GetType().SetScalarType( EScalarType_Int );
+		}
+	}
+
 	const char* GetElementName() const { return "ConstInt"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
@@ -53,6 +74,11 @@ public:
 	void EvaluateType() override
 	{
 
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTConstantInt( GetParserPosition(), m_uValue, m_uBits, m_bSigned );
 	}
 
 private:
@@ -80,6 +106,15 @@ public:
 		GetType().SetScalarType( EScalarType_Float );
 	}
 
+	CASTConstantFloat( const SParsePosition& rtParsePosition, double fValue )
+	: CASTExpression( rtParsePosition, CType::GetConstFloatType(), false )
+	, m_fValue( fValue )
+	{
+		AddReflection( "Value", EASTReflectionType_Double, &m_fValue );
+
+		GetType().SetScalarType( EScalarType_Float );
+	}
+
 	const char* GetElementName() const { return "ConstFloat"; }
 
 	void ParseString( const char* pszString, unsigned int uCharacters );
@@ -93,6 +128,11 @@ public:
 	void EvaluateType() override
 	{
 
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTConstantFloat( GetParserPosition(), m_fValue );
 	}
 
 private:
@@ -122,6 +162,17 @@ public:
 		{
 			Assert( 0, "Invalid boolean value" );
 		}
+
+		GetType().SetScalarType( EScalarType_Bool );
+	}
+
+	CASTConstantBool( const SParsePosition& rtParsePosition, bool bValue )
+	: CASTExpression( rtParsePosition, CType::GetConstFloatType(), false )
+	, m_bValue( bValue )
+	{
+		AddReflection( "Value", EASTReflectionType_Bool, &m_bValue );
+
+		GetType().SetScalarType( EScalarType_Bool );
 	}
 
 	const char* GetElementName() const { return "ConstBool"; }
@@ -137,6 +188,11 @@ public:
 	void EvaluateType() override
 	{
 
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTConstantBool( GetParserPosition(), m_bValue );
 	}
 
 private:
@@ -173,6 +229,22 @@ public:
 	CASTVariable* GetVariable()
 	{
 		return m_pVariable;
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		CASTExpression* pNewChild = ReplaceAndCloneSingle( m_pVariable, expressionsToReplace, uDepthToRecurse - 1 );
+		CASTVariable* pNewChildAsVariable = dynamic_cast<CASTVariable*>(pNewChild);
+
+		//Special case, if we previously has a reference to a variable yet we just replaced it with a non-variable expression then we should just return the child instead surrounded by parentheses
+		if( pNewChildAsVariable )
+		{
+			return new CASTVariableReference( GetParserPosition(), pNewChildAsVariable );
+		}
+		else
+		{
+			return new CASTExpressionParen( GetParserPosition(), pNewChild );
+		}
 	}
 
 private:

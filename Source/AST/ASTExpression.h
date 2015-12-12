@@ -16,6 +16,31 @@ public:
 
 	virtual void EvaluateType() = 0;
 
+	//Replaces instances of an expression with a new expression and clones every node along the way.
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) = 0;
+
+	static CASTExpression* ReplaceAndCloneSingle( CASTExpression* pExpression, std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse )
+	{
+		CASTExpression* pNewExpr = pExpression;
+		for( auto& expPair : expressionsToReplace )
+		{
+			if( expPair.first == pExpression )
+			{
+				pNewExpr = expPair.second;
+				break;
+			}
+		}
+
+		if( uDepthToRecurse == 0 )
+		{
+			return pNewExpr;
+		}
+		else
+		{
+			return pNewExpr->ReplaceAndClone( expressionsToReplace, uDepthToRecurse );
+		}
+	}
+
 	//Does the operator modify its L-value?
 	bool DoesModifyLeft() { return m_bModifiesLeft; }
 
@@ -44,6 +69,11 @@ public:
 		std::vector< CASTBase* > tChildren;
 		tChildren.push_back( m_pExpression );
 		return tChildren;
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTExpressionParen( GetParserPosition(), ReplaceAndCloneSingle( m_pExpression, expressionsToReplace, uDepthToRecurse - 1 ) );
 	}
 
 	void EvaluateType() override
@@ -86,6 +116,11 @@ public:
 	void EvaluateType() override
 	{
 		m_tType = EvaluateType( m_pExpression );
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTExpressionUnary( GetParserPosition(), m_eOperator, m_bPre, ReplaceAndCloneSingle( m_pExpression, expressionsToReplace, uDepthToRecurse - 1 ) );
 	}
 
 protected:
@@ -134,6 +169,11 @@ public:
 		m_tType = EvaluateType( m_pLeft, m_pRight );
 	}
 
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTExpressionBinary( GetParserPosition(), m_eOperator, ReplaceAndCloneSingle( m_pLeft, expressionsToReplace, uDepthToRecurse - 1 ), ReplaceAndCloneSingle( m_pRight, expressionsToReplace, uDepthToRecurse - 1 ) );
+	}
+
 protected:
 
 	CType EvaluateType( CASTExpression* pLeft, CASTExpression* pRight );
@@ -174,6 +214,11 @@ public:
 	void EvaluateType() override
 	{
 		m_tType = EvaluateType( m_pCondition, m_pTrue, m_pFalse );
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTExpressionTernary( GetParserPosition(), ReplaceAndCloneSingle( m_pCondition, expressionsToReplace, uDepthToRecurse - 1 ), ReplaceAndCloneSingle( m_pTrue, expressionsToReplace, uDepthToRecurse - 1 ), ReplaceAndCloneSingle( m_pFalse, expressionsToReplace, uDepthToRecurse - 1 ) );
 	}
 
 protected:
@@ -221,6 +266,11 @@ public:
 		return m_tSwizzle.size();
 	}
 
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTExpressionSwizzleMask( GetParserPosition(), m_tSwizzle );
+	}
+
 private:
 
 	std::string m_tSwizzle;
@@ -248,6 +298,11 @@ public:
 	void EvaluateType() override
 	{
 		m_tType = CType::GetVoidType();
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		return new CASTExpressionMemberAccess( GetParserPosition(), m_tIdentifier );
 	}
 
 private:
@@ -303,6 +358,12 @@ public:
 	CASTExpressionStatement* GetAssignment()
 	{
 		return m_pAssignment;
+	}
+
+	virtual CASTExpression* ReplaceAndClone( std::vector< std::pair< CASTExpression*, CASTExpression* > >& expressionsToReplace, unsigned int uDepthToRecurse ) override
+	{
+		//DO NOT clone variables
+		return this;
 	}
 
 private:
