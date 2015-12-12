@@ -280,4 +280,6 @@ void ResolveTokenAmbiguity( SParseContext& rtContext, bool bExpectOperator );
 void AdvanceToken( SParseContext& rtContext, SPossibleToken& rtToken );
 bool ConsumeToken( SParseContext& rtContext );
 
+bool TokenModifiesLeft( EShaderToken eToken );
+
 #endif //SHADR_TOKEN_H

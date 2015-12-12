@@ -9,7 +9,7 @@ class CASTConstantInt : public CASTExpression
 public:
 
 	CASTConstantInt( const SParsePosition& rtParsePosition, const char* pszString, unsigned int uCharacters )
-	: CASTExpression( rtParsePosition, CType::GetConstIntType() )
+	: CASTExpression( rtParsePosition, CType::GetConstIntType(), false )
 	, m_uValue( 0 )
 	, m_uBits( 0 )
 	, m_bSigned( 0 )
@@ -71,7 +71,7 @@ class CASTConstantFloat : public CASTExpression
 public:
 
 	CASTConstantFloat( const SParsePosition& rtParsePosition, const char* pszString, unsigned int uCharacters )
-	: CASTExpression( rtParsePosition, CType::GetConstFloatType() )
+	: CASTExpression( rtParsePosition, CType::GetConstFloatType(), false )
 	, m_fValue( 0.0 )
 	{
 		AddReflection( "Value", EASTReflectionType_Double, &m_fValue );
@@ -105,7 +105,7 @@ class CASTConstantBool : public CASTExpression
 public:
 
 	CASTConstantBool( const SParsePosition& rtParsePosition, const char* pszString, unsigned int uCharacters )
-	: CASTExpression( rtParsePosition, CType::GetConstFloatType() )
+	: CASTExpression( rtParsePosition, CType::GetConstFloatType(), false )
 	, m_bValue( false )
 	{
 		AddReflection( "Value", EASTReflectionType_Bool, &m_bValue );
@@ -148,8 +148,8 @@ class CASTVariableReference : public CASTExpression
 {
 public:
 
-	CASTVariableReference( const SParsePosition& rtParsePosition, SVariable* pVariable )
-	: CASTExpression( rtParsePosition, *pVariable->pType )
+	CASTVariableReference( const SParsePosition& rtParsePosition, CASTVariable* pVariable )
+	: CASTExpression( rtParsePosition, pVariable->GetType(), false )
 	, m_pVariable( pVariable )
 	{
 		AddReflection( "Variable", EASTReflectionType_Variable, &m_pVariable );
@@ -160,17 +160,24 @@ public:
 	std::vector< CASTBase* > GetChildren( void )
 	{
 		std::vector< CASTBase* > tChildren;
+		tChildren.reserve(1);
+		tChildren.push_back( m_pVariable );
 		return tChildren;
 	}
 
 	void EvaluateType() override
 	{
-		m_tType = *m_pVariable->pType;
+		m_tType = m_pVariable->GetType();
+	}
+
+	CASTVariable* GetVariable()
+	{
+		return m_pVariable;
 	}
 
 private:
 
-	SVariable* m_pVariable;
+	CASTVariable* m_pVariable;
 };
 
 #endif //SHADR_AST_NUMERIC_H

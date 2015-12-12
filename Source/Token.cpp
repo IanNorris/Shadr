@@ -783,3 +783,26 @@ bool ConsumeToken( SParseContext& rtContext )
 	rtContext.sNextToken.eToken = EShaderToken_Invalid;
 	return false;
 }
+
+bool TokenModifiesLeft( EShaderToken eToken )
+{
+	switch( eToken )
+	{
+		case EShaderToken_Unary_Increment:
+		case EShaderToken_Unary_Decrement:
+		case EShaderToken_Assign:
+		case EShaderToken_Assign_Add:
+		case EShaderToken_Assign_Subtract:
+		case EShaderToken_Assign_Divide:
+		case EShaderToken_Assign_Multiply:
+		case EShaderToken_Assign_Modulo:
+		case EShaderToken_Assign_Shift_Left:
+		case EShaderToken_Assign_Shift_Right:
+		case EShaderToken_Special_TriplePlus:
+		case EShaderToken_Special_TripleMinus:
+			return true;
+
+		default:
+			return false;
+	}
+}

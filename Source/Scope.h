@@ -13,39 +13,8 @@ enum EVariableFlag
 class CASTExpressionStatement;
 class CASTPrototype;
 class CASTFunction;
+class CASTVariable;
 
-struct SVariable : public CReflectionObject
-{
-	SVariable()
-	: pType( nullptr )
-	, pAssignment( nullptr )
-	, uFlags( 0 )
-	{
-		AddReflection( "Type", EASTReflectionType_Type, &pType );
-		AddReflection( "Name", EASTReflectionType_SString, &tName );
-		AddReflection( "Assignment", EASTReflectionType_ASTNode, &pAssignment );
-
-		AddCondition( "HasAssignment", [&]() { return pAssignment != nullptr; } );
-	}
-
-	const char* GetElementName() const { return "Variable"; }
-
-	static SVariable* CreateDummyVariable()
-	{
-		SVariable* pVariable = new SVariable();
-		pVariable->pType = new CType( "dummy", EScalarType_Dummy );
-
-		return pVariable;
-	}
-
-	std::string tName;
-
-	CType* pType;
-
-	CASTExpressionStatement* pAssignment;
-
-	unsigned int uFlags;
-};
 
 class CScope
 {
@@ -55,7 +24,7 @@ public:
 	: m_pParentScope( pParent )
 	{}
 
-	SVariable* FindVariable( const std::string& rtName )
+	CASTVariable* FindVariable( const std::string& rtName )
 	{
 		auto tIter = m_pVariables.find( rtName );
 
@@ -106,19 +75,7 @@ public:
 		}
 	}
 
-	void AddVariable( SParseContext& rtContext, SVariable* pVariable )
-	{
-		auto tIter = m_pVariables.find( pVariable->tName );
-		if( tIter != m_pVariables.end() )
-		{
-			if( (*tIter).second->pType->GetScalarType() != EScalarType_Dummy )
-			{
-				Error_Compiler( EError_Error, rtContext.pszFilename, rtContext.uCurrentRow, rtContext.uCurrentCol, "Identifier %s is already defined in this scope.", pVariable->tName.c_str() );
-			}
-		}
-
-		m_pVariables[ pVariable->tName ] = pVariable;
-	}
+	void AddVariable( SParseContext& rtContext, CASTVariable* pVariable );
 
 	void AddPrototype( SParseContext& rtContext, CASTPrototype* pPrototype );
 
@@ -129,7 +86,7 @@ public:
 private:
 
 	CScope*													m_pParentScope;
-	std::unordered_map< std::string, SVariable* >			m_pVariables;
+	std::unordered_map< std::string, CASTVariable* >		m_pVariables;
 	std::unordered_multimap< std::string, CASTPrototype* >	m_pPrototypes;
 	std::unordered_multimap< std::string, CASTFunction* >	m_pFunctions;
 };

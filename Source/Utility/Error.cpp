@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 
+unsigned int g_uErrorCount = 0;
+unsigned int g_uWarningCount = 0;
+
 bool g_bErrors = false;
 std::vector<std::string> g_tFilenameStack;
 
@@ -38,17 +41,20 @@ void Error_Compiler( EError eLevel, const char* pszFilename, unsigned int uSourc
 	{
 		case EError_Fatal:
 			pszErrorType = "fatal error";
+			g_uErrorCount++;
 			g_bErrors = true;
 			pFile = stderr;
 			break;
 		case EError_Error:
 			pszErrorType = "error";
+			g_uErrorCount++;
 			g_bErrors = true;
 			pFile = stderr;
 			break;
 
 		case EError_Warning:
 			pszErrorType = "warning";
+			g_uWarningCount++;
 			pFile = stderr;
 			break;
 
@@ -85,17 +91,20 @@ void Error_Linker( EError eLevel, const char* pszFilename, const char* pszDescri
 	{
 		case EError_Fatal:
 			pszErrorType = "fatal error";
+			g_uErrorCount++;
 			g_bErrors = true;
 			pFile = stderr;
 			break;
 		case EError_Error:
 			pszErrorType = "error";
+			g_uErrorCount++;
 			g_bErrors = true;
 			pFile = stderr;
 			break;
 
 		case EError_Warning:
 			pszErrorType = "warning";
+			g_uWarningCount++;
 			pFile = stderr;
 			break;
 
@@ -129,6 +138,7 @@ void Error_Linker( EError eLevel, const char* pszFilename, const char* pszDescri
 void Error_Fatal( const char* pszFilename, const char* pszDescription, ... )
 {
 	g_bErrors = true;
+	g_uErrorCount++;
 
 	va_list argList;
 	va_start( argList, pszDescription );
@@ -144,6 +154,7 @@ void Error_Fatal( const char* pszFilename, const char* pszDescription, ... )
 void Error_Assert( const char* pszExpression, const char* pszSourceFile, int iLine, const char* pszDescription, ... )
 {
 	g_bErrors = true;
+	g_uErrorCount++;
 
 	const char* pszFile = "Internal Error";
 	if( !g_tFilenameStack.empty() )

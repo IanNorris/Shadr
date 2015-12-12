@@ -212,7 +212,7 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 						}
 						else
 						{	
-							SVariable* pVariable = pParentScope->FindVariable( tIdentifierName );
+							CASTVariable* pVariable = pParentScope->FindVariable( tIdentifierName );
 
 							if( !pVariable )
 							{
@@ -223,8 +223,7 @@ CASTExpression* ParsePrimary( SParseContext& rtContext, EShaderToken eToken, CSc
 								}
 
 								ParserError( rtContext, "Undeclared identifier '%s'.", tIdentifierName.c_str() );
-								SVariable* pDummy = SVariable::CreateDummyVariable();
-								pDummy->tName = tIdentifierName;
+								CASTVariable* pDummy = CASTVariable::CreateDummyVariable( rtContext, tIdentifierName );
 								pParentScope->AddVariable( rtContext, pDummy );
 								pResult = new CASTVariableReference( rtContext, pDummy );
 							}

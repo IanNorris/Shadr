@@ -122,7 +122,7 @@ class CASTExpressionFunctionCall : public CASTExpression
 {
 public:
 	CASTExpressionFunctionCall( const SParsePosition& rtParsePosition, const std::string& rtName )
-	: CASTExpression( rtParsePosition, CType::GetVoidType() )
+	: CASTExpression( rtParsePosition, CType::GetVoidType(), false )
 	, m_tName( rtName )
 	, m_pPrototype( nullptr )
 	, m_pFunctionBody( nullptr )

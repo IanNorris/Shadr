@@ -13,6 +13,9 @@
 
 #include <iostream>
 
+extern unsigned int g_uErrorCount;
+extern unsigned int g_uWarningCount;
+
 int main( int iArgCount, char** apszArguments )
 {
 	std::string executablePath = apszArguments[0];
@@ -76,6 +79,11 @@ int main( int iArgCount, char** apszArguments )
 
 				printf( "%s\n", tContext.tCurrentElement.c_str() );
 			}
+		}
+
+		if( g_uErrorCount > 0 || g_uWarningCount > 0 )
+		{
+			fprintf( stderr, "%s has %u error(s) and %u warning(s).\n", apszArguments[1], g_uErrorCount, g_uWarningCount );
 		}
 
 		return DidCompilationSucceed() ? 0 : 1;

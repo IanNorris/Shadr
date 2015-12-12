@@ -354,9 +354,7 @@ public:
 	, m_pType( &m_tType )
 	, m_bChild( bIsChild )
 	{
-		SVariable* pVariable = new SVariable();
-		pVariable->tName = rtName;
-		pVariable->pType = &m_tType;
+		CASTVariable* pVariable = new CASTVariable( rtParsePosition, rtName, m_tType, nullptr );
 
 		m_tVariables.push_back( pVariable );
 
@@ -372,7 +370,7 @@ public:
 	const CType& GetType() const { return m_tType; }
 	CType& GetType() { return m_tType; }
 
-	std::vector<SVariable*>& GetVariables() { return m_tVariables; }
+	std::vector<CASTVariable*>& GetVariables() { return m_tVariables; }
 	std::vector<CASTStatement*>& GetAssignments() { return m_tAssignments; }
 
 	std::vector< CASTBase* > GetChildren( void )
@@ -390,7 +388,7 @@ private:
 	CType*		m_pType;
 	CType		m_tType;
 
-	std::vector<SVariable*>	m_tVariables;
+	std::vector<CASTVariable*>	m_tVariables;
 	std::vector<CASTStatement*> m_tAssignments;
 
 	bool		m_bChild;
