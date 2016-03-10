@@ -6,6 +6,9 @@
 void InitialiseBasicTypes( void );
 
 class CType;
+class CScope;
+class CASTAnnotationGroup;
+class CASTPrototype;
 
 inline bool operator==(const CType& lhs, const CType& rhs);
 
@@ -122,6 +125,8 @@ public:
 
 	CType( const std::string& rtTypeName, EScalarType eType, unsigned int uFlags = 0, unsigned int uVectorWidth = 1, unsigned int uVectorHeight = 1, unsigned int uArrayCount = 0, CType* pParentType = nullptr, SSemantic* pSemantic = nullptr, CRegister* pRegister = nullptr )
 	: m_tName( rtTypeName )
+	, m_pAnnotation( nullptr )
+	, m_pScope( nullptr )
 	, m_pParentType( pParentType )
 	, m_pSemantic( pSemantic )
 	, m_pRegister( pRegister )
@@ -208,41 +213,7 @@ public:
 			return false;
 		}
 
-		if( m_pSemantic == other.m_pSemantic )
-		{
-
-		}
-		else
-		{
-			if( m_pSemantic == NULL )
-			{
-				return false;
-			}
-
-			if( other.m_pSemantic == NULL )
-			{
-				return false;
-			}
-
-			if( !(*m_pSemantic == *other.m_pSemantic) )
-			{
-				return false;
-			}
-		}
-
-		if( m_tChildren.size() != other.m_tChildren.size() )
-		{
-			return false;
-		}
-
-		size_t uChildCount = m_tChildren.size();
-		for( size_t uChild = 0; uChild < uChildCount; uChild++ )
-		{
-			if( !(*m_tChildren[ uChild ].pType == *other.m_tChildren[ uChild ].pType) )
-			{
-				return false;
-			}
-		}
+		//Do not do a deep comparison of types
 
 		return true;
 	}
@@ -251,15 +222,6 @@ public:
 	unsigned int GetVectorHeight() { return m_uVectorHeight; }
 	unsigned int GetArrayCount() { return m_uArrayCount; }
 
-	void AddChild( const std::string& rtName, CType* pType )
-	{
-		SChild tNewChild;
-		tNewChild.tName = rtName;
-		tNewChild.pType = pType;
-
-		m_tChildren.push_back( tNewChild );
-	}
-
 	void SetSemantic( SSemantic* pSemantic )
 	{
 		Assert( m_pSemantic == nullptr, "Semantic is already set" );
@@ -267,18 +229,24 @@ public:
 		m_pSemantic = pSemantic;
 	}
 
-private:
-
-	struct SChild
+	void SetAnnotation( CASTAnnotationGroup* pAnnotation )
 	{
-		std::string tName;
-		CType*		pType;
+		m_pAnnotation = pAnnotation;
+	}
+
+	void CreateScope( CScope* pParentScope );
+
+	CScope* GetScope()
+	{
+		return m_pScope;
 	};
 
-	std::vector< SChild > m_tChildren;
+private:
 
 	std::string		m_tName;
 
+	CASTAnnotationGroup* m_pAnnotation;
+	CScope*			m_pScope;
 	CType*			m_pParentType;
 	SSemantic*		m_pSemantic;
 	CRegister*		m_pRegister;

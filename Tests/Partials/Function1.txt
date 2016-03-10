@@ -8,6 +8,18 @@ struct VSInput
     float2 TexCoord 		: TEXCOORD(diffuse);
 	float3 TangentOS 		: TANGENT;
 	float3 BinormalOS		: BINORMAL;
+	
+	void DoStuff();
+	
+	void DoMoreStuff()
+	{
+	
+	}
+	
+	float4 GetValue()
+	{
+		return PositionOS;
+	}
 };
 
 struct VSInput2

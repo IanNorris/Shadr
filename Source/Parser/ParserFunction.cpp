@@ -59,54 +59,61 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 
 CASTPrototype* ParsePrototype( SParseContext& rtContext, CType* pReturnType, const std::string& rtFunctionName, CScope* pParentScope )
 {
+	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Open )
+	{
+		return NULL;
+	}
+
+	if( !ConsumeToken( rtContext ) )
+	{
+		ParserError( rtContext, "Expected end of file" );
+	}
+
 	CASTPrototype* pPrototype = new CASTPrototype( rtContext, rtFunctionName.c_str(), rtFunctionName.length(), *pReturnType, pParentScope, (pReturnType->GetFlags() & ETypeFlag_Intrinsic) != 0, (pReturnType->GetFlags() & ETypeFlag_Inline) != 0 );
 	pParentScope->AddPrototype( rtContext, pPrototype );
 
+	bool bContinue;
+	do
+	{
+		bContinue = false;
+
+		CASTVariableDefinition* pParameter = ParseFunctionParameter( rtContext );
+		if( pParameter )
+		{
+			pPrototype->AddParameter( pParameter );
+
+			pPrototype->GetScope().AddVariable( rtContext, pParameter->GetVariables()[0] );
+		}
+		else
+		{
+			//ParseFunctionParameter will return NULL if it encounters the void type,
+			//but we need to validate that we didn't get any more parameters before it.
+			//If there was any kind of parsing error it would have already reported that
+			//to the user.
+
+			if( !pPrototype->GetParameters().empty() )
+			{
+				ParserError( rtContext, "Malformed parameter list for function %s", rtFunctionName.c_str() );
+			}
+
+			break;
+		}
+
+		if( rtContext.sNextToken.eToken == EShaderToken_Comma )
+		{
+			if( !ConsumeToken( rtContext ) )
+			{
+				ParserError( rtContext, "Expected end of file" );
+			}
+
+			bContinue = true;
+		}
+	}
+	while( bContinue );
+
 	if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
 	{
-		bool bContinue;
-		do
-		{
-			bContinue = false;
-
-			CASTVariableDefinition* pParameter = ParseFunctionParameter( rtContext );
-			if( pParameter )
-			{
-				pPrototype->AddParameter( pParameter );
-
-				pPrototype->GetScope().AddVariable( rtContext, pParameter->GetVariables()[0] );
-			}
-			else
-			{
-				//ParseFunctionParameter will return NULL if it encounters the void type,
-				//but we need to validate that we didn't get any more parameters before it.
-				//If there was any kind of parsing error it would have already reported that
-				//to the user.
-
-				if( !pPrototype->GetParameters().empty() )
-				{
-					ParserError( rtContext, "Malformed parameter list for function %s", rtFunctionName.c_str() );
-				}
-
-				break;
-			}
-
-			if( rtContext.sNextToken.eToken == EShaderToken_Comma )
-			{
-				if( !ConsumeToken( rtContext ) )
-				{
-					ParserError( rtContext, "Expected end of file" );
-				}
-
-				bContinue = true;
-			}
-		}
-		while( bContinue );
-
-		if( rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close )
-		{
-			ParserError( rtContext, "Expected end of function prototype" );
-		}
+		ParserError( rtContext, "Expected end of function prototype" );
 	}
 
 	if( !ConsumeToken( rtContext ) )

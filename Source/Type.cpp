@@ -1,5 +1,6 @@
 #include "CompilationUnit.h"
 #include "Tokens.h"
+#include "Scope.h"
 #include "Parser/ParserType.h"
 #include "Utility/Error.h"
 #include <algorithm>
@@ -167,6 +168,14 @@ CType* GetType( const std::string& rtName )
 	}
 
 	return NULL;
+}
+
+void CType::CreateScope( CScope* pParentScope )
+{
+	if( m_pScope == nullptr )
+	{
+		m_pScope = new CScope( pParentScope );
+	}
 }
 
 const std::string& CType::GetTypeName()

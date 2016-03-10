@@ -5,7 +5,7 @@
 
 SSemantic* ParseSemantic( SParseContext& rtContext, CType* pType );
 
-CType* ParseTypeDefinition( SParseContext& rtContext );
+CType* ParseTypeDefinition( SParseContext& rtContext, CASTAnnotationGroup* pAnnotation, CScope* pParentScope );
 
 CType* ParseType( SParseContext& rtContext );
 

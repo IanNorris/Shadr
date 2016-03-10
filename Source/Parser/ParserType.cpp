@@ -160,7 +160,7 @@ SSemantic* ParseSemantic( SParseContext& rtContext, CType* pType )
 	return pNewSemantic;
 }
 
-CType* ParseTypeDefinition( SParseContext& rtContext )
+CType* ParseTypeDefinition( SParseContext& rtContext, CASTAnnotationGroup* pAnnotation, CScope* pParentScope )
 {
 	if(		rtContext.sNextToken.eToken == EShaderToken_Struct
 		||	rtContext.sNextToken.eToken == EShaderToken_Constant_Buffer )
@@ -200,25 +200,92 @@ CType* ParseTypeDefinition( SParseContext& rtContext )
 		}
 
 		CType* pNewType = new CType( tTypeName, eScalarType );
+		pNewType->SetAnnotation( pAnnotation );
 		AddTypeDefinition(pNewType);
 
-		while( CASTVariableDefinition* pVariableDef = ParseFunctionParameter( rtContext ) )
+		while( true )
 		{
-			for( auto& pVar : pVariableDef->GetVariables() )
+			SParseContext rtCopyContext = rtContext;
+
+			pNewType->CreateScope( pParentScope );
+
+			CType* pReturnType = ParseType( rtContext );
+
+			//If there's no return type, it can't be a function
+			if( !pReturnType )
 			{
-				pNewType->AddChild( pVar->GetName(), &pVar->GetType() );
+				break;
 			}
 
-			if (rtContext.sNextToken.eToken != EShaderToken_SemiColon)
+			//Target name could be a function or global variable at this point
+			std::string tTargetName( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+
+			if( !ConsumeToken( rtContext ) )
 			{
-				ParserError(rtContext, "Expected a semi-colon.");
-				return pNewType;
+				ParserError( rtContext, "Unexpected end of file" );
 			}
 
-			if (!ConsumeToken(rtContext))
+			CASTPrototype* pPrototype = ParsePrototype( rtContext, pReturnType, tTargetName, pNewType->GetScope() );
+			if( pPrototype )
 			{
-				ParserError(rtContext, "Unexpected end of program.");
-				return pNewType;
+				//We have a function body
+				if( rtContext.sNextToken.eToken == EShaderToken_Brace_Open )
+				{
+					CASTFunction* pFunction = ParseFunction( rtContext, pPrototype, &pPrototype->GetScope() );
+
+					if( pFunction )
+					{
+						if( pAnnotation )
+						{
+							pFunction->AddAnnotation( pAnnotation );
+						}
+					}
+					else
+					{
+						ParserError( rtContext, "Unexpected end of function" );
+					}
+				}
+				else if( rtContext.sNextToken.eToken == EShaderToken_SemiColon )
+				{
+					if( pAnnotation )
+					{
+						pPrototype->AddAnnotation( pAnnotation );
+					}
+
+					if( !ConsumeToken( rtContext ) )
+					{
+						ParserError(rtContext, "Expected a semi-colon.");
+						break;
+					}
+				}
+			}
+			else
+			{
+				rtContext = rtCopyContext;
+
+				//The function parameter does what we need - it supports reading a parameter 
+				CASTVariableDefinition* pVariableDef = ParseFunctionParameter( rtContext );
+				if( pVariableDef )
+				{
+					pNewType->CreateScope( pParentScope );
+
+					for( auto& pVar : pVariableDef->GetVariables() )
+					{
+						pNewType->GetScope()->AddVariable( rtContext, pVar );
+					}
+
+					if (rtContext.sNextToken.eToken != EShaderToken_SemiColon)
+					{
+						ParserError(rtContext, "Expected a semi-colon.");
+						return pNewType;
+					}
+
+					if (!ConsumeToken(rtContext))
+					{
+						ParserError(rtContext, "Unexpected end of program.");
+						return pNewType;
+					}
+				}
 			}
 		}
 

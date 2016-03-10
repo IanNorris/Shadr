@@ -17,7 +17,7 @@ CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 
 		SParseContext tPostAnnotationCopy = rtContext;
 
-		if( ParseTypeDefinition( rtContext ) )
+		if( ParseTypeDefinition( rtContext, pAnnotation, pParentScope ) )
 		{
 			//Nothing to do here as it is done internally to the function on success.
 		}
@@ -46,11 +46,6 @@ CASTProgram* ParseProgram( SParseContext& rtContext, CScope* pParentScope )
 			//It's a prototype!
 			if( rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Open )
 			{
-				if( !ConsumeToken( rtContext ) )
-				{
-					ParserError( rtContext, "Unexpected end of file" );
-				}
-
 				CASTPrototype* pPrototype = ParsePrototype( rtContext, pReturnType, tTargetName, &pProgram->GetScope() );
 
 				//We have a function body
