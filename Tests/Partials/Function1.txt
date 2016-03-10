@@ -1,3 +1,15 @@
+//SamplerState mySampler : register( t0 );
+//Texture2D myTexture : register ( s0 ); 
+
+struct VSInput
+{
+    float4 PositionOS 		: POSITION;
+    float3 NormalOS 		: NORMAL;
+    float2 TexCoord 		: TEXCOORD0;
+	float3 TangentOS 		: TANGENT;
+	float3 BinormalOS		: BINORMAL;
+};
+
 void TestFloatFormatting( void )
 {
 	1.23f;

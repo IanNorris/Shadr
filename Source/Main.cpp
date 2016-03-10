@@ -67,19 +67,22 @@ int main( int iArgCount, char** apszArguments )
 
 		//NOTE: At this point all the pointers from the file data will be invalidated. Do all the work in ParseBuffer.
 		
-		CFormatter* pFormatter = InitialiseFormat( pathToFormatterDefinition.c_str() );
-		if( pFormatter )
+		if( pProgram )
 		{
-			CASTFormatter* pProgramFormatter = pFormatter->GetASTType( "Program" );
-			if( pProgramFormatter )
+			CFormatter* pFormatter = InitialiseFormat( pathToFormatterDefinition.c_str() );
+			if( pFormatter )
 			{
-				CFormatterContext tContext( pFormatter );
+				CASTFormatter* pProgramFormatter = pFormatter->GetASTType( "Program" );
+				if( pProgramFormatter )
+				{
+					CFormatterContext tContext( pFormatter );
 
-				pProgramFormatter->Action( &tContext, pProgram );
+					pProgramFormatter->Action( &tContext, pProgram );
 
-				printf( "%s\n", tContext.tCurrentElement.c_str() );
+					printf( "%s\n", tContext.tCurrentElement.c_str() );
+				}
 			}
-		}
+			}
 
 		if( g_uErrorCount > 0 || g_uWarningCount > 0 )
 		{

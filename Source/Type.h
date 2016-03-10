@@ -9,6 +9,19 @@ class CType;
 
 inline bool operator==(const CType& lhs, const CType& rhs);
 
+enum EShaderType
+{
+	EShaderType_Vertex		= 1 << 0,
+	EShaderType_Pixel		= 1 << 1,
+	EShaderType_Geometry	= 1 << 2,
+	EShaderType_Hull		= 1 << 3,
+	EShaderType_Domain		= 1 << 4,
+	EShaderType_Compute		= 1 << 5,
+
+	EShaderType_Tesselation	= EShaderType_Geometry | EShaderType_Hull | EShaderType_Domain,
+	EShaderType_All			= EShaderType_Vertex | EShaderType_Pixel | EShaderType_Geometry | EShaderType_Hull | EShaderType_Domain | EShaderType_Compute,
+};
+
 enum EScalarType
 {
 	EScalarType_Dummy,
@@ -45,15 +58,50 @@ enum ETypeFlag
 
 const char* GetNameFromScalarType( EScalarType eScalarType );
 
-class CSemantic
+struct SSemantic
 {
+public:
+
+	SSemantic()
+	: pType( nullptr )
+	{}
+
 	//TODO: update operator== below	
+
+	std::string tPartialName;
+
+	CType* pType;
 };
 
-inline bool operator==(const CSemantic& lhs, const CSemantic& rhs)
+inline bool operator==(const SSemantic& lhs, const SSemantic& rhs)
 {
+	bool bIsEqual = true;
+	
+	bIsEqual &= lhs.pType == rhs.pType;
+	bIsEqual &= (lhs.tPartialName.compare( rhs.tPartialName ) == 0);
+
 	return true;
 }
+
+//A semantic group is for example all semantics based off TEXCOORD.
+//So the group would contain TEXCOORD0, TEXCOORD1, TEXCOORD2 and TEXCOORD(main)
+//but an actual semantic is any one of those.
+class CSemanticGroup
+{
+	struct SEntry
+	{
+		SEntry() : index( -1 ), name( "" ) {}
+		SEntry( int index ) : index( index ), name( "" ) {}
+		SEntry( std::string name ) : index( -1 ), name( name ) {}
+
+		int index;
+		std::string name;
+
+		
+	};
+
+	std::vector< SEntry > tEntries;
+};
 
 class CRegister
 {
@@ -64,7 +112,7 @@ class CType : public CReflectionObject
 {
 public:
 
-	CType( const std::string& rtTypeName, EScalarType eType, unsigned int uFlags = 0, unsigned int uVectorWidth = 1, unsigned int uVectorHeight = 1, unsigned int uArrayCount = 0, CType* pParentType = nullptr, CSemantic* pSemantic = nullptr, CRegister* pRegister = nullptr )
+	CType( const std::string& rtTypeName, EScalarType eType, unsigned int uFlags = 0, unsigned int uVectorWidth = 1, unsigned int uVectorHeight = 1, unsigned int uArrayCount = 0, CType* pParentType = nullptr, SSemantic* pSemantic = nullptr, CRegister* pRegister = nullptr )
 	: m_tName( rtTypeName )
 	, m_pParentType( pParentType )
 	, m_pSemantic( pSemantic )
@@ -178,6 +226,22 @@ public:
 	unsigned int GetVectorHeight() { return m_uVectorHeight; }
 	unsigned int GetArrayCount() { return m_uArrayCount; }
 
+	void AddChild( const std::string& rtName, CType* pType )
+	{
+		SChild tNewChild;
+		tNewChild.tName = rtName;
+		tNewChild.pType = pType;
+
+		m_tChildren.push_back( tNewChild );
+	}
+
+	void SetSemantic( SSemantic* pSemantic )
+	{
+		Assert( m_pSemantic == nullptr, "Semantic is already set" );
+
+		m_pSemantic = pSemantic;
+	}
+
 private:
 
 	struct SChild
@@ -191,7 +255,7 @@ private:
 	std::string		m_tName;
 
 	CType*			m_pParentType;
-	CSemantic*		m_pSemantic;
+	SSemantic*		m_pSemantic;
 	CRegister*		m_pRegister;
 	EScalarType		m_eType;
 	unsigned int	m_uFlags;

@@ -3,6 +3,8 @@
 
 #include "Type.h"
 
+SSemantic* ParseSemantic( SParseContext& rtContext, CType* pType );
+
 CType* ParseTypeDefinition( SParseContext& rtContext );
 
 CType* ParseType( SParseContext& rtContext );

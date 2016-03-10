@@ -42,6 +42,8 @@ const char* GetNameFromScalarType( EScalarType eScalarType )
 
 std::unordered_map< std::string, CType* > g_tTypeDatabase;
 
+std::unordered_map< std::string, CSemanticGroup* > g_tSemanticDatabase;
+
 void AddTypeDefinition( CType* pType )
 {
 	g_tTypeDatabase[ pType->GetTypeName() ] = pType;

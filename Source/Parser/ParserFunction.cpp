@@ -35,6 +35,8 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 		ParserError( rtContext, "Expected end of file" );
 	}
 
+	SSemantic* pSemantic = nullptr;
+
 	if( rtContext.sNextToken.eToken == EShaderToken_Colon )
 	{
 		if( !ConsumeToken( rtContext ) )
@@ -42,8 +44,10 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 			ParserError( rtContext, "Expected end of file" );
 		}
 
-		ParserFatal( rtContext, "Encountered semantic, this is not implemented yet." );
+		pSemantic = ParseSemantic( rtContext, pType );
 	}
+
+	pType->SetSemantic( pSemantic );
 
 	return new CASTVariableDefinition( rtContext, *pType, tName, true );
 }
