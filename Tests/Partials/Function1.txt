@@ -5,10 +5,38 @@ struct VSInput
 {
     float4 PositionOS 		: POSITION;
     float3 NormalOS 		: NORMAL;
-    float2 TexCoord 		: TEXCOORD0;
+    float2 TexCoord 		: TEXCOORD(diffuse);
 	float3 TangentOS 		: TANGENT;
 	float3 BinormalOS		: BINORMAL;
 };
+
+struct VSInput2
+{
+    float4 PositionOS 		: POSITION;
+    float3 NormalOS 		: NORMAL1;
+    float2 TexCoord 		: TEXCOORD(diffuse);
+	float3 TangentOS 		: TANGENT;
+	float3 BinormalOS		: BINORMAL;
+};
+
+struct VSInput3
+{
+    float4 PositionOS 		: POSITION;
+    float3 NormalOS 		: NORMAL1;
+    float2 TexCoord 		: TEXCOORD(normal);
+	float3 TangentOS 		: TANGENT;
+	float3 BinormalOS		: BINORMAL0;
+};
+
+struct VSOutput
+{
+    float4 PositionOS 		: POSITION;
+    float3 NormalOS 		: NORMAL1;
+    float2 TexCoord 		: TEXCOORD(normal);
+	float3 TangentOS 		: TANGENT;
+	float3 BinormalOS		: BINORMAL0;
+};
+
 
 void TestFloatFormatting( void )
 {

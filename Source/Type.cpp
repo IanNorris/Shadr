@@ -42,7 +42,44 @@ const char* GetNameFromScalarType( EScalarType eScalarType )
 
 std::unordered_map< std::string, CType* > g_tTypeDatabase;
 
-std::unordered_map< std::string, CSemanticGroup* > g_tSemanticDatabase;
+std::unordered_map< std::string, SSemanticGroup* > g_tSemanticDatabase;
+
+void AddSemantic( SSemantic* pSemantic )
+{
+	SSemanticGroup* pGroup = nullptr;
+	auto& rtIter = g_tSemanticDatabase.find( pSemantic->tSemanticName );
+	if( rtIter != g_tSemanticDatabase.end() )
+	{
+		pGroup = (*rtIter).second;
+	}
+	else
+	{
+		pGroup = g_tSemanticDatabase[ pSemantic->tSemanticName ] = new SSemanticGroup();
+	}
+
+	for( auto& rtEntry : pGroup->tEntries )
+	{
+		if(		rtEntry.iSemanticIndex >= 0 
+			&&	rtEntry.iSemanticIndex == pSemantic->iSemanticIndex )
+		{
+			rtEntry.attachedSemantics.push_back( pSemantic );
+			return;
+		}
+		else if(	!rtEntry.tNamedSemanticIndex.empty()
+				 &&	rtEntry.tNamedSemanticIndex.compare( pSemantic->tNamedSemanticIndex ) == 0 )
+		{
+			rtEntry.attachedSemantics.push_back( pSemantic );
+			return;
+		}
+	}
+
+	SSemanticGroup::SEntry tEntry;
+	tEntry.iSemanticIndex = pSemantic->iSemanticIndex;
+	tEntry.tNamedSemanticIndex = pSemantic->tNamedSemanticIndex;
+	tEntry.attachedSemantics.push_back( pSemantic );
+
+	pGroup->tEntries.push_back( tEntry );
+}
 
 void AddTypeDefinition( CType* pType )
 {

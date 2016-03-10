@@ -45,6 +45,11 @@ CASTVariableDefinition* ParseFunctionParameter( SParseContext& rtContext )
 		}
 
 		pSemantic = ParseSemantic( rtContext, pType );
+
+		if( pSemantic )
+		{
+			AddSemantic( pSemantic );
+		}
 	}
 
 	pType->SetSemantic( pSemantic );

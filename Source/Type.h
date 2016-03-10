@@ -64,11 +64,17 @@ public:
 
 	SSemantic()
 	: pType( nullptr )
+	, iSemanticIndex( -1 )
+	, iIsOut( -1 )
 	{}
 
 	//TODO: update operator== below	
 
-	std::string tPartialName;
+	std::string tSemanticName;
+	std::string tNamedSemanticIndex;
+	int			iSemanticIndex;
+	
+	int			iIsOut; //Negative if unset
 
 	CType* pType;
 };
@@ -78,7 +84,9 @@ inline bool operator==(const SSemantic& lhs, const SSemantic& rhs)
 	bool bIsEqual = true;
 	
 	bIsEqual &= lhs.pType == rhs.pType;
-	bIsEqual &= (lhs.tPartialName.compare( rhs.tPartialName ) == 0);
+	bIsEqual &= (lhs.tSemanticName.compare( rhs.tSemanticName ) == 0);
+	bIsEqual &= (lhs.tNamedSemanticIndex.compare( rhs.tNamedSemanticIndex ) == 0);
+	bIsEqual &= lhs.iIsOut == rhs.iIsOut || lhs.iIsOut == -1 || rhs.iIsOut == -1;
 
 	return true;
 }
@@ -86,18 +94,18 @@ inline bool operator==(const SSemantic& lhs, const SSemantic& rhs)
 //A semantic group is for example all semantics based off TEXCOORD.
 //So the group would contain TEXCOORD0, TEXCOORD1, TEXCOORD2 and TEXCOORD(main)
 //but an actual semantic is any one of those.
-class CSemanticGroup
+struct SSemanticGroup
 {
 	struct SEntry
 	{
-		SEntry() : index( -1 ), name( "" ) {}
-		SEntry( int index ) : index( index ), name( "" ) {}
-		SEntry( std::string name ) : index( -1 ), name( name ) {}
+		SEntry() : iSemanticIndex( -1 ), tNamedSemanticIndex( "" ) {}
+		SEntry( int index ) : iSemanticIndex( index ), tNamedSemanticIndex( "" ) {}
+		SEntry( std::string name ) : iSemanticIndex( -1 ), tNamedSemanticIndex( name ) {}
 
-		int index;
-		std::string name;
+		int iSemanticIndex;
+		std::string tNamedSemanticIndex;
 
-		
+		std::vector< SSemantic* > attachedSemantics;
 	};
 
 	std::vector< SEntry > tEntries;
@@ -200,9 +208,26 @@ public:
 			return false;
 		}
 
-		if( !(*m_pSemantic == *other.m_pSemantic) )
+		if( m_pSemantic == other.m_pSemantic )
 		{
-			return false;
+
+		}
+		else
+		{
+			if( m_pSemantic == NULL )
+			{
+				return false;
+			}
+
+			if( other.m_pSemantic == NULL )
+			{
+				return false;
+			}
+
+			if( !(*m_pSemantic == *other.m_pSemantic) )
+			{
+				return false;
+			}
 		}
 
 		if( m_tChildren.size() != other.m_tChildren.size() )
@@ -269,6 +294,7 @@ inline bool operator==(const CType& lhs, const CType& rhs)
 	return lhs.CompareTo( rhs );
 }
 
+void AddSemantic( SSemantic* pSemantic );
 void AddTypeDefinition( CType* pType );
 CType* GetType( const std::string& rtName );
 

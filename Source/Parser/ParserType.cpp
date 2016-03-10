@@ -83,6 +83,27 @@ SSemantic* ParseSemantic( SParseContext& rtContext, CType* pType )
 	}
 
 	std::string tIdentifier = std::string( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+	int iIdentifierLength = (int)tIdentifier.length();
+
+	int iSemanticIndexChars = 0;
+	for( int index = iIdentifierLength - 1; index >= 0; index-- )
+	{
+		if( tIdentifier[ index ] >= '0' && tIdentifier[ index ] < '9' )
+		{
+			iSemanticIndexChars++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	std::string tIdentifierSemanticIndex = tIdentifier.substr( iIdentifierLength - iSemanticIndexChars );
+	tIdentifier = tIdentifier.substr( 0, iIdentifierLength - iSemanticIndexChars );
+
+	//TODO: Look up semantic in the database
+
+	int iSemanticIndex = tIdentifierSemanticIndex.length() > 0 ? atoi( tIdentifierSemanticIndex.c_str() ) : 0;
 
 	if( !ConsumeToken( rtContext ) )
 	{
@@ -91,8 +112,50 @@ SSemantic* ParseSemantic( SParseContext& rtContext, CType* pType )
 	}
 
 	SSemantic* pNewSemantic = new SSemantic();
-	pNewSemantic->pType;
-	pNewSemantic->tPartialName = tIdentifier;
+	pNewSemantic->pType = pType;
+	pNewSemantic->iSemanticIndex = iSemanticIndex;
+	pNewSemantic->tSemanticName = tIdentifier;
+
+	if (rtContext.sNextToken.eToken == EShaderToken_Parenthesis_Open )
+	{
+		if( tIdentifierSemanticIndex.length() > 0 )
+		{
+			ParserWarning(rtContext, "Semantic has been specified as index %d but a named semantic index is also specified.", iSemanticIndex );
+		}
+
+		if( !ConsumeToken( rtContext ) )
+		{
+			ParserError( rtContext, "Unexpected end of program." );
+			return pNewSemantic;
+		}
+
+		if (rtContext.sNextToken.eToken != EShaderToken_Identifier)
+		{
+			ParserError(rtContext, "Expected identifier." );
+			return pNewSemantic;
+		}
+
+		pNewSemantic->tNamedSemanticIndex = std::string( rtContext.sNextToken.pszToken, rtContext.sNextToken.uLength );
+		pNewSemantic->iSemanticIndex = -1;
+
+		if( !ConsumeToken( rtContext ) )
+		{
+			ParserError( rtContext, "Unexpected end of program." );
+			return pNewSemantic;
+		}
+
+		if (rtContext.sNextToken.eToken != EShaderToken_Parenthesis_Close)
+		{
+			ParserError(rtContext, "Expected a closing parenthesis." );
+			return pNewSemantic;
+		}
+
+		if( !ConsumeToken( rtContext ) )
+		{
+			ParserError( rtContext, "Unexpected end of program." );
+			return pNewSemantic;
+		}
+	}
 
 	return pNewSemantic;
 }
@@ -273,7 +336,6 @@ CType* ParseType( SParseContext& rtContext )
 	}
 	else
 	{
-		ParserError( rtContext, "Expected type" );
 		rtContext = tContextCopy;
 		return NULL;
 	}
